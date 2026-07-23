@@ -16,6 +16,7 @@ export default function Dashboard() {
   const [investments, setInvestments] = useState<InvestmentWithProperty[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,6 +29,17 @@ export default function Dashboard() {
       }
       
       setUser(session.user);
+
+      // Check if user is admin
+      const { data: userData } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', session.user.id)
+        .single();
+        
+      if (userData?.role === 'admin') {
+        setIsAdmin(true);
+      }
       
       // Fetch investments with joined properties
       const { data } = await supabase
@@ -72,6 +84,14 @@ export default function Dashboard() {
             <p className="text-[#0A0A0A]/60">Welcome back, {user?.user_metadata?.full_name || 'Investor'}</p>
           </div>
           <div className="flex items-center gap-4">
+            {isAdmin && (
+              <Link 
+                to="/admin"
+                className="flex items-center px-6 py-3 rounded-full bg-[#0A0A0A] text-[#F7D0BC] font-bold hover:bg-[#0A0A0A]/80 transition-colors shadow-sm"
+              >
+                Admin Panel
+              </Link>
+            )}
             <Link 
               to="/dashboard/profile"
               className="p-3 rounded-full bg-white/50 backdrop-blur-sm border border-black/5 text-[#0A0A0A] hover:opacity-70 transition-opacity"

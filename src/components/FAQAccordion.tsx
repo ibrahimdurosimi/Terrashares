@@ -59,10 +59,15 @@ export function FAQAccordion() {
                 </span>
                 <span className="font-semibold text-lg text-[#0A0A0A]">{faq.question}</span>
               </div>
-              <ChevronDown className={cn(
-                "w-5 h-5 text-[#0A0A0A]/40 transition-transform duration-300 shrink-0",
-                isOpen && "rotate-180 text-[#9B8924]"
-              )} />
+              <div className={cn(
+                "w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors",
+                isOpen ? "bg-[#9B8924] text-white" : "bg-black/5 text-[#0A0A0A]/40"
+              )}>
+                <ChevronDown className={cn(
+                  "w-5 h-5 transition-transform duration-300",
+                  isOpen && "rotate-180"
+                )} />
+              </div>
             </button>
             
             <div 
