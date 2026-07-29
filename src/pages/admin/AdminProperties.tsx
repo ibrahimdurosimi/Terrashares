@@ -22,12 +22,12 @@ export default function AdminProperties() {
 
   async function fetchProperties() {
     setLoading(true);
-    const { data } = await supabase.from('properties').select('*').order('created_at', { ascending: false });
+    const { data } = await (supabase as any).from('properties').select('*').order('created_at', { ascending: false });
     if (data) setProperties(data);
     setLoading(false);
   }
 
-  const handleSave = async (e: React.FormEvent) => {
+  const handleSave = async (e: any) => {
     e.preventDefault();
     const { id, ...rest } = formData;
     
@@ -38,9 +38,9 @@ export default function AdminProperties() {
     }
     
     if (id) {
-      await supabase.from('properties').update(processedData as any).eq('id', id);
+      await (supabase as any).from('properties').update(processedData as any).eq('id', id);
     } else {
-      await supabase.from('properties').insert(processedData as any);
+      await (supabase as any).from('properties').insert(processedData as any);
     }
     
     setIsModalOpen(false);
@@ -66,7 +66,7 @@ export default function AdminProperties() {
 
   const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to delete this property?')) {
-      await supabase.from('properties').delete().eq('id', id);
+      await (supabase as any).from('properties').delete().eq('id', id);
       fetchProperties();
     }
   };
@@ -79,15 +79,15 @@ export default function AdminProperties() {
   };
 
   const fetchValuations = async (id: string) => {
-    const { data } = await supabase.from('property_valuations').select('*').eq('property_id', id).order('recorded_date', { ascending: true });
+    const { data } = await (supabase as any).from('property_valuations').select('*').eq('property_id', id).order('recorded_date', { ascending: true });
     if (data) setValuations(data);
   };
 
-  const handleSaveValuation = async (e: React.FormEvent) => {
+  const handleSaveValuation = async (e: any) => {
     e.preventDefault();
     if (!currentPropId) return;
     
-    await supabase.from('property_valuations').insert({
+    await (supabase as any).from('property_valuations').insert({
       property_id: currentPropId,
       recorded_date: valuationForm.recorded_date,
       value: valuationForm.value
@@ -98,7 +98,7 @@ export default function AdminProperties() {
   };
 
   const handleDeleteValuation = async (id: string) => {
-    await supabase.from('property_valuations').delete().eq('id', id);
+    await (supabase as any).from('property_valuations').delete().eq('id', id);
     if (currentPropId) fetchValuations(currentPropId);
   };
 

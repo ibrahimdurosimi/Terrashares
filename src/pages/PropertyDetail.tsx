@@ -36,7 +36,7 @@ export default function PropertyDetail() {
         const { data: valData } = await supabase
           .from('property_valuations')
           .select('*')
-          .eq('property_id', propData.id)
+          .eq('property_id', (propData as any).id)
           .order('recorded_date', { ascending: true });
           
         if (valData) {

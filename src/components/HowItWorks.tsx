@@ -61,6 +61,12 @@ const stepsData = {
   ]
 };
 
+  const tabImages: Record<string, string> = {
+    home: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    fractional: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80",
+    land: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80"
+  };
+
 export function HowItWorks() {
   const [activeTab, setActiveTab] = useState('home');
 
@@ -95,19 +101,29 @@ export function HowItWorks() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
-              className="grid md:grid-cols-3 gap-12"
+                            className="flex flex-col"
             >
-              {stepsData[activeTab as keyof typeof stepsData].map((step, idx) => (
-                <div key={idx} className="text-center flex flex-col items-center">
-                  <div className="w-16 h-16 bg-[#9B8924] rounded-full flex items-center justify-center text-white text-2xl font-bold mb-6">
-                    {step.step}
+              <div className="grid md:grid-cols-3 gap-12 mb-16">
+                {stepsData[activeTab as keyof typeof stepsData].map((step, idx) => (
+                  <div key={idx} className="text-center flex flex-col items-center">
+                    <div className="w-16 h-16 bg-[#9B8924] rounded-full flex items-center justify-center text-white text-2xl font-bold mb-6 shadow-lg shadow-[#9B8924]/20">
+                      {step.step}
+                    </div>
+                    <h3 className="text-xl font-bold text-[#0A0A0A] mb-4">{step.title}</h3>
+                    <p className="text-[#0A0A0A]/70 leading-relaxed max-w-sm mx-auto">
+                      {step.description}
+                    </p>
                   </div>
-                  <h3 className="text-xl font-bold text-[#0A0A0A] mb-4">{step.title}</h3>
-                  <p className="text-[#0A0A0A]/70 leading-relaxed max-w-sm mx-auto">
-                    {step.description}
-                  </p>
-                </div>
-              ))}
+                ))}
+              </div>
+              <div className="w-full h-[300px] md:h-[450px] rounded-[3rem] overflow-hidden shadow-2xl relative">
+                <div className="absolute inset-0 bg-black/10 z-10 pointer-events-none"></div>
+                <img 
+                  src={tabImages[activeTab]} 
+                  alt={activeTab} 
+                  className="w-full h-full object-cover" 
+                />
+              </div>
             </motion.div>
           </AnimatePresence>
         </div>

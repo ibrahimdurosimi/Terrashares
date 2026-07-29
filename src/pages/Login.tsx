@@ -11,7 +11,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: any) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
@@ -27,7 +27,7 @@ export default function Login() {
     } else {
       // Check role
       const { data: userData } = await supabase.from('users').select('role').eq('id', data.user.id).single();
-      if (userData?.role === 'admin') {
+      if (userData ? (userData as any).role === 'admin' : false) {
         navigate('/admin/properties');
       } else {
         navigate('/dashboard');

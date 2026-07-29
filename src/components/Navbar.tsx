@@ -35,7 +35,7 @@ export function Navbar() {
       .eq('id', session.user.id)
       .single();
     
-    setIsAdmin(data?.role === 'admin');
+    setIsAdmin(data ? (data as any).role === 'admin' : false);
   }
 
   return (

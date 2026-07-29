@@ -1,9 +1,11 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Database } from '../types/database';
 
 type Property = Database['public']['Tables']['properties']['Row'];
 
 interface PropertyCardProps {
+  key?: React.Key | string | number;
   property: Property;
 }
 

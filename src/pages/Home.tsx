@@ -19,10 +19,10 @@ type Property = Database['public']['Tables']['properties']['Row'];
 export default function Home() {
   const [featuredProperties, setFeaturedProperties] = useState<Property[]>([]);
   const [stats, setStats] = useState({ 
-    props: 0, 
-    members: 0, 
-    invested: 0, 
-    avgRoi: 0 
+    props: 20, 
+    members: 100, 
+    invested: 2000000000, 
+    avgRoi: 16 
   });
 
   useEffect(() => {
@@ -55,12 +55,7 @@ export default function Home() {
         ? propertiesData.reduce((sum, p) => sum + (p as any).returns_percent, 0) / propertiesData.length
         : 0;
 
-      setStats({
-        props: propsCount || 0,
-        members: usersCount || 0,
-        invested: totalInvested,
-        avgRoi: avgRoi,
-      });
+// Stats are hardcoded for now
     }
     
     fetchHomeData();
@@ -97,95 +92,14 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Simple line-art skyline illustration */}
-        <div className="relative w-full h-32 md:h-48 border-t border-[#0A0A0A]/5 flex items-end justify-center overflow-hidden opacity-60 mt-12">
-          <svg viewBox="0 0 1000 200" className="absolute bottom-0 w-[150%] md:w-full h-full fill-none" preserveAspectRatio="none">
-            {/* Clouds */}
-            <g stroke="#9B8924" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.6">
-              <path d="M 120 45 a 10 10 0 0 1 10 -10 a 15 15 0 0 1 25 0 a 10 10 0 0 1 10 10 h -45" />
-              <path d="M 350 35 a 12 12 0 0 1 12 -12 a 18 18 0 0 1 30 0 a 12 12 0 0 1 12 12 h -54" />
-              <path d="M 750 60 a 15 15 0 0 1 15 -15 a 25 25 0 0 1 40 0 a 15 15 0 0 1 15 15 h -70" />
-            </g>
-            {/* Buildings */}
-            <g stroke="#9B8924" strokeWidth="1.5" strokeLinejoin="round">
-              {/* Building 1 */}
-              <rect x="50" y="120" width="60" height="80" rx="4" />
-              <rect x="70" y="180" width="20" height="20" />
-              <rect x="60" y="135" width="12" height="15" />
-              <rect x="88" y="135" width="12" height="15" />
-              <rect x="60" y="160" width="12" height="15" />
-              <rect x="88" y="160" width="12" height="15" />
-
-              {/* Building 2 */}
-              <rect x="130" y="70" width="80" height="130" rx="4" />
-              <rect x="155" y="175" width="30" height="25" />
-              <rect x="145" y="90" width="15" height="20" />
-              <rect x="180" y="90" width="15" height="20" />
-              <rect x="145" y="125" width="15" height="20" />
-              <rect x="180" y="125" width="15" height="20" />
-
-              {/* Building 3 */}
-              <rect x="230" y="140" width="70" height="60" rx="4" />
-              <rect x="250" y="180" width="30" height="20" />
-              <rect x="245" y="155" width="40" height="12" />
-
-              {/* Building 4 */}
-              <rect x="320" y="50" width="90" height="150" rx="4" />
-              <rect x="350" y="170" width="30" height="30" />
-              <rect x="340" y="70" width="20" height="20" />
-              <rect x="370" y="70" width="20" height="20" />
-              <rect x="340" y="105" width="20" height="20" />
-              <rect x="370" y="105" width="20" height="20" />
-              <rect x="340" y="140" width="20" height="20" />
-              <rect x="370" y="140" width="20" height="20" />
-
-              {/* Building 5 */}
-              <rect x="430" y="90" width="60" height="110" rx="4" />
-              <rect x="445" y="175" width="30" height="25" />
-              <rect x="445" y="110" width="30" height="15" />
-              <rect x="445" y="140" width="30" height="15" />
-
-              {/* Building 6 */}
-              <rect x="510" y="30" width="100" height="170" rx="4" />
-              <rect x="545" y="165" width="30" height="35" />
-              <rect x="530" y="55" width="20" height="25" />
-              <rect x="570" y="55" width="20" height="25" />
-              <rect x="530" y="95" width="20" height="25" />
-              <rect x="570" y="95" width="20" height="25" />
-              <rect x="530" y="135" width="20" height="25" />
-              <rect x="570" y="135" width="20" height="25" />
-
-              {/* Building 7 */}
-              <rect x="630" y="110" width="70" height="90" rx="4" />
-              <rect x="650" y="170" width="30" height="30" />
-              <rect x="645" y="130" width="15" height="20" />
-              <rect x="670" y="130" width="15" height="20" />
-
-              {/* Building 8 */}
-              <rect x="720" y="60" width="80" height="140" rx="4" />
-              <rect x="745" y="175" width="30" height="25" />
-              <rect x="740" y="80" width="15" height="20" />
-              <rect x="765" y="80" width="15" height="20" />
-              <rect x="740" y="115" width="15" height="20" />
-              <rect x="765" y="115" width="15" height="20" />
-              <rect x="740" y="150" width="15" height="20" />
-              <rect x="765" y="150" width="15" height="20" />
-
-              {/* Building 9 */}
-              <rect x="820" y="130" width="50" height="70" rx="4" />
-              <rect x="835" y="175" width="20" height="25" />
-              <rect x="830" y="145" width="12" height="15" />
-              <rect x="848" y="145" width="12" height="15" />
-
-              {/* Building 10 */}
-              <rect x="890" y="80" width="70" height="120" rx="4" />
-              <rect x="910" y="170" width="30" height="30" />
-              <rect x="905" y="100" width="15" height="20" />
-              <rect x="930" y="100" width="15" height="20" />
-              <rect x="905" y="135" width="15" height="20" />
-              <rect x="930" y="135" width="15" height="20" />
-            </g>
-          </svg>
+        {/* Realistic Lagos skyline */}
+        <div className="absolute bottom-0 left-0 right-0 w-full h-64 md:h-[500px] z-0 opacity-15 mix-blend-multiply pointer-events-none">
+          <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent z-10"></div>
+          <img 
+            src="https://images.unsplash.com/photo-1618828665011-0abd973f7bb8?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" 
+            alt="Lagos Skyline" 
+            className="w-full h-full object-cover" 
+          />
         </div>
       </section>
 
@@ -199,33 +113,33 @@ export default function Home() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 border-t border-b border-[#0A0A0A]/10 py-8 relative">
+            <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 border-t border-b border-[#0A0A0A]/10 py-12 relative max-w-5xl mx-auto">
               {/* Floating element */}
               <motion.div animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }} className="absolute -top-4 -left-4 w-8 h-8 rounded-full bg-[#F7D0BC]/40 blur-md"></motion.div>
               
-              <div className="text-center border-r border-[#0A0A0A]/10 px-4">
+              <div className="text-center px-4">
                 <div className="text-3xl md:text-5xl font-black text-[#0A0A0A] mb-1">
-                  <AnimatedCounter value={stats.props} />
+                  <AnimatedCounter value={stats.props} suffix="+" />
                 </div>
-                <div className="text-[10px] md:text-xs uppercase tracking-widest font-bold text-[#0A0A0A]/50">Properties</div>
+                <div className="text-[10px] md:text-xs uppercase tracking-widest font-bold text-[#0A0A0A]/50 mt-2">Properties</div>
               </div>
-              <div className="text-center md:border-r border-[#0A0A0A]/10 px-4">
+              <div className="text-center px-4">
                 <div className="text-3xl md:text-5xl font-black text-[#0A0A0A] mb-1">
-                  <AnimatedCounter value={stats.invested} prefix="$" isCurrency={true} />
+                  <AnimatedCounter value={stats.invested} prefix="₦" isCurrency={true} suffix="+" />
                 </div>
-                <div className="text-[10px] md:text-xs uppercase tracking-widest font-bold text-[#0A0A0A]/50">Invested</div>
+                <div className="text-[10px] md:text-xs uppercase tracking-widest font-bold text-[#0A0A0A]/50 mt-2">Invested</div>
               </div>
-              <div className="text-center border-r border-[#0A0A0A]/10 px-4 mt-8 md:mt-0">
+              <div className="text-center px-4">
                 <div className="text-3xl md:text-5xl font-black text-[#0A0A0A] mb-1">
-                  <AnimatedCounter value={stats.members} />
+                  <AnimatedCounter value={stats.members} suffix="+" />
                 </div>
-                <div className="text-[10px] md:text-xs uppercase tracking-widest font-bold text-[#0A0A0A]/50">Members</div>
+                <div className="text-[10px] md:text-xs uppercase tracking-widest font-bold text-[#0A0A0A]/50 mt-2">Members</div>
               </div>
-              <div className="text-center px-4 mt-8 md:mt-0">
+              <div className="text-center px-4">
                 <div className="text-3xl md:text-5xl font-black text-[#0A0A0A] mb-1">
                   <AnimatedCounter value={stats.avgRoi} suffix="%" />
                 </div>
-                <div className="text-[10px] md:text-xs uppercase tracking-widest font-bold text-[#0A0A0A]/50">Avg Returns</div>
+                <div className="text-[10px] md:text-xs uppercase tracking-widest font-bold text-[#0A0A0A]/50 mt-2">Avg Returns</div>
               </div>
             </div>
           )}
@@ -262,20 +176,25 @@ export default function Home() {
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
         
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="mb-20 max-w-2xl">
-            <p className="text-[#9B8924] text-xs md:text-sm font-bold tracking-[0.2em] uppercase mb-4">About Terrashare</p>
-            <h2 className="text-5xl md:text-6xl text-[#0A0A0A] leading-[1.1] mb-6" style={{ fontFamily: 'Georgia, serif' }}>
-              Property ownership shouldn't be out of reach.
-            </h2>
-            <p className="text-lg text-[#0A0A0A]/70 leading-relaxed mb-8">
-              For too long, it’s felt like something only the wealthy could afford. We’re here to change that, for good. We’re a passionate team working to change the way land is owned in Nigeria.
-            </p>
-            <Link 
-              to="/about"
-              className="inline-flex h-12 items-center justify-center rounded-full bg-[#0A0A0A] px-8 text-sm font-bold text-white transition-transform hover:scale-105 shadow-lg"
-            >
-              Learn our story
-            </Link>
+          <div className="grid lg:grid-cols-2 gap-16 mb-20 items-center">
+            <div>
+              <p className="text-[#9B8924] text-xs md:text-sm font-bold tracking-[0.2em] uppercase mb-4">About Terrashare</p>
+              <h2 className="text-5xl md:text-6xl text-[#0A0A0A] leading-[1.1] mb-6" style={{ fontFamily: 'Georgia, serif' }}>
+                Property ownership shouldn't be out of reach.
+              </h2>
+              <p className="text-lg text-[#0A0A0A]/70 leading-relaxed mb-8">
+                For too long, it’s felt like something only the wealthy could afford. We’re here to change that, for good. We’re a passionate team working to change the way land is owned in Nigeria.
+              </p>
+              <Link 
+                to="/about"
+                className="inline-flex h-12 items-center justify-center rounded-full bg-[#0A0A0A] px-8 text-sm font-bold text-white transition-transform hover:scale-105 shadow-lg"
+              >
+                Learn our story
+              </Link>
+            </div>
+            <div className="relative rounded-[3rem] overflow-hidden shadow-2xl h-[300px] md:h-[400px]">
+              <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=80" alt="Modern Nigerian Real Estate" className="w-full h-full object-cover" />
+            </div>
           </div>
 
           <div className="grid lg:grid-cols-3 gap-6 md:gap-8">

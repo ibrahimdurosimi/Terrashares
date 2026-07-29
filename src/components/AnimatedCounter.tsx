@@ -13,6 +13,9 @@ export function AnimatedCounter({ value, prefix = "", suffix = "", isCurrency = 
   }, [value, springValue]);
 
   const displayValue = useTransform(springValue, (current) => {
+    if (isCurrency && current >= 1000000000) {
+      return (current / 1000000000).toFixed(0) + 'Bn';
+    }
     if (isCurrency && current >= 1000000) {
       return (current / 1000000).toFixed(1) + 'M';
     }

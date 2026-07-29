@@ -39,7 +39,7 @@ export default function Dashboard() {
         .eq('id', session.user.id)
         .single();
         
-      if (userData?.role === 'admin') {
+      if (userData ? (userData as any).role === 'admin' : false) {
         setIsAdmin(true);
       }
       

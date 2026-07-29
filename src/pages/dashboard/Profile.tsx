@@ -15,7 +15,7 @@ export default function Profile() {
 
   useEffect(() => {
     async function fetchProfile() {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session } } = await (supabase as any).auth.getSession();
       
       if (!session) {
         navigate('/login');
@@ -24,7 +24,7 @@ export default function Profile() {
       
       setUser(session.user);
       
-      const { data } = await supabase
+      const { data }: any = await (supabase as any)
         .from('users')
         .select('*')
         .eq('id', session.user.id)
@@ -40,14 +40,14 @@ export default function Profile() {
     fetchProfile();
   }, [navigate]);
 
-  const handleSave = async (e: React.FormEvent) => {
+  const handleSave = async (e: any) => {
     e.preventDefault();
     setSaving(true);
     setMessage({ text: '', type: '' });
     
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('users')
-      .update({ full_name: fullName, phone })
+      .update({ full_name: fullName, phone } as any)
       .eq('id', user.id);
       
     if (error) {

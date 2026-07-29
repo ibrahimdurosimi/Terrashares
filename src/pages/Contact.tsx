@@ -2,6 +2,7 @@ import { Mail, Phone, MapPin, Send, MessageCircle } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -14,16 +15,20 @@ export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Simulate API call
-    setTimeout(() => {
+    // Push to supabase leads table
+    supabase.from('leads').insert({
+      name: formData.name,
+      email: formData.email,
+      message: `Subject: ${formData.subject}\n\n${formData.message}`
+    } as any).then(() => {
       setIsSubmitting(false);
       setSubmitted(true);
       setFormData({ name: '', email: '', subject: '', message: '' });
       setTimeout(() => setSubmitted(false), 5000);
-    }, 1500);
+    });
   };
 
   return (
