@@ -2,14 +2,16 @@ import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { Database } from '../../types/database';
-import { Building2, TrendingUp, LogOut, Settings, Wallet } from 'lucide-react';
-import { format, parseISO } from 'date-fns';
+import { Building2, Wallet, TrendingUp, LogOut, Settings, Heart, CheckCircle2 } from 'lucide-react';
+import { format, parseISO, differenceInDays } from 'date-fns';
 
 type Investment = Database['public']['Tables']['investments']['Row'];
 type Property = Database['public']['Tables']['properties']['Row'];
 
 type InvestmentWithProperty = Investment & {
   property: Property | null;
+  isLocal?: boolean;
+  localType?: 'wishlist' | 'offline';
 };
 
 export default function Dashboard() {
@@ -41,8 +43,8 @@ export default function Dashboard() {
         setIsAdmin(true);
       }
       
-      // Fetch investments with joined properties
-      const { data } = await supabase
+      // Fetch investments with joined properties from DB
+      const { data: dbData } = await supabase
         .from('investments')
         .select(`
           *,
@@ -51,9 +53,37 @@ export default function Dashboard() {
         .eq('user_id', session.user.id)
         .order('invested_at', { ascending: false });
         
-      if (data) {
-        setInvestments(data as unknown as InvestmentWithProperty[]);
-      }
+      let allInvestments: InvestmentWithProperty[] = (dbData as any) || [];
+
+      // Read local portfolio
+      const key = `terrashare_portfolio_${session.user.id}`;
+      const localData = JSON.parse(localStorage.getItem(key) || '[]');
+      
+      const localInvestments: InvestmentWithProperty[] = localData.map((item: any) => ({
+        id: item.id,
+        user_id: session.user.id,
+        property_id: item.property_id,
+        amount: item.min_investment || 0, // Fallback to min investment
+        status: item.type === 'offline' ? 'confirmed' : 'pending',
+        invested_at: item.added_at,
+        isLocal: true,
+        localType: item.type,
+        property: {
+          id: item.property_id,
+          title: item.title,
+          slug: item.property_slug,
+          returns_percent: item.returns_percent,
+          duration_months: 12, // default
+          category: item.category,
+        }
+      }));
+
+      // Merge and sort
+      allInvestments = [...allInvestments, ...localInvestments].sort((a, b) => 
+        new Date(b.invested_at).getTime() - new Date(a.invested_at).getTime()
+      );
+
+      setInvestments(allInvestments);
       setLoading(false);
     }
     
@@ -67,40 +97,58 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-24">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#9B8924]"></div>
+      <div className="flex items-center justify-center py-24 min-h-screen bg-[#FAF8F5]">
+        <div className="w-12 h-12 border-4 border-[#0A0A0A]/10 border-t-[#9B8924] rounded-full animate-spin"></div>
       </div>
     );
   }
 
-  const totalInvested = investments.reduce((sum, inv) => sum + inv.amount, 0);
+  // Calculate stats (only for confirmed / offline investments, not wishlist)
+  const activeInvestments = investments.filter(inv => inv.status === 'confirmed' || inv.status === 'matured' || inv.localType === 'offline');
+  
+  const totalInvested = activeInvestments.reduce((sum, inv) => sum + (inv.amount || 0), 0);
+  
+  // Calculate appreciation
+  const totalValue = activeInvestments.reduce((sum, inv) => {
+    const amount = inv.amount || 0;
+    const returns = inv.property?.returns_percent || 0;
+    const durationMonths = inv.property?.duration_months || 12;
+    
+    const daysSince = Math.max(0, differenceInDays(new Date(), parseISO(inv.invested_at)));
+    const totalDays = durationMonths * 30;
+    const fraction = Math.min(1, daysSince / totalDays);
+    
+    const appreciation = amount * (returns / 100) * fraction;
+    return sum + amount + appreciation;
+  }, 0);
 
   return (
-    <div className="py-12">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-10">
+    <div className="pt-32 pb-24 min-h-screen bg-[#FAF8F5]">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-10 max-w-6xl">
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6">
           <div>
-            <h1 className="text-3xl font-bold text-[#0A0A0A] mb-2">My Portfolio</h1>
-            <p className="text-[#0A0A0A]/60">Welcome back, {user?.user_metadata?.full_name || 'Investor'}</p>
+            <h1 className="text-3xl font-bold text-[#0A0A0A] mb-2 font-serif">My Portfolio</h1>
+            <p className="text-[#0A0A0A]/60 font-medium">Welcome back, {user?.user_metadata?.full_name || 'Investor'}</p>
           </div>
           <div className="flex items-center gap-4">
             {isAdmin && (
               <Link 
                 to="/admin"
-                className="flex items-center px-6 py-3 rounded-full bg-[#0A0A0A] text-[#F7D0BC] font-bold hover:bg-[#0A0A0A]/80 transition-colors shadow-sm"
+                className="flex items-center px-6 py-3 rounded-full bg-[#0A0A0A] text-white font-bold hover:bg-[#0A0A0A]/80 transition-colors shadow-sm"
               >
                 Admin Panel
               </Link>
             )}
             <Link 
               to="/dashboard/profile"
-              className="p-3 rounded-full bg-white/50 backdrop-blur-sm border border-black/5 text-[#0A0A0A] hover:opacity-70 transition-opacity"
+              className="p-3 rounded-full bg-white border border-black/5 text-[#0A0A0A] hover:bg-gray-50 transition-colors shadow-sm"
+              title="Settings"
             >
               <Settings className="w-5 h-5" />
             </Link>
             <button 
               onClick={handleLogout}
-              className="flex items-center px-6 py-3 rounded-full bg-white/50 backdrop-blur-sm text-[#0A0A0A] font-medium hover:bg-white transition-colors"
+              className="flex items-center px-6 py-3 rounded-full bg-white border border-black/5 text-[#0A0A0A] font-bold hover:bg-gray-50 transition-colors shadow-sm"
             >
               <LogOut className="w-4 h-4 mr-2" /> Logout
             </button>
@@ -109,88 +157,97 @@ export default function Dashboard() {
 
         {/* Portfolio Summary */}
         <div className="grid md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-white/60 backdrop-blur-sm p-8 rounded-[2rem] border border-black/5 shadow-sm">
+          <div className="bg-white p-8 rounded-[2rem] border border-black/5 shadow-sm">
             <div className="flex items-center text-[#0A0A0A]/50 mb-4">
               <Wallet className="w-5 h-5 mr-2" />
-              <span className="font-medium uppercase tracking-wider text-sm">Total Invested</span>
+              <span className="font-bold uppercase tracking-wider text-sm">Total Invested</span>
             </div>
-            <p className="text-4xl font-black text-[#0A0A0A]">${totalInvested.toLocaleString()}</p>
+            <p className="text-4xl font-black text-[#0A0A0A]">₦{totalInvested.toLocaleString()}</p>
           </div>
-          <div className="bg-white/60 backdrop-blur-sm p-8 rounded-[2rem] border border-black/5 shadow-sm">
+          <div className="bg-white p-8 rounded-[2rem] border border-black/5 shadow-sm">
             <div className="flex items-center text-[#0A0A0A]/50 mb-4">
-              <Building2 className="w-5 h-5 mr-2" />
-              <span className="font-medium uppercase tracking-wider text-sm">Active Investments</span>
+              <TrendingUp className="w-5 h-5 mr-2" />
+              <span className="font-bold uppercase tracking-wider text-sm">Current Value</span>
             </div>
-            <p className="text-4xl font-black text-[#0A0A0A]">{investments.length}</p>
+            <p className="text-4xl font-black text-[#449175]">₦{totalValue.toLocaleString(undefined, {maximumFractionDigits: 0})}</p>
+            <p className="text-sm text-[#449175] font-medium mt-2">+₦{(totalValue - totalInvested).toLocaleString(undefined, {maximumFractionDigits: 0})} Appreciation</p>
           </div>
           <div className="bg-[#0A0A0A] text-white p-8 rounded-[2rem] border border-black/5 shadow-sm">
             <div className="flex items-center text-white/50 mb-4">
-              <TrendingUp className="w-5 h-5 mr-2" />
-              <span className="font-medium uppercase tracking-wider text-sm">Avg. Target Returns</span>
+              <Building2 className="w-5 h-5 mr-2" />
+              <span className="font-bold uppercase tracking-wider text-sm">Active Properties</span>
             </div>
-            <p className="text-4xl font-black text-[#F7D0BC]">
-              {investments.length > 0 
-                ? (investments.reduce((sum, inv) => sum + (inv.property?.returns_percent || 0), 0) / investments.length).toFixed(1) 
-                : '0'}%
+            <p className="text-4xl font-black text-[#BFA15F]">
+              {activeInvestments.length}
             </p>
           </div>
         </div>
 
         {/* Investments List */}
-        <div className="bg-white/60 backdrop-blur-sm rounded-[2rem] border border-black/5 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-[2rem] border border-black/5 shadow-sm overflow-hidden">
           <div className="p-8 border-b border-black/5 flex justify-between items-center">
-            <h2 className="text-xl font-bold text-[#0A0A0A]">Investment History</h2>
+            <h2 className="text-xl font-bold text-[#0A0A0A]">Your Properties & Wishlist</h2>
           </div>
           
           {investments.length === 0 ? (
             <div className="p-12 text-center">
               <Building2 className="w-16 h-16 text-[#0A0A0A]/20 mx-auto mb-4" />
-              <p className="text-[#0A0A0A]/50 mb-6">You haven't made any investments yet.</p>
+              <p className="text-[#0A0A0A]/50 mb-6 font-medium">You haven't added any properties to your portfolio yet.</p>
               <Link 
                 to="/properties"
-                className="inline-flex h-12 items-center justify-center rounded-full bg-[#0A0A0A] px-8 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+                className="inline-flex h-14 items-center justify-center rounded-full bg-[#0A0A0A] px-8 font-bold text-white transition-colors hover:bg-gray-800"
               >
                 Browse Properties
               </Link>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+              <table className="w-full text-left border-collapse min-w-[800px]">
                 <thead>
-                  <tr className="bg-black/5 text-[#0A0A0A]/50 text-sm uppercase tracking-wider">
-                    <th className="p-6 font-medium">Property</th>
-                    <th className="p-6 font-medium">Amount</th>
-                    <th className="p-6 font-medium">Returns</th>
-                    <th className="p-6 font-medium">Status</th>
-                    <th className="p-6 font-medium">Invested On</th>
+                  <tr className="bg-gray-50 text-gray-500 text-sm font-bold uppercase tracking-wider border-b border-gray-100">
+                    <th className="p-6">Property</th>
+                    <th className="p-6">Type</th>
+                    <th className="p-6">Amount</th>
+                    <th className="p-6">Returns</th>
+                    <th className="p-6">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-black/5 text-[#0A0A0A]">
+                <tbody className="divide-y divide-gray-100 text-gray-900">
                   {investments.map((inv) => (
-                    <tr key={inv.id} className="hover:bg-white/50 transition-colors">
+                    <tr key={inv.id} className="hover:bg-gray-50 transition-colors">
                       <td className="p-6">
                         <Link to={`/properties/${inv.property?.slug}`} className="font-bold hover:text-[#9B8924] transition-colors">
                           {inv.property?.title || 'Unknown Property'}
                         </Link>
-                        {inv.units_purchased && (
-                          <p className="text-sm text-[#0A0A0A]/50 mt-1">{inv.units_purchased} Units</p>
+                        {inv.localType === 'wishlist' && (
+                          <div className="flex items-center text-xs text-gray-500 font-medium mt-1">
+                            <Heart className="w-3 h-3 mr-1 text-red-400 fill-current" /> Tracking
+                          </div>
+                        )}
+                        {inv.localType === 'offline' && (
+                          <div className="flex items-center text-xs text-gray-500 font-medium mt-1">
+                            <CheckCircle2 className="w-3 h-3 mr-1 text-green-500" /> Offline Investment
+                          </div>
                         )}
                       </td>
-                      <td className="p-6 font-bold text-lg">${inv.amount.toLocaleString()}</td>
-                      <td className="p-6">
-                        <span className="text-[#9B8924] font-bold">{inv.property?.returns_percent}%</span>
+                      <td className="p-6 font-medium text-gray-600 capitalize">
+                        {inv.property?.category?.replace('_', ' ') || '-'}
+                      </td>
+                      <td className="p-6 font-bold text-lg">
+                        {inv.localType === 'wishlist' ? '-' : `₦${inv.amount.toLocaleString()}`}
                       </td>
                       <td className="p-6">
-                        <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                        <span className="text-[#449175] font-bold">{inv.property?.returns_percent}%</span>
+                      </td>
+                      <td className="p-6">
+                        <span className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${
+                          inv.localType === 'wishlist' ? 'bg-gray-100 text-gray-600' :
                           inv.status === 'confirmed' ? 'bg-green-100 text-green-800' :
                           inv.status === 'matured' ? 'bg-blue-100 text-blue-800' :
                           'bg-yellow-100 text-yellow-800'
                         }`}>
-                          {inv.status}
+                          {inv.localType === 'wishlist' ? 'Wishlist' : inv.status}
                         </span>
-                      </td>
-                      <td className="p-6 text-[#0A0A0A]/50">
-                        {format(parseISO(inv.invested_at), 'MMM dd, yyyy')}
                       </td>
                     </tr>
                   ))}

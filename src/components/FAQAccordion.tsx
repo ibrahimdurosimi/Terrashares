@@ -1,90 +1,78 @@
-import { useState, useEffect } from 'react';
-import { ChevronDown } from 'lucide-react';
-import { supabase } from '../lib/supabase';
-import { cn } from '../lib/utils';
-import { Database } from '../types/database';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { ChevronRight } from 'lucide-react';
 
-type FAQ = Database['public']['Tables']['faqs']['Row'];
+const faqs = [
+  {
+    question: "I am Nigerian but I don't reside in Nigeria; Can I still invest through Terrashare?",
+    answer: "Yes, you can. Terrashare is open to both resident and non-resident Nigerians looking to invest in local real estate."
+  },
+  {
+    question: "How do I know Real Estate Investing is for me?",
+    answer: "Real estate is a stable, tangible asset class that historically appreciates over time. It's ideal for investors looking for long-term wealth preservation and steady returns."
+  },
+  {
+    question: "What am I investing in?",
+    answer: "You are investing directly into vetted, high-yield commercial and residential real estate projects, earning returns through capital appreciation or rental income."
+  },
+  {
+    question: "Why should I invest through Terrashare?",
+    answer: "Terrashare provides fractional ownership and low minimum entry points, allowing you to diversify your portfolio without needing the huge capital typically required for real estate."
+  },
+  {
+    question: "What valid ID is acceptable on the platform?",
+    answer: "We accept valid government-issued IDs including International Passport, Driver's License, or National Identity Card (NIN)."
+  },
+  {
+    question: "Is Terrashare safe?",
+    answer: "Yes, all our properties are thoroughly vetted and legally secured. We employ strict compliance and security measures to ensure your investment is protected."
+  },
+  {
+    question: "Who can use Terrashare?",
+    answer: "Anyone aged 18 and above who meets our KYC requirements can use Terrashare to build their real estate portfolio."
+  },
+  {
+    question: "How long does it take for my investment to mature?",
+    answer: "Maturity periods vary depending on the specific property asset. You can view the specific duration (typically 12-24 months) on each property's detail page."
+  }
+];
 
 export function FAQAccordion() {
-  const [faqs, setFaqs] = useState<FAQ[]>([]);
-  const [openId, setOpenId] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function fetchFaqs() {
-      const { data } = await supabase
-        .from('faqs')
-        .select('*')
-        .order('sort_order', { ascending: true });
-      
-      if (data && data.length > 0) {
-        setFaqs(data);
-        setOpenId(data[0].id);
-      } else {
-        // Fallback dummy data if table is empty
-        const dummyFaqs: FAQ[] = [
-          { id: '1', question: 'What is the minimum investment?', answer: 'The minimum investment varies by property but typically starts at $5,000 for fractional ownership opportunities.', sort_order: 1, created_at: '' },
-          { id: '2', question: 'When do I receive my returns?', answer: 'Returns are distributed either monthly or after maturity depending on the specific terms of the property. Check the "Payout Style" on each property detail page.', sort_order: 2, created_at: '' },
-          { id: '3', question: 'Are my investments liquid?', answer: 'Real estate is generally an illiquid asset. Investments are meant to be held for the full target duration (typically 12-60 months).', sort_order: 3, created_at: '' },
-        ];
-        setFaqs(dummyFaqs);
-        setOpenId(dummyFaqs[0].id);
-      }
-    }
-    fetchFaqs();
-  }, []);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
     <div className="space-y-4">
-      {faqs.map((faq, index) => {
-        const isOpen = openId === faq.id;
-        return (
-          <div 
-            key={faq.id} 
-            className={cn(
-              "border rounded-[2rem] overflow-hidden transition-colors duration-300 shadow-sm",
-              isOpen ? "border-[#9B8924] bg-white/60 backdrop-blur-sm" : "border-black/5 bg-white/40 backdrop-blur-sm hover:bg-white/60"
-            )}
+      {faqs.map((faq, index) => (
+        <div 
+          key={index} 
+          className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+        >
+          <button
+            onClick={() => setOpenIndex(openIndex === index ? null : index)}
+            className="w-full flex items-center justify-between p-5 text-left transition-colors hover:bg-gray-50 focus:outline-none"
           >
-            <button
-              onClick={() => setOpenId(isOpen ? null : faq.id)}
-              className="w-full flex items-center justify-between p-6 text-left"
-            >
-              <div className="flex items-center gap-4">
-                <span className={cn(
-                  "text-sm font-bold w-6 h-6 rounded-full flex items-center justify-center shrink-0",
-                  isOpen ? "bg-[#9B8924] text-white" : "bg-[#0A0A0A]/10 text-[#0A0A0A]/50"
-                )}>
-                  {index + 1}
-                </span>
-                <span className="font-semibold text-lg text-[#0A0A0A]">{faq.question}</span>
-              </div>
-              <div className={cn(
-                "w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors",
-                isOpen ? "bg-[#9B8924] text-white" : "bg-black/5 text-[#0A0A0A]/40"
-              )}>
-                <ChevronDown className={cn(
-                  "w-5 h-5 transition-transform duration-300",
-                  isOpen && "rotate-180"
-                )} />
-              </div>
-            </button>
-            
-            <div 
-              className={cn(
-                "grid transition-all duration-300 ease-in-out",
-                isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-              )}
-            >
-              <div className="overflow-hidden">
-                <p className="px-6 pb-6 pt-0 text-[#0A0A0A]/70 pl-[3.25rem] leading-relaxed">
-                  {faq.answer}
-                </p>
-              </div>
+            <span className="font-bold text-gray-900 pr-4">{faq.question}</span>
+            <div className={`w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center shrink-0 transition-transform duration-300 ${openIndex === index ? 'rotate-90 bg-gray-100' : ''}`}>
+              <ChevronRight className="w-4 h-4 text-gray-500" />
             </div>
-          </div>
-        );
-      })}
+          </button>
+          
+          <AnimatePresence>
+            {openIndex === index && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+              >
+                <div className="p-5 pt-0 text-gray-600 leading-relaxed border-t border-gray-50">
+                  {faq.answer}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      ))}
     </div>
   );
 }

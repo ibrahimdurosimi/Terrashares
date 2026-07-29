@@ -24,9 +24,9 @@ import AdminFAQs from './pages/admin/AdminFAQs';
 export default function App() {
   return (
     <Router>
-      <div className="min-h-screen flex flex-col font-sans text-[#0A0A0A] bg-[#F7D0BC]">
+      <div className="min-h-screen flex flex-col font-sans text-[#0A0A0A] bg-white">
         <Navbar />
-        <main className="flex-grow">
+        <main className="flex-grow pt-20">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/properties" element={<Properties />} />

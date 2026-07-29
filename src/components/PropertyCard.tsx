@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { MapPin, Home, Building, Trees, Grid, Bath, Bed, Square } from 'lucide-react';
 import { Database } from '../types/database';
 
 type Property = Database['public']['Tables']['properties']['Row'];
@@ -9,84 +8,68 @@ interface PropertyCardProps {
 }
 
 export function PropertyCard({ property }: PropertyCardProps) {
-  const getCategoryIcon = () => {
-    switch (property.category) {
-      case 'residential': return <Home className="w-4 h-4" />;
-      case 'commercial': return <Building className="w-4 h-4" />;
-      case 'land': return <Trees className="w-4 h-4" />;
-      case 'mixed_use': return <Grid className="w-4 h-4" />;
-      default: return <Home className="w-4 h-4" />;
-    }
-  };
-
-  const getCategoryLabel = () => {
-    return property.category.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-  };
-
-  // Safe parse type details
-  const typeDetails: any = property.type_details || {};
-
   return (
-    <div className="bg-white rounded-3xl p-3 shadow-xl shadow-black/5 flex flex-col group transition-transform duration-300 hover:-translate-y-1">
-      <div className="aspect-[4/3] relative overflow-hidden bg-[#E5E7EB] rounded-2xl mb-4">
-        {property.image_urls && property.image_urls.length > 0 ? (
-          <img 
-            src={property.image_urls[0]} 
-            alt={property.title}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-        ) : (
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-        )}
-        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-gray-900 shadow-sm">
-          {getCategoryLabel()}
+    <div className="bg-white rounded-2xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-black/[0.03] flex flex-col h-full hover:shadow-lg transition-shadow">
+      {/* Header */}
+      <div className="flex gap-4 mb-4">
+        <div className="w-[72px] h-[72px] rounded-2xl overflow-hidden shrink-0 bg-gray-100">
+          {property.image_urls && property.image_urls.length > 0 ? (
+            <img 
+              src={property.image_urls[0]} 
+              alt={property.title}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-gray-200"></div>
+          )}
         </div>
-        {property.status === 'closed' && (
-          <div className="absolute top-3 right-3 bg-gray-900 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white shadow-sm">
-            Closed
-          </div>
-        )}
-      </div>
-      
-      <div className="px-3 flex-col flex flex-grow">
-        <h3 className="font-bold text-lg leading-tight text-gray-900 mb-2 truncate group-hover:text-[#9B8924] transition-colors">
-          {property.title}
-        </h3>
-        <p className="text-xs text-[#0A0A0A]/50 mb-4 flex items-center gap-1">
-          <MapPin className="w-3.5 h-3.5" />
-          {property.location}
-        </p>
-        
-        {/* Key category details if available */}
-        {property.category === 'residential' && typeDetails.bedrooms && (
-          <div className="flex items-center gap-4 text-[10px] font-semibold text-[#0A0A0A]/60 mb-5 pb-5 border-b border-black/5">
-            <span className="flex items-center gap-1.5"><Bed className="w-3.5 h-3.5" /> {typeDetails.bedrooms} Beds</span>
-            <span className="flex items-center gap-1.5"><Bath className="w-3.5 h-3.5" /> {typeDetails.bathrooms} Baths</span>
-            <span className="flex items-center gap-1.5"><Square className="w-3.5 h-3.5" /> {typeDetails.square_footage} sqft</span>
-          </div>
-        )}
-        
-        <div className="mt-auto flex justify-between items-end mb-5">
-          <div>
-            <div className="text-[10px] uppercase text-[#0A0A0A]/40 font-bold mb-0.5">Min. Invest</div>
-            <div className="font-black text-lg text-[#0A0A0A]">
-              ${property.min_investment.toLocaleString()}
-            </div>
-          </div>
-          <div className="bg-[#9B8924]/10 px-3 py-1.5 rounded-lg flex items-center justify-center">
-            <div className="font-bold text-[#9B8924] text-sm flex items-center">
-              {property.returns_percent}% <span className="text-[10px] ml-1 uppercase opacity-60">ROI</span>
-            </div>
+        <div className="flex flex-col justify-center">
+          <h3 className="font-bold text-lg text-gray-900 leading-tight mb-1 truncate max-w-[200px]">
+            {property.title}
+          </h3>
+          <div className="flex items-center text-sm text-gray-500 gap-1.5">
+            <svg viewBox="0 0 24 24" className="w-4 h-4 text-green-500 fill-current">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
+            </svg>
+            <span className="truncate max-w-[150px]">{property.location}</span>
           </div>
         </div>
-        
-        <Link 
-          to={`/properties/${property.slug}`}
-          className="w-full mt-auto py-3.5 border border-[#0A0A0A] text-[#0A0A0A] rounded-full text-sm font-bold text-center hover:bg-[#0A0A0A] hover:text-white transition-colors"
-        >
-          Invest now
-        </Link>
       </div>
+
+      {/* Description */}
+      <p className="text-sm text-gray-600 line-clamp-3 mb-6 leading-relaxed">
+        {property.description}
+      </p>
+
+      {/* Stats Grid */}
+      <div className="grid grid-cols-3 gap-2 mb-6 mt-auto">
+        <div>
+          <p className="text-xs text-gray-400 mb-1">Min. Investment</p>
+          <p className="font-bold text-gray-900 text-sm">₦{property.min_investment.toLocaleString()}</p>
+        </div>
+        <div>
+          <p className="text-xs text-gray-400 mb-1">Returns</p>
+          <p className="font-bold text-[#9B8924] text-sm">{property.returns_percent}%</p>
+        </div>
+        <div>
+          <p className="text-xs text-gray-400 mb-1">Status</p>
+          <div className={`inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-bold ${
+            property.status === 'open' 
+              ? 'bg-green-100 text-green-700' 
+              : 'bg-green-100 text-green-700' // Keeping it green for both per screenshot, or make closed slightly different
+          }`}>
+            {property.status === 'open' ? 'Active' : 'Closed'}
+          </div>
+        </div>
+      </div>
+
+      {/* Button */}
+      <Link
+        to={`/properties/${property.slug}`}
+        className="w-full py-3.5 bg-[#0A0A0A] text-white rounded-xl font-bold text-sm text-center hover:bg-gray-800 transition-colors"
+      >
+        Invest
+      </Link>
     </div>
   );
 }

@@ -39,7 +39,7 @@ export function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-[#F7D0BC]">
+    <header className="absolute top-0 z-50 w-full bg-transparent">
       <div className="container mx-auto px-4 sm:px-6 lg:px-10">
         <div className="flex h-20 items-center justify-between">
           <div className="flex items-center">

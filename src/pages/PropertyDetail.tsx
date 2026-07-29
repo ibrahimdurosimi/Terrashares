@@ -2,14 +2,10 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { Database } from '../types/database';
-import { 
-  Building2, MapPin, Calendar, Banknote, Percent, Target, 
-  ChevronLeft, MessageCircle, Home, Building, Trees, Grid, Share2
-} from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { format, parseISO } from 'date-fns';
+import { ArrowLeft, MapPin, X, MessageCircle, Mail, BookmarkPlus } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
+import { motion, AnimatePresence } from 'motion/react';
 import { FAQAccordion } from '../components/FAQAccordion';
-import { cn } from '../lib/utils';
 
 type Property = Database['public']['Tables']['properties']['Row'];
 type Valuation = Database['public']['Tables']['property_valuations']['Row'];
@@ -19,18 +15,13 @@ export default function PropertyDetail() {
   const [property, setProperty] = useState<Property | null>(null);
   const [valuations, setValuations] = useState<Valuation[]>([]);
   const [loading, setLoading] = useState(true);
-  
-  // Fractional investing states
-  const [units, setUnits] = useState(1);
-  
-  // Lead form states
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
-  const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [isInvestModalOpen, setIsInvestModalOpen] = useState(false);
+  const [isPortfolioModalOpen, setIsPortfolioModalOpen] = useState(false);
+  const [portfolioStatus, setPortfolioStatus] = useState<'idle'|'success'>('idle');
 
   useEffect(() => {
-    async function fetchProperty() {
+    async function fetchPropertyDetails() {
       if (!slug) return;
-      setLoading(true);
       
       const { data: propData } = await supabase
         .from('properties')
@@ -41,6 +32,7 @@ export default function PropertyDetail() {
       if (propData) {
         setProperty(propData);
         
+        // Fetch valuations for chart
         const { data: valData } = await supabase
           .from('property_valuations')
           .select('*')
@@ -54,393 +46,363 @@ export default function PropertyDetail() {
       setLoading(false);
     }
     
-    fetchProperty();
+    fetchPropertyDetails();
   }, [slug]);
-
-  const handleLeadSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!property) return;
-    
-    setFormStatus('submitting');
-    
-    const message = property.is_fractional 
-      ? `Interest: ${units} units ($${((property.unit_value || 0) * units).toLocaleString()}). ${formData.message}`
-      : formData.message;
-
-    const { error } = await supabase.from('leads').insert({
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone,
-      message: message,
-      property_id: property.id,
-      status: 'new'
-    });
-
-    if (error) {
-      console.error(error);
-      setFormStatus('error');
-    } else {
-      setFormStatus('success');
-      setFormData({ name: '', email: '', phone: '', message: '' });
-    }
-  };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-24">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#9B8924]"></div>
+      <div className="pt-32 pb-24 min-h-screen flex items-center justify-center bg-[#FAF8F5]">
+        <div className="w-12 h-12 border-4 border-[#0A0A0A]/10 border-t-[#9B8924] rounded-full animate-spin"></div>
       </div>
     );
   }
 
   if (!property) {
     return (
-      <div className="flex flex-col items-center justify-center py-24">
-        <Building2 className="w-16 h-16 text-[#0A0A0A]/20 mb-6" />
-        <h2 className="text-2xl font-bold text-[#0A0A0A] mb-4">Property Not Found</h2>
-        <Link to="/properties" className="text-[#9B8924] font-medium hover:opacity-70 flex items-center transition-opacity">
-          <ChevronLeft className="w-4 h-4 mr-1" /> Back to Properties
-        </Link>
+      <div className="pt-32 pb-24 min-h-screen flex items-center justify-center bg-[#FAF8F5]">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">Property not found</h2>
+          <Link to="/properties" className="text-[#9B8924] hover:underline">Back to properties</Link>
+        </div>
       </div>
     );
   }
 
-  const typeDetails: any = property.type_details || {};
-  const isAvailable = property.status === 'open';
-  const availableUnits = property.is_fractional ? (property.total_units || 0) - (property.units_sold || 0) : 0;
-  const progressPercent = property.is_fractional && property.total_units ? Math.round(((property.units_sold || 0) / property.total_units) * 100) : 0;
+  // Calculate progress safely
+  const progressPercent = property.is_fractional && property.total_units && property.units_sold
+    ? Math.round((property.units_sold / property.total_units) * 100)
+    : (property.status === 'closed' ? 100 : 0);
 
-  // Chart formatting
-  const chartData = valuations.map(v => ({
-    date: format(parseISO(v.recorded_date), 'MMM yyyy'),
-    value: v.value,
-  }));
-  
-  const initialValue = valuations.length > 0 ? valuations[0].value : 0;
-  const latestValue = valuations.length > 0 ? valuations[valuations.length - 1].value : 0;
-  const valueChange = initialValue > 0 ? ((latestValue - initialValue) / initialValue) * 100 : 0;
+  const getCategoryLabel = (cat: string) => cat.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  const getPayoutLabel = (style: string) => style.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+
+  const handleAddToPortfolio = async (type: 'wishlist' | 'offline') => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      alert("Please login to add to your portfolio.");
+      return;
+    }
+    
+    const key = `terrashare_portfolio_${session.user.id}`;
+    const existing = JSON.parse(localStorage.getItem(key) || '[]');
+    
+    // Check if already exists
+    if (!existing.some((item: any) => item.property_id === property?.id)) {
+      existing.push({
+        id: Math.random().toString(36).substr(2, 9),
+        property_id: property?.id,
+        property_slug: property?.slug,
+        title: property?.title,
+        type,
+        added_at: new Date().toISOString(),
+        min_investment: property?.min_investment,
+        returns_percent: property?.returns_percent,
+        category: property?.category,
+        image_urls: property?.image_urls
+      });
+      localStorage.setItem(key, JSON.stringify(existing));
+    }
+    
+    setPortfolioStatus('success');
+    setTimeout(() => {
+      setIsPortfolioModalOpen(false);
+      setPortfolioStatus('idle');
+    }, 2000);
+  };
+
+  // Sample data if none provided
+  const chartData = valuations.length > 0 
+    ? valuations.map(v => ({ name: new Date(v.recorded_date).toLocaleDateString(undefined, {month: 'short', year: 'numeric'}), value: v.value }))
+    : [
+        { name: 'Jan 2023', value: property.min_investment },
+        { name: 'Jul 2023', value: property.min_investment * 1.05 },
+        { name: 'Jan 2024', value: property.min_investment * 1.12 },
+        { name: 'Current', value: property.min_investment * (1 + property.returns_percent / 100) }
+      ];
 
   return (
-    <div className="pb-24">
-      {/* Hero Image Gallery */}
-      <div className="w-full h-[40vh] md:h-[60vh] bg-[#0A0A0A] relative">
-        {property.image_urls && property.image_urls.length > 0 ? (
-          <img 
-            src={property.image_urls[0]} 
-            alt={property.title} 
-            className="w-full h-full object-cover opacity-80"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <Building2 className="w-24 h-24 text-white/20" />
+    <div className="pt-24 pb-24 min-h-screen bg-white">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-10 max-w-4xl">
+        
+        <Link to="/properties" className="inline-flex items-center text-[#0A0A0A]/60 hover:text-[#0A0A0A] font-medium mb-6 transition-colors">
+          <ArrowLeft className="w-4 h-4 mr-2" /> Back to properties
+        </Link>
+
+        {/* 1. Main Image */}
+        <div className="w-full aspect-[16/9] md:aspect-[21/9] bg-gray-100 rounded-3xl overflow-hidden relative mb-8 shadow-sm">
+          {property.image_urls && property.image_urls.length > 0 ? (
+            <img 
+              src={property.image_urls[0]} 
+              alt={property.title}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-gray-200"></div>
+          )}
+          
+          {/* Closed Badge on Image */}
+          <div className="absolute bottom-4 right-4 bg-white px-6 py-2 rounded-full text-sm font-bold text-gray-700 shadow-md">
+            {property.status === 'closed' ? 'Closed' : 'Active'}
           </div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-transparent to-transparent"></div>
-        <div className="absolute bottom-0 left-0 w-full">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-10 pb-8 md:pb-12">
-            <Link to="/properties" className="inline-flex items-center text-white/80 hover:text-white mb-6 transition-colors">
-              <ChevronLeft className="w-4 h-4 mr-1" /> Back to properties
-            </Link>
-            <div className="flex flex-wrap items-center gap-3 mb-4">
-              <span className="bg-[#9B8924] text-white px-3 py-1 rounded-full text-sm font-semibold tracking-wide uppercase">
-                {property.category.replace('_', ' ')}
-              </span>
-              <span className={cn(
-                "px-3 py-1 rounded-full text-sm font-semibold tracking-wide uppercase text-white",
-                property.status === 'open' ? "bg-green-600" : "bg-gray-600"
-              )}>
-                {property.status}
-              </span>
-            </div>
-            <h1 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tight leading-tight">
-              {property.title}
-            </h1>
-            <div className="flex items-center text-gray-300 text-lg">
-              <MapPin className="w-5 h-5 mr-2" />
+        </div>
+
+        {/* 2. Header Info */}
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-8 gap-4">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{property.title}</h1>
+            <div className="flex items-center text-gray-600 gap-1.5 font-medium">
+              <svg viewBox="0 0 24 24" className="w-5 h-5 text-green-600 fill-current shrink-0">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
+              </svg>
               {property.location}
             </div>
           </div>
+          <div className="text-left sm:text-right">
+            <p className="text-sm text-gray-500 mb-1">Returns</p>
+            <p className="text-2xl font-bold text-[#449175]">{property.returns_percent}%</p>
+          </div>
+        </div>
+
+        {/* 3. Description */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-3">Description</h2>
+          <p className="text-gray-700 leading-relaxed">
+            {property.description}
+          </p>
+        </div>
+
+        {/* 4. Invest Button */}
+        <div className="flex gap-4 mb-10">
+          <button 
+            onClick={() => setIsInvestModalOpen(true)}
+            className="flex-1 py-4 bg-[#449175] hover:bg-[#387861] text-white rounded-2xl font-bold text-lg shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={property.status === 'closed'}
+          >
+            {property.status === 'closed' ? 'Closed' : 'Invest'}
+          </button>
+          <button 
+            onClick={() => setIsPortfolioModalOpen(true)}
+            className="w-16 flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-2xl shadow-sm transition-colors"
+            title="Add to Portfolio"
+          >
+            <BookmarkPlus className="w-6 h-6" />
+          </button>
+        </div>
+
+        {/* 5. Progress */}
+        <div className="mb-10">
+          <div className="flex justify-between items-center text-sm font-medium mb-2 text-gray-600">
+            <span>Asset progress</span>
+            <span>{progressPercent}% invested</span>
+          </div>
+          <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+            <div 
+              className="bg-[#BFA15F] h-full transition-all duration-1000" 
+              style={{ width: `${progressPercent}%` }}
+            ></div>
+          </div>
+        </div>
+
+        {/* 6. Asset Details */}
+        <div className="mb-12">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Asset details</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="bg-[#F8F9FA] p-4 rounded-xl">
+              <p className="text-sm text-gray-500 mb-1">Minimum investment</p>
+              <p className="font-bold text-gray-900">₦{property.min_investment.toLocaleString()}</p>
+            </div>
+            <div className="bg-[#F8F9FA] p-4 rounded-xl">
+              <p className="text-sm text-gray-500 mb-1">Returns</p>
+              <p className="font-bold text-gray-900">{property.returns_percent}%</p>
+            </div>
+            <div className="bg-[#F8F9FA] p-4 rounded-xl">
+              <p className="text-sm text-gray-500 mb-1">Category</p>
+              <p className="font-bold text-gray-900">{getCategoryLabel(property.category)}</p>
+            </div>
+            <div className="bg-[#F8F9FA] p-4 rounded-xl">
+              <p className="text-sm text-gray-500 mb-1">Payout Style</p>
+              <p className="font-bold text-gray-900">{getPayoutLabel(property.payout_style)}</p>
+            </div>
+            <div className="bg-[#F8F9FA] p-4 rounded-xl">
+              <p className="text-sm text-gray-500 mb-1">Duration</p>
+              <p className="font-bold text-gray-900">{property.duration_months} Months</p>
+            </div>
+            <div className="bg-[#F8F9FA] p-4 rounded-xl">
+              <p className="text-sm text-gray-500 mb-1">Status</p>
+              <p className={`font-bold ${property.status === 'open' ? 'text-[#449175]' : 'text-[#449175]'}`}>
+                {property.status === 'open' ? 'Active' : 'Closed'}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* 7. Property Value Over Time */}
+        <div>
+          <h2 className="text-xl font-bold text-gray-900 mb-6">Property value over time</h2>
+          <div className="h-[300px] w-full bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                <XAxis 
+                  dataKey="name" 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fontSize: 12, fill: '#6B7280' }} 
+                  dy={10} 
+                />
+                <YAxis 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fontSize: 12, fill: '#6B7280' }} 
+                  tickFormatter={(val) => `₦${val >= 1000000 ? (val/1000000).toFixed(1)+'M' : val.toLocaleString()}`}
+                  dx={-10}
+                />
+                <RechartsTooltip 
+                  formatter={(value: number) => [`₦${value.toLocaleString()}`, 'Value']}
+                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)' }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="value" 
+                  stroke="#9B8924" 
+                  strokeWidth={3}
+                  dot={{ r: 4, fill: '#9B8924', strokeWidth: 0 }}
+                  activeDot={{ r: 6, fill: '#9B8924', stroke: '#fff', strokeWidth: 2 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* 8. FAQs */}
+        <div className="mt-16">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h2>
+          <FAQAccordion />
         </div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-10 mt-8 md:mt-12">
-        <div className="grid lg:grid-cols-3 gap-8 md:gap-12 items-start">
-          
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-12">
-            {/* Overview */}
-            <section className="bg-white/60 backdrop-blur-sm rounded-[2rem] p-8 md:p-10 border border-black/5 shadow-sm">
-              <h2 className="text-2xl font-bold text-[#0A0A0A] mb-6">Overview</h2>
-              <div className="prose prose-lg text-[#0A0A0A]/70 leading-relaxed max-w-none">
-                <p>{property.description}</p>
+      {/* Investment Options Modal */}
+      <AnimatePresence>
+        {isInvestModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={() => setIsInvestModalOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-md bg-white rounded-3xl shadow-xl overflow-hidden"
+            >
+              <div className="flex justify-between items-center p-6 border-b border-black/5">
+                <h3 className="text-xl font-bold text-gray-900">Invest in {property.title}</h3>
+                <button
+                  onClick={() => setIsInvestModalOpen(false)}
+                  className="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-500"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
-            </section>
-
-            {/* Asset Details */}
-            <section className="bg-white/60 backdrop-blur-sm rounded-[2rem] p-8 md:p-10 border border-black/5 shadow-sm">
-              <h2 className="text-2xl font-bold text-[#0A0A0A] mb-8">Asset Details</h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-10">
-                <div>
-                  <div className="flex items-center text-[#0A0A0A]/50 mb-2">
-                    <Target className="w-4 h-4 mr-2" />
-                    <span className="text-sm font-medium uppercase tracking-wider">Target Returns</span>
-                  </div>
-                  <p className="text-2xl font-bold text-[#9B8924]">{property.returns_percent}%</p>
-                </div>
-                <div>
-                  <div className="flex items-center text-[#0A0A0A]/50 mb-2">
-                    <Calendar className="w-4 h-4 mr-2" />
-                    <span className="text-sm font-medium uppercase tracking-wider">Duration</span>
-                  </div>
-                  <p className="text-2xl font-bold text-[#0A0A0A]">{property.duration_months} Months</p>
-                </div>
-                <div>
-                  <div className="flex items-center text-[#0A0A0A]/50 mb-2">
-                    <Banknote className="w-4 h-4 mr-2" />
-                    <span className="text-sm font-medium uppercase tracking-wider">Payout Style</span>
-                  </div>
-                  <p className="text-2xl font-bold text-[#0A0A0A] capitalize">{property.payout_style.replace('_', ' ')}</p>
-                </div>
+              <div className="p-6 space-y-4">
+                <p className="text-sm text-gray-600 mb-2">Choose how you'd like to get in touch with our investment managers to proceed with your investment.</p>
                 
-                {/* Dynamic Category Details */}
-                {property.category === 'residential' && (
-                  <>
-                    <div>
-                      <p className="text-sm text-[#0A0A0A]/50 font-medium uppercase tracking-wider mb-2">Bedrooms</p>
-                      <p className="text-2xl font-bold text-[#0A0A0A]">{typeDetails.bedrooms || '-'}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-[#0A0A0A]/50 font-medium uppercase tracking-wider mb-2">Bathrooms</p>
-                      <p className="text-2xl font-bold text-[#0A0A0A]">{typeDetails.bathrooms || '-'}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-[#0A0A0A]/50 font-medium uppercase tracking-wider mb-2">Square Footage</p>
-                      <p className="text-2xl font-bold text-[#0A0A0A]">{typeDetails.square_footage?.toLocaleString() || '-'}</p>
-                    </div>
-                  </>
-                )}
-                {property.category === 'commercial' && (
-                  <>
-                    <div>
-                      <p className="text-sm text-[#0A0A0A]/50 font-medium uppercase tracking-wider mb-2">Business Type</p>
-                      <p className="text-2xl font-bold text-[#0A0A0A] capitalize">{typeDetails.business_type || '-'}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-[#0A0A0A]/50 font-medium uppercase tracking-wider mb-2">Floors</p>
-                      <p className="text-2xl font-bold text-[#0A0A0A]">{typeDetails.floors || '-'}</p>
-                    </div>
-                  </>
-                )}
-                {property.category === 'land' && (
-                  <>
-                    <div>
-                      <p className="text-sm text-[#0A0A0A]/50 font-medium uppercase tracking-wider mb-2">Lot Size (Acres)</p>
-                      <p className="text-2xl font-bold text-[#0A0A0A]">{typeDetails.lot_size_acres || '-'}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-[#0A0A0A]/50 font-medium uppercase tracking-wider mb-2">Zoning</p>
-                      <p className="text-2xl font-bold text-[#0A0A0A] capitalize">{typeDetails.zoning_type || '-'}</p>
-                    </div>
-                  </>
-                )}
-              </div>
-            </section>
-
-            {/* Valuation Chart */}
-            {valuations.length > 0 && (
-              <section className="bg-white/60 backdrop-blur-sm rounded-[2rem] p-8 md:p-10 border border-black/5 shadow-sm">
-                <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+                <a 
+                  href={`https://wa.me/2348000000000?text=${encodeURIComponent(`Hello! I am interested in investing in ${property.title} located at ${property.location}. The minimum investment is ₦${property.min_investment.toLocaleString()}. Please let me know how to proceed.`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center w-full p-4 rounded-2xl bg-[#25D366]/10 border border-[#25D366]/20 hover:bg-[#25D366]/20 transition-colors"
+                >
+                  <div className="w-12 h-12 rounded-full bg-[#25D366] flex items-center justify-center mr-4 shrink-0 shadow-sm shadow-[#25D366]/20">
+                    <MessageCircle className="w-6 h-6 text-white" />
+                  </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-[#0A0A0A] mb-2">Valuation History</h2>
-                    <p className="text-[#0A0A0A]/60">Track the asset's performance over time.</p>
+                    <h4 className="font-bold text-[#25D366] mb-0.5">Chat on WhatsApp</h4>
+                    <p className="text-xs text-[#25D366]/80 font-medium">Quickest response time</p>
                   </div>
-                  <div className="bg-white/50 px-4 py-2 rounded-xl border border-black/5">
-                    <p className="text-xs text-[#0A0A0A]/50 uppercase font-bold tracking-wider mb-1">Total Change</p>
-                    <p className={cn(
-                      "text-xl font-bold flex items-center",
-                      valueChange >= 0 ? "text-green-600" : "text-red-600"
-                    )}>
-                      {valueChange >= 0 ? '+' : ''}{valueChange.toFixed(2)}%
-                    </p>
+                </a>
+
+                <a 
+                  href={`mailto:invest@yourcompany.com?subject=${encodeURIComponent(`Investment Inquiry: ${property.title}`)}&body=${encodeURIComponent(`Hello,\n\nI am interested in investing in ${property.title} located at ${property.location}.\n\nThe minimum investment is ₦${property.min_investment.toLocaleString()}.\n\nPlease provide me with the next steps to proceed with this investment.\n\nThank you.`)}`}
+                  className="flex items-center w-full p-4 rounded-2xl bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-colors"
+                >
+                  <div className="w-12 h-12 rounded-full bg-[#0A0A0A] flex items-center justify-center mr-4 shrink-0 shadow-sm shadow-black/10">
+                    <Mail className="w-6 h-6 text-white" />
                   </div>
-                </div>
-                <div className="h-[300px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                      <XAxis 
-                        dataKey="date" 
-                        axisLine={false} 
-                        tickLine={false} 
-                        tick={{ fill: '#9ca3af', fontSize: 12 }} 
-                        dy={10}
-                      />
-                      <YAxis 
-                        axisLine={false} 
-                        tickLine={false} 
-                        tick={{ fill: '#9ca3af', fontSize: 12 }}
-                        tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
-                        dx={-10}
-                      />
-                      <Tooltip 
-                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                        formatter={(value: number) => [`$${value.toLocaleString()}`, 'Valuation']}
-                      />
-                      <Line 
-                        type="monotone" 
-                        dataKey="value" 
-                        stroke="#9B8924" 
-                        strokeWidth={3}
-                        dot={{ fill: '#9B8924', strokeWidth: 2, r: 4 }}
-                        activeDot={{ r: 6, strokeWidth: 0 }}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </section>
-            )}
-
-            {/* FAQs */}
-            <section className="pt-4">
-              <h2 className="text-2xl font-bold text-[#0A0A0A] mb-6">Investment FAQs</h2>
-              <FAQAccordion />
-            </section>
-          </div>
-
-          {/* Sidebar / Investment Form */}
-          <div className="lg:col-span-1 lg:sticky lg:top-24 space-y-6">
-            <div className="bg-white/60 backdrop-blur-sm rounded-[2rem] p-6 md:p-8 border border-black/5 shadow-xl shadow-black/5">
-              {property.is_fractional ? (
-                <>
-                  <div className="mb-6 pb-6 border-b border-black/5">
-                    <p className="text-sm text-[#0A0A0A]/50 font-bold tracking-wider uppercase mb-2">Price per unit</p>
-                    <p className="text-4xl font-black text-[#0A0A0A]">${property.unit_value?.toLocaleString()}</p>
+                  <div>
+                    <h4 className="font-bold text-[#0A0A0A] mb-0.5">Send an Email</h4>
+                    <p className="text-xs text-gray-500 font-medium">Detailed correspondence</p>
                   </div>
-                  
-                  <div className="mb-8">
-                    <div className="flex justify-between text-sm mb-2">
-                      <span className="font-semibold text-[#0A0A0A]/70">Funding Progress</span>
-                      <span className="text-[#9B8924] font-bold">{progressPercent}%</span>
-                    </div>
-                    <div className="w-full bg-black/5 rounded-full h-3 mb-2 overflow-hidden">
-                      <div 
-                        className="bg-[#9B8924] h-3 rounded-full transition-all duration-1000" 
-                        style={{ width: `${progressPercent}%` }}
-                      ></div>
-                    </div>
-                    <p className="text-xs text-[#0A0A0A]/50 font-medium">
-                      {property.units_sold} of {property.total_units} units sold • {availableUnits} remaining
-                    </p>
-                  </div>
+                </a>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-                  {isAvailable && (
-                    <div className="mb-8 bg-white/40 p-4 rounded-2xl border border-black/5">
-                      <label className="block text-sm font-bold text-[#0A0A0A] mb-3">Select Units</label>
-                      <div className="flex items-center gap-4">
-                        <button 
-                          onClick={() => setUnits(Math.max(1, units - 1))}
-                          className="w-12 h-12 rounded-full bg-white border border-black/10 flex items-center justify-center font-bold text-xl hover:bg-black/5 transition-colors"
-                        >-</button>
-                        <span className="text-2xl font-black text-[#0A0A0A] w-12 text-center">{units}</span>
-                        <button 
-                          onClick={() => setUnits(Math.min(availableUnits, units + 1))}
-                          className="w-12 h-12 rounded-full bg-white border border-black/10 flex items-center justify-center font-bold text-xl hover:bg-black/5 transition-colors"
-                        >+</button>
-                      </div>
-                      <div className="mt-4 pt-4 border-t border-black/10 flex justify-between items-center">
-                        <span className="font-semibold text-[#0A0A0A]/60">Total Investment</span>
-                        <span className="text-2xl font-black text-[#0A0A0A]">${((property.unit_value || 0) * units).toLocaleString()}</span>
-                      </div>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className="mb-8 pb-6 border-b border-black/5">
-                  <p className="text-sm text-[#0A0A0A]/50 font-bold tracking-wider uppercase mb-2">Minimum Investment</p>
-                  <p className="text-4xl font-black text-[#0A0A0A]">${property.min_investment.toLocaleString()}</p>
-                </div>
-              )}
-
-              <div className="space-y-4">
-                <h3 className="font-bold text-[#0A0A0A] text-lg">Express Interest</h3>
-                <p className="text-sm text-[#0A0A0A]/50 mb-4">Leave your details and an investment manager will contact you.</p>
-                
-                {formStatus === 'success' ? (
-                  <div className="bg-green-50 text-green-800 p-6 rounded-2xl text-center border border-green-100">
-                    <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <Target className="w-6 h-6 text-green-600" />
-                    </div>
-                    <h4 className="font-bold mb-1">Interest Registered!</h4>
-                    <p className="text-sm">We've received your request and will be in touch shortly.</p>
-                    <button 
-                      onClick={() => setFormStatus('idle')}
-                      className="mt-4 text-sm font-semibold text-green-700 hover:underline"
-                    >
-                      Submit another request
-                    </button>
+      {/* Portfolio Options Modal */}
+      <AnimatePresence>
+        {isPortfolioModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={() => setIsPortfolioModalOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-md bg-white rounded-3xl shadow-xl overflow-hidden"
+            >
+              <div className="flex justify-between items-center p-6 border-b border-black/5">
+                <h3 className="text-xl font-bold text-gray-900">Add to Portfolio</h3>
+                <button
+                  onClick={() => setIsPortfolioModalOpen(false)}
+                  className="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-500"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="p-6 space-y-4">
+                {portfolioStatus === 'success' ? (
+                  <div className="bg-green-50 text-green-700 p-6 rounded-2xl text-center">
+                    <p className="font-bold">Successfully added to your portfolio!</p>
                   </div>
                 ) : (
-                  <form onSubmit={handleLeadSubmit} className="space-y-4">
-                    <input
-                      required
-                      type="text"
-                      placeholder="Full Name"
-                      className="w-full px-4 py-3 rounded-xl bg-white/50 border border-black/5 focus:ring-2 focus:ring-[#9B8924] focus:bg-white transition-colors"
-                      value={formData.name}
-                      onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    />
-                    <input
-                      required
-                      type="email"
-                      placeholder="Email Address"
-                      className="w-full px-4 py-3 rounded-xl bg-white/50 border border-black/5 focus:ring-2 focus:ring-[#9B8924] focus:bg-white transition-colors"
-                      value={formData.email}
-                      onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    />
-                    <input
-                      type="tel"
-                      placeholder="Phone Number"
-                      className="w-full px-4 py-3 rounded-xl bg-white/50 border border-black/5 focus:ring-2 focus:ring-[#9B8924] focus:bg-white transition-colors"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    />
-                    <textarea
-                      placeholder="Any questions?"
-                      rows={3}
-                      className="w-full px-4 py-3 rounded-xl bg-white/50 border border-black/5 focus:ring-2 focus:ring-[#9B8924] focus:bg-white transition-colors resize-none"
-                      value={formData.message}
-                      onChange={(e) => setFormData({...formData, message: e.target.value})}
-                    ></textarea>
+                  <>
+                    <p className="text-sm text-gray-600 mb-4">How would you like to track this property?</p>
                     
-                    <button
-                      type="submit"
-                      disabled={!isAvailable || formStatus === 'submitting'}
-                      className="w-full h-14 rounded-full bg-[#0A0A0A] text-white font-bold text-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    <button 
+                      onClick={() => handleAddToPortfolio('wishlist')}
+                      className="flex items-center text-left w-full p-4 rounded-2xl bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-colors"
                     >
-                      {formStatus === 'submitting' ? 'Submitting...' : isAvailable ? 'Request Details' : 'Closed for Funding'}
+                      <div>
+                        <h4 className="font-bold text-gray-900 mb-0.5">Add to Wishlist</h4>
+                        <p className="text-xs text-gray-500 font-medium">Track this property for future investment</p>
+                      </div>
                     </button>
-                    {formStatus === 'error' && (
-                      <p className="text-red-500 text-sm text-center">Something went wrong. Please try again.</p>
-                    )}
-                  </form>
+
+                    <button 
+                      onClick={() => handleAddToPortfolio('offline')}
+                      className="flex items-center text-left w-full p-4 rounded-2xl bg-[#9B8924]/10 border border-[#9B8924]/20 hover:bg-[#9B8924]/20 transition-colors"
+                    >
+                      <div>
+                        <h4 className="font-bold text-[#9B8924] mb-0.5">Invested Offline</h4>
+                        <p className="text-xs text-[#9B8924]/80 font-medium">I have already invested in this property offline</p>
+                      </div>
+                    </button>
+                  </>
                 )}
               </div>
-            </div>
-
-            {/* WhatsApp Float/Inline */}
-            <a 
-              href={`https://wa.me/1234567890?text=${encodeURIComponent(`Hi, I'm interested in ${property.title}`)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full h-14 rounded-full bg-[#25D366] text-white font-bold text-lg flex items-center justify-center hover:bg-[#20bd5a] transition-colors shadow-lg shadow-[#25D366]/20"
-            >
-              <MessageCircle className="w-5 h-5 mr-2" />
-              Chat on WhatsApp
-            </a>
-          </div>
-          
-        </div>
-      </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
