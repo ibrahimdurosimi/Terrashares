@@ -17,7 +17,7 @@ export default function Signup() {
     setLoading(true);
     setError(null);
     
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -29,11 +29,10 @@ export default function Signup() {
     });
 
     if (error) {
-      console.error("Supabase Signup Error:", error);
       if (error.message === "Failed to fetch" || error.message?.includes("Failed to fetch")) {
         setError("Network error: Please check your Supabase URL and configuration.");
       } else {
-        setError(error.message || JSON.stringify(error));
+        setError(error.message && error.message !== "{}" ? error.message : "Database error: Please run the latest SQL migration in your Supabase SQL editor to fix the user creation policies.");
       }
       setLoading(false);
     } else {

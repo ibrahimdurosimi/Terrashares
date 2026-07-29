@@ -25,7 +25,7 @@ export default function Login() {
       if (error.message === "Failed to fetch" || error.message?.includes("Failed to fetch")) {
         setError("Network error: Please check your Supabase URL and configuration.");
       } else {
-        setError(error.message || JSON.stringify(error));
+        setError(error.message && error.message !== "{}" ? error.message : "Database error: Please run the latest SQL migration in your Supabase SQL editor to fix the user creation policies.");
       }
       setLoading(false);
     } else {
