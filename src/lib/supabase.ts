@@ -6,4 +6,5 @@ import { Database } from '../types/database';
 const supabaseUrl = (import.meta as any).env.VITE_SUPABASE_URL || 'https://placeholder.supabase.co';
 const supabaseAnonKey = (import.meta as any).env.VITE_SUPABASE_ANON_KEY || 'placeholder_key';
 
+console.log("Supabase URL:", supabaseUrl);
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);

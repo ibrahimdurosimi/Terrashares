@@ -29,7 +29,12 @@ export default function Signup() {
     });
 
     if (error) {
-      setError(error.message);
+      console.error("Supabase Signup Error:", error);
+      if (error.message === "Failed to fetch" || error.message?.includes("Failed to fetch")) {
+        setError("Network error: Please check your Supabase URL and configuration.");
+      } else {
+        setError(error.message || JSON.stringify(error));
+      }
       setLoading(false);
     } else {
       navigate('/dashboard');
