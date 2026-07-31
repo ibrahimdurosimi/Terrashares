@@ -4,6 +4,7 @@
  */
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ThemeProvider } from './components/ThemeProvider';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import Home from './pages/Home';
@@ -23,8 +24,9 @@ import AdminFAQs from './pages/admin/AdminFAQs';
 
 export default function App() {
   return (
-    <Router>
-      <div className="min-h-screen flex flex-col font-sans text-[#0A0A0A] bg-white">
+    <ThemeProvider>
+      <Router>
+      <div className="min-h-screen flex flex-col font-sans text-[#0A0A0A] dark:text-white bg-white dark:bg-[#0a0a0a] transition-colors">
         <Navbar />
         <main className="flex-grow pt-20">
           <Routes>
@@ -50,5 +52,6 @@ export default function App() {
         <Footer />
       </div>
     </Router>
+    </ThemeProvider>
   );
 }

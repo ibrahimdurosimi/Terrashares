@@ -97,7 +97,7 @@ export function WhoIsItForCarousel() {
           }}
           className="absolute w-full px-12"
         >
-          <div className="bg-white border border-black/5 shadow-2xl p-10 md:p-16 rounded-[2rem] flex flex-col items-center text-center gap-6 transform transition-transform hover:scale-[1.02]">
+          <div className="bg-white dark:bg-[#0a0a0a] border border-black/5 shadow-2xl p-10 md:p-16 rounded-[2rem] flex flex-col items-center text-center gap-6 transform transition-transform hover:scale-[1.02]">
             <motion.div 
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
@@ -106,7 +106,7 @@ export function WhoIsItForCarousel() {
             >
               {items[currentIndex].icon}
             </motion.div>
-            <p className="font-black text-[#0A0A0A] text-2xl md:text-3xl leading-tight max-w-2xl">
+            <p className="font-black text-[#0A0A0A] dark:text-white text-2xl md:text-3xl leading-tight max-w-2xl">
               {items[currentIndex].text}
             </p>
           </div>
@@ -114,13 +114,13 @@ export function WhoIsItForCarousel() {
       </AnimatePresence>
 
       <button
-        className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-lg border border-black/5 flex items-center justify-center text-[#0A0A0A] hover:bg-gray-50 z-10 transition-transform hover:scale-110 focus:outline-none"
+        className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white dark:bg-[#0a0a0a] rounded-full shadow-lg border border-black/5 flex items-center justify-center text-[#0A0A0A] dark:text-white hover:bg-gray-50 dark:bg-white/5 z-10 transition-transform hover:scale-110 focus:outline-none"
         onClick={() => paginate(-1)}
       >
         <ChevronLeft className="w-6 h-6" />
       </button>
       <button
-        className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-lg border border-black/5 flex items-center justify-center text-[#0A0A0A] hover:bg-gray-50 z-10 transition-transform hover:scale-110 focus:outline-none"
+        className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white dark:bg-[#0a0a0a] rounded-full shadow-lg border border-black/5 flex items-center justify-center text-[#0A0A0A] dark:text-white hover:bg-gray-50 dark:bg-white/5 z-10 transition-transform hover:scale-110 focus:outline-none"
         onClick={() => paginate(1)}
       >
         <ChevronRight className="w-6 h-6" />

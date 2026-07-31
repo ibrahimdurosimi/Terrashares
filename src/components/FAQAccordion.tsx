@@ -45,15 +45,15 @@ export function FAQAccordion() {
       {faqs.map((faq, index) => (
         <div 
           key={index} 
-          className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+          className="bg-white dark:bg-[#0a0a0a] rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm overflow-hidden"
         >
           <button
             onClick={() => setOpenIndex(openIndex === index ? null : index)}
-            className="w-full flex items-center justify-between p-5 text-left transition-colors hover:bg-gray-50 focus:outline-none"
+            className="w-full flex items-center justify-between p-5 text-left transition-colors hover:bg-gray-50 dark:bg-white/5 focus:outline-none"
           >
-            <span className="font-bold text-gray-900 pr-4">{faq.question}</span>
-            <div className={`w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center shrink-0 transition-transform duration-300 ${openIndex === index ? 'rotate-90 bg-gray-100' : ''}`}>
-              <ChevronRight className="w-4 h-4 text-gray-500" />
+            <span className="font-bold text-gray-900 dark:text-gray-100 pr-4">{faq.question}</span>
+            <div className={`w-8 h-8 rounded-full border border-gray-200 dark:border-gray-700 flex items-center justify-center shrink-0 transition-transform duration-300 ${openIndex === index ? 'rotate-90 bg-gray-100 dark:bg-gray-800' : ''}`}>
+              <ChevronRight className="w-4 h-4 text-gray-500 dark:text-gray-400" />
             </div>
           </button>
           
@@ -65,7 +65,7 @@ export function FAQAccordion() {
                 exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.3, ease: 'easeInOut' }}
               >
-                <div className="p-5 pt-0 text-gray-600 leading-relaxed border-t border-gray-50">
+                <div className="p-5 pt-0 text-gray-600 dark:text-gray-400 leading-relaxed border-t border-gray-50">
                   {faq.answer}
                 </div>
               </motion.div>

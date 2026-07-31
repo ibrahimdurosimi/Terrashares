@@ -3,7 +3,7 @@ import { Building2, Facebook, Twitter, Instagram, Linkedin, Mail, Info } from 'l
 
 export function Footer() {
   return (
-    <footer className="bg-[#FAF8F5] pt-12 pb-8">
+    <footer className="bg-[#FAF8F5] dark:bg-[#111] pt-12 pb-8">
       <div className="container mx-auto px-4 sm:px-6 lg:px-10">
         
         {/* Newsletter Box */}
@@ -45,51 +45,51 @@ export function Footer() {
           <div className="lg:col-span-5">
             <Link to="/" className="flex items-center gap-2 mb-6">
               <Building2 className="h-7 w-7 text-[#9B8924]" />
-              <span className="text-2xl text-[#0A0A0A]" style={{ fontFamily: 'Georgia, serif' }}>
+              <span className="text-2xl text-[#0A0A0A] dark:text-white" style={{ fontFamily: 'Georgia, serif' }}>
                 Terrashare
               </span>
             </Link>
-            <p className="text-[#0A0A0A]/60 leading-relaxed mb-8 max-w-sm">
+            <p className="text-[#0A0A0A]/60 dark:text-white/60 leading-relaxed mb-8 max-w-sm">
               A real estate technology platform connecting capital providers, buyers, and everyday Nigerians to affordable property ownership.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-[#0A0A0A]/5 flex items-center justify-center text-[#0A0A0A] hover:bg-[#0A0A0A] hover:text-white transition-colors"><Twitter className="h-4 w-4" /></a>
-              <a href="#" className="w-10 h-10 rounded-full bg-[#0A0A0A]/5 flex items-center justify-center text-[#0A0A0A] hover:bg-[#0A0A0A] hover:text-white transition-colors"><Mail className="h-4 w-4" /></a>
-              <a href="#" className="w-10 h-10 rounded-full bg-[#0A0A0A]/5 flex items-center justify-center text-[#0A0A0A] hover:bg-[#0A0A0A] hover:text-white transition-colors"><Linkedin className="h-4 w-4" /></a>
+              <a href="#" className="w-10 h-10 rounded-full bg-[#0A0A0A]/5 flex items-center justify-center text-[#0A0A0A] dark:text-white hover:bg-[#0A0A0A] hover:text-white transition-colors"><Twitter className="h-4 w-4" /></a>
+              <a href="#" className="w-10 h-10 rounded-full bg-[#0A0A0A]/5 flex items-center justify-center text-[#0A0A0A] dark:text-white hover:bg-[#0A0A0A] hover:text-white transition-colors"><Mail className="h-4 w-4" /></a>
+              <a href="#" className="w-10 h-10 rounded-full bg-[#0A0A0A]/5 flex items-center justify-center text-[#0A0A0A] dark:text-white hover:bg-[#0A0A0A] hover:text-white transition-colors"><Linkedin className="h-4 w-4" /></a>
             </div>
           </div>
           
           <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-8">
             <div>
-              <h3 className="font-bold text-[#0A0A0A] mb-6" style={{ fontFamily: 'Georgia, serif' }}>Company</h3>
+              <h3 className="font-bold text-[#0A0A0A] dark:text-white mb-6" style={{ fontFamily: 'Georgia, serif' }}>Company</h3>
               <ul className="space-y-4">
-                <li><Link to="/about" className="text-[#0A0A0A]/60 hover:text-[#9B8924] transition-colors text-sm">About us</Link></li>
-                <li><Link to="/properties" className="text-[#0A0A0A]/60 hover:text-[#9B8924] transition-colors text-sm">Properties</Link></li>
-                <li><Link to="/contact" className="text-[#0A0A0A]/60 hover:text-[#9B8924] transition-colors text-sm">Contact</Link></li>
-                <li><Link to="#" className="text-[#0A0A0A]/60 hover:text-[#9B8924] transition-colors text-sm">Careers</Link></li>
+                <li><Link to="/about" className="text-[#0A0A0A]/60 dark:text-white/60 hover:text-[#9B8924] transition-colors text-sm">About us</Link></li>
+                <li><Link to="/properties" className="text-[#0A0A0A]/60 dark:text-white/60 hover:text-[#9B8924] transition-colors text-sm">Properties</Link></li>
+                <li><Link to="/contact" className="text-[#0A0A0A]/60 dark:text-white/60 hover:text-[#9B8924] transition-colors text-sm">Contact</Link></li>
+                <li><Link to="#" className="text-[#0A0A0A]/60 dark:text-white/60 hover:text-[#9B8924] transition-colors text-sm">Careers</Link></li>
               </ul>
             </div>
             
             <div>
-              <h3 className="font-bold text-[#0A0A0A] mb-6" style={{ fontFamily: 'Georgia, serif' }}>Products</h3>
+              <h3 className="font-bold text-[#0A0A0A] dark:text-white mb-6" style={{ fontFamily: 'Georgia, serif' }}>Products</h3>
               <ul className="space-y-4">
-                <li><Link to="/properties" className="text-[#0A0A0A]/60 hover:text-[#9B8924] transition-colors text-sm">All Services</Link></li>
-                <li><Link to="#" className="text-[#0A0A0A]/60 hover:text-[#9B8924] transition-colors text-sm">Home Ownership</Link></li>
-                <li><Link to="#" className="text-[#0A0A0A]/60 hover:text-[#9B8924] transition-colors text-sm">Fractional Ownership</Link></li>
-                <li><Link to="#" className="text-[#0A0A0A]/60 hover:text-[#9B8924] transition-colors text-sm">Land Ownership</Link></li>
+                <li><Link to="/properties" className="text-[#0A0A0A]/60 dark:text-white/60 hover:text-[#9B8924] transition-colors text-sm">All Services</Link></li>
+                <li><Link to="#" className="text-[#0A0A0A]/60 dark:text-white/60 hover:text-[#9B8924] transition-colors text-sm">Home Ownership</Link></li>
+                <li><Link to="#" className="text-[#0A0A0A]/60 dark:text-white/60 hover:text-[#9B8924] transition-colors text-sm">Fractional Ownership</Link></li>
+                <li><Link to="#" className="text-[#0A0A0A]/60 dark:text-white/60 hover:text-[#9B8924] transition-colors text-sm">Land Ownership</Link></li>
               </ul>
             </div>
             
             <div>
-              <h3 className="font-bold text-[#0A0A0A] mb-6" style={{ fontFamily: 'Georgia, serif' }}>Contact</h3>
+              <h3 className="font-bold text-[#0A0A0A] dark:text-white mb-6" style={{ fontFamily: 'Georgia, serif' }}>Contact</h3>
               <div className="space-y-6">
                 <div>
-                  <p className="text-xs text-[#0A0A0A]/40 font-bold tracking-widest uppercase mb-1">PHONE</p>
-                  <p className="text-sm text-[#0A0A0A]/80">+234 805 659 9547</p>
+                  <p className="text-xs text-[#0A0A0A] dark:text-white/40 font-bold tracking-widest uppercase mb-1">PHONE</p>
+                  <p className="text-sm text-[#0A0A0A] dark:text-white/80">+234 805 659 9547</p>
                 </div>
                 <div>
-                  <p className="text-xs text-[#0A0A0A]/40 font-bold tracking-widest uppercase mb-1">EMAIL</p>
-                  <p className="text-sm text-[#0A0A0A]/80">hello@terrashare.ng</p>
+                  <p className="text-xs text-[#0A0A0A] dark:text-white/40 font-bold tracking-widest uppercase mb-1">EMAIL</p>
+                  <p className="text-sm text-[#0A0A0A] dark:text-white/80">hello@terrashare.ng</p>
                 </div>
               </div>
             </div>
@@ -98,26 +98,26 @@ export function Footer() {
         
         {/* Divider */}
         <div className="border-t border-black/5 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-[#0A0A0A]/50">
+          <p className="text-sm text-[#0A0A0A]/50 dark:text-white/50">
             &copy; {new Date().getFullYear()} Terrashare Technologies Ltd. All rights reserved.
           </p>
           <div className="flex gap-6">
-            <Link to="/privacy" className="text-sm text-[#0A0A0A]/50 hover:text-[#0A0A0A]">Privacy Policy</Link>
-            <Link to="/terms" className="text-sm text-[#0A0A0A]/50 hover:text-[#0A0A0A]">Terms of Use</Link>
-            <Link to="#" className="text-sm text-[#0A0A0A]/50 hover:text-[#0A0A0A]">Legal</Link>
+            <Link to="/privacy" className="text-sm text-[#0A0A0A]/50 dark:text-white/50 hover:text-[#0A0A0A] dark:text-white">Privacy Policy</Link>
+            <Link to="/terms" className="text-sm text-[#0A0A0A]/50 dark:text-white/50 hover:text-[#0A0A0A] dark:text-white">Terms of Use</Link>
+            <Link to="#" className="text-sm text-[#0A0A0A]/50 dark:text-white/50 hover:text-[#0A0A0A] dark:text-white">Legal</Link>
           </div>
         </div>
 
         {/* Disclaimer */}
-        <div className="bg-[#0A0A0A]/5 rounded-2xl p-6 md:p-8 mt-4 border border-black/[0.03]">
+        <div className="bg-[#0A0A0A]/5 rounded-2xl p-6 md:p-8 mt-4 border border-black/[0.03] dark:border-white/5">
           <div className="flex items-center gap-2 mb-4">
-            <Info className="w-5 h-5 text-[#0A0A0A]/60" />
-            <h4 className="text-lg text-[#0A0A0A] font-medium" style={{ fontFamily: 'Georgia, serif' }}>Disclaimer of liability</h4>
+            <Info className="w-5 h-5 text-[#0A0A0A]/60 dark:text-white/60" />
+            <h4 className="text-lg text-[#0A0A0A] dark:text-white font-medium" style={{ fontFamily: 'Georgia, serif' }}>Disclaimer of liability</h4>
           </div>
-          <p className="text-xs md:text-sm text-[#0A0A0A]/60 leading-relaxed mb-4">
+          <p className="text-xs md:text-sm text-[#0A0A0A]/60 dark:text-white/60 leading-relaxed mb-4">
             Terrashare accepts no responsibility should any damages be caused to a person as a result of the use that is made of information provided in, or taken from, this site or as a result of reliance on the information available on the site.
           </p>
-          <p className="text-xs md:text-sm text-[#0A0A0A]/60 leading-relaxed">
+          <p className="text-xs md:text-sm text-[#0A0A0A]/60 dark:text-white/60 leading-relaxed">
             This disclaimer of liability also applies to any damages or injury caused by any failure of performance, error, omission, interruption, deletion, defect, delay in operation or transmission, computer virus, communication line failure, theft or destruction, or unauthorized access to, alteration of, or use of information under any cause of action. Terrashare is a technology intermediary and does not operate as a licensed lender or bank. All financing products are originated and provided by licensed capital partners.
           </p>
         </div>

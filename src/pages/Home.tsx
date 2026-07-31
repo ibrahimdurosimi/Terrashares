@@ -65,27 +65,27 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       <SocialProofToast />
       {/* 2. Hero Section */}
-      <section className="relative px-4 sm:px-6 lg:px-10 -mt-20 pt-28 pb-0 overflow-hidden bg-gradient-to-b from-[#F7D0BC] to-white">
+      <section className="relative px-4 sm:px-6 lg:px-10 -mt-20 pt-28 pb-0 overflow-hidden bg-gradient-to-b from-[#F7D0BC] to-white dark:from-[#3a2012] dark:to-[#0a0a0a] dark:from-[#3a2012] dark:to-[#0a0a0a]">
         <div className="flex flex-col items-center text-center relative z-10">
-          <h1 className="text-5xl md:text-7xl font-black leading-[1.1] mb-8 max-w-4xl tracking-tight text-[#0A0A0A]">
+          <h1 className="text-5xl md:text-7xl font-black leading-[1.1] mb-8 max-w-4xl tracking-tight text-[#0A0A0A] dark:text-white">
             Invest in <AnimatedHeroText /><br/>build your <span className="text-[#9B8924] italic" style={{ fontFamily: 'Georgia, serif' }}>future.</span>
           </h1>
           
-          <p className="text-lg md:text-xl text-[#0A0A0A]/60 mb-12 max-w-2xl leading-relaxed">
+          <p className="text-lg md:text-xl text-[#0A0A0A]/60 dark:text-white/60 mb-12 max-w-2xl leading-relaxed">
             Fractional real estate investment platform. Secure, transparent, and built for everyone to grow their wealth through high-yield assets.
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
             <Link 
               to="/properties"
-              className="w-full sm:w-auto px-8 py-4 border-2 border-[#0A0A0A]/10 text-[#0A0A0A] rounded-full font-bold flex items-center justify-center gap-2 hover:border-[#0A0A0A] transition-colors"
+              className="w-full sm:w-auto px-8 py-4 border-2 border-[#0A0A0A]/10 dark:border-white/10 text-[#0A0A0A] dark:text-white rounded-full font-bold flex items-center justify-center gap-2 hover:border-[#0A0A0A] transition-colors"
             >
               Browse Properties
               <ArrowRight className="w-5 h-5" />
             </Link>
             <Link 
               to="/signup"
-              className="w-full sm:w-auto px-8 py-4 bg-[#0A0A0A] text-white rounded-full font-bold shadow-xl shadow-black/10 hover:bg-gray-800 transition-colors"
+              className="w-full sm:w-auto px-8 py-4 bg-[#0A0A0A] dark:bg-white dark:bg-[#0a0a0a] text-white dark:text-[#0A0A0A] dark:text-white rounded-full font-bold shadow-xl shadow-black/10 hover:bg-gray-800 transition-colors"
             >
               Invest Now
             </Link>
@@ -104,42 +104,44 @@ export default function Home() {
       </section>
 
       {/* 3. Stats Bar */}
-      <div className="bg-white pb-16">
-        <div className="mx-4 sm:mx-6 lg:mx-10 max-w-7xl mx-auto">
+      <div className="bg-white dark:bg-[#0a0a0a] pb-16">
+        <div className="px-4 sm:px-6 lg:px-10 max-w-7xl mx-auto">
           {stats.props === 0 && stats.members === 0 ? (
-            <div className="border-t border-b border-[#0A0A0A]/10 py-12 text-center">
-              <p className="text-xl md:text-2xl font-bold text-[#0A0A0A]/60 italic" style={{ fontFamily: 'Georgia, serif' }}>
+            <div className="border-t border-b border-[#0A0A0A]/10 dark:border-white/10 py-12 text-center w-full">
+              <p className="text-xl md:text-2xl font-bold text-[#0A0A0A]/60 dark:text-white/60 italic" style={{ fontFamily: 'Georgia, serif' }}>
                 Now open for our first investors.
               </p>
             </div>
           ) : (
-            <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 border-t border-b border-[#0A0A0A]/10 py-12 relative max-w-5xl mx-auto">
+            <div className="w-full border-t border-b border-[#0A0A0A]/10 dark:border-white/10 py-12 relative">
               {/* Floating element */}
               <motion.div animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }} className="absolute -top-4 -left-4 w-8 h-8 rounded-full bg-[#F7D0BC]/40 blur-md"></motion.div>
               
-              <div className="text-center px-4">
-                <div className="text-3xl md:text-5xl font-black text-[#0A0A0A] mb-1">
-                  <AnimatedCounter value={stats.props} suffix="+" />
+              <div className="flex flex-wrap justify-around items-center gap-8 md:gap-12 w-full max-w-6xl mx-auto">
+                <div className="text-center px-2">
+                  <div className="text-3xl md:text-5xl font-black text-[#0A0A0A] dark:text-white mb-1">
+                    <AnimatedCounter value={stats.props} suffix="+" />
+                  </div>
+                  <div className="text-[10px] md:text-xs uppercase tracking-widest font-bold text-[#0A0A0A]/50 dark:text-white/50 mt-2">Properties</div>
                 </div>
-                <div className="text-[10px] md:text-xs uppercase tracking-widest font-bold text-[#0A0A0A]/50 mt-2">Properties</div>
-              </div>
-              <div className="text-center px-4">
-                <div className="text-3xl md:text-5xl font-black text-[#0A0A0A] mb-1">
-                  <AnimatedCounter value={stats.invested} prefix="₦" isCurrency={true} suffix="+" />
+                <div className="text-center px-2">
+                  <div className="text-3xl md:text-5xl font-black text-[#0A0A0A] dark:text-white mb-1">
+                    <AnimatedCounter value={stats.invested} prefix="₦" isCurrency={true} suffix="+" />
+                  </div>
+                  <div className="text-[10px] md:text-xs uppercase tracking-widest font-bold text-[#0A0A0A]/50 dark:text-white/50 mt-2">Invested</div>
                 </div>
-                <div className="text-[10px] md:text-xs uppercase tracking-widest font-bold text-[#0A0A0A]/50 mt-2">Invested</div>
-              </div>
-              <div className="text-center px-4">
-                <div className="text-3xl md:text-5xl font-black text-[#0A0A0A] mb-1">
-                  <AnimatedCounter value={stats.members} suffix="+" />
+                <div className="text-center px-2">
+                  <div className="text-3xl md:text-5xl font-black text-[#0A0A0A] dark:text-white mb-1">
+                    <AnimatedCounter value={stats.members} suffix="+" />
+                  </div>
+                  <div className="text-[10px] md:text-xs uppercase tracking-widest font-bold text-[#0A0A0A]/50 dark:text-white/50 mt-2">Members</div>
                 </div>
-                <div className="text-[10px] md:text-xs uppercase tracking-widest font-bold text-[#0A0A0A]/50 mt-2">Members</div>
-              </div>
-              <div className="text-center px-4">
-                <div className="text-3xl md:text-5xl font-black text-[#0A0A0A] mb-1">
-                  <AnimatedCounter value={stats.avgRoi} suffix="%" />
+                <div className="text-center px-2">
+                  <div className="text-3xl md:text-5xl font-black text-[#0A0A0A] dark:text-white mb-1">
+                    <AnimatedCounter value={stats.avgRoi} suffix="%" />
+                  </div>
+                  <div className="text-[10px] md:text-xs uppercase tracking-widest font-bold text-[#0A0A0A]/50 dark:text-white/50 mt-2">Avg Returns</div>
                 </div>
-                <div className="text-[10px] md:text-xs uppercase tracking-widest font-bold text-[#0A0A0A]/50 mt-2">Avg Returns</div>
               </div>
             </div>
           )}
@@ -147,17 +149,17 @@ export default function Home() {
       </div>
 
       {/* 7.5 Investment Calculator */}
-      <section className="relative px-4 sm:px-6 lg:px-10 py-16 bg-white overflow-hidden">
-        <div className="absolute right-[-10%] top-1/2 -translate-y-1/2 text-[15vw] font-black text-[#0A0A0A]/[0.02] pointer-events-none whitespace-nowrap" style={{ fontFamily: 'Georgia, serif' }}>
+      <section className="relative px-4 sm:px-6 lg:px-10 py-16 bg-white dark:bg-[#0a0a0a] overflow-hidden">
+        <div className="absolute right-[-10%] top-1/2 -translate-y-1/2 text-[15vw] font-black text-[#0A0A0A]/[0.02] dark:text-white/[0.02] pointer-events-none whitespace-nowrap" style={{ fontFamily: 'Georgia, serif' }}>
           CALCULATE
         </div>
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center relative z-10">
           <div>
             <p className="text-[#9B8924] text-xs md:text-sm font-bold tracking-[0.2em] uppercase mb-4">Project Returns</p>
-            <h2 className="text-4xl md:text-5xl text-[#0A0A0A] mb-6 leading-[1.1]" style={{ fontFamily: 'Georgia, serif' }}>
+            <h2 className="text-4xl md:text-5xl text-[#0A0A0A] dark:text-white mb-6 leading-[1.1]" style={{ fontFamily: 'Georgia, serif' }}>
               See how your money grows
             </h2>
-            <p className="text-lg text-[#0A0A0A]/60 mb-8 leading-relaxed">
+            <p className="text-lg text-[#0A0A0A]/60 dark:text-white/60 mb-8 leading-relaxed">
               Real estate offers some of the most stable, high-yield returns. Use our demo calculator to project potential earnings over time based on historical performance.
             </p>
             <motion.div animate={{ y: [0, 10, 0] }} transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }} className="w-16 h-16 bg-[#F7D0BC]/20 rounded-full flex items-center justify-center">
@@ -171,7 +173,7 @@ export default function Home() {
       </section>
 
       {/* 8. About TerraShare section */}
-      <section className="relative px-4 sm:px-6 lg:px-10 py-16 bg-[#FAF8F5] overflow-hidden">
+      <section className="relative px-4 sm:px-6 lg:px-10 py-16 bg-[#FAF8F5] dark:bg-[#111] overflow-hidden">
         {/* Subtle grid background */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
         
@@ -179,15 +181,15 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-16 mb-20 items-center">
             <div>
               <p className="text-[#9B8924] text-xs md:text-sm font-bold tracking-[0.2em] uppercase mb-4">About Terrashare</p>
-              <h2 className="text-5xl md:text-6xl text-[#0A0A0A] leading-[1.1] mb-6" style={{ fontFamily: 'Georgia, serif' }}>
+              <h2 className="text-5xl md:text-6xl text-[#0A0A0A] dark:text-white leading-[1.1] mb-6" style={{ fontFamily: 'Georgia, serif' }}>
                 Property ownership shouldn't be out of reach.
               </h2>
-              <p className="text-lg text-[#0A0A0A]/70 leading-relaxed mb-8">
+              <p className="text-lg text-[#0A0A0A] dark:text-white/70 leading-relaxed mb-8">
                 For too long, it’s felt like something only the wealthy could afford. We’re here to change that, for good. We’re a passionate team working to change the way land is owned in Nigeria.
               </p>
               <Link 
                 to="/about"
-                className="inline-flex h-12 items-center justify-center rounded-full bg-[#0A0A0A] px-8 text-sm font-bold text-white transition-transform hover:scale-105 shadow-lg"
+                className="inline-flex h-12 items-center justify-center rounded-full bg-[#0A0A0A] dark:bg-white dark:bg-[#0a0a0a] px-8 text-sm font-bold text-white dark:text-[#0A0A0A] dark:text-white transition-transform hover:scale-105 shadow-lg"
               >
                 Learn our story
               </Link>
@@ -199,47 +201,47 @@ export default function Home() {
 
           <div className="grid lg:grid-cols-3 gap-6 md:gap-8">
              {/* Mission */}
-             <div className="bg-white rounded-3xl p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-black/[0.03] flex flex-col items-start hover:-translate-y-2 transition-transform duration-500">
-               <div className="w-14 h-14 bg-gray-50 border border-gray-100 rounded-2xl flex items-center justify-center mb-8">
+             <div className="bg-white dark:bg-[#0a0a0a] rounded-3xl p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-black/[0.03] dark:border-white/5 flex flex-col items-start hover:-translate-y-2 transition-transform duration-500">
+               <div className="w-14 h-14 bg-gray-50 dark:bg-white/5 dark:bg-white dark:bg-[#0a0a0a]/5 border border-gray-100 dark:border-white/10 rounded-2xl flex items-center justify-center mb-8">
                  <Target className="w-7 h-7 text-[#9B8924]" />
                </div>
-               <h3 className="text-3xl text-[#0A0A0A] mb-4" style={{ fontFamily: 'Georgia, serif' }}>Our Mission</h3>
-               <p className="text-[#0A0A0A]/60 leading-relaxed mb-8 flex-grow">
+               <h3 className="text-3xl text-[#0A0A0A] dark:text-white mb-4" style={{ fontFamily: 'Georgia, serif' }}>Our Mission</h3>
+               <p className="text-[#0A0A0A]/60 dark:text-white/60 leading-relaxed mb-8 flex-grow">
                  To make land ownership possible for everyday Nigerians by using smart technology to deliver safe, simple, and affordable investments, one share at a time.
                </p>
-               <Link to="/about" className="inline-flex items-center text-[#0A0A0A] font-semibold text-sm hover:text-[#9B8924] transition-colors group">
+               <Link to="/about" className="inline-flex items-center text-[#0A0A0A] dark:text-white font-semibold text-sm hover:text-[#9B8924] transition-colors group">
                  Read more <ArrowRight className="ml-2 w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
                </Link>
              </div>
 
              {/* Vision */}
-             <div className="bg-white rounded-3xl p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-black/[0.03] flex flex-col items-start hover:-translate-y-2 transition-transform duration-500">
-               <div className="w-14 h-14 bg-gray-50 border border-gray-100 rounded-2xl flex items-center justify-center mb-8">
+             <div className="bg-white dark:bg-[#0a0a0a] rounded-3xl p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-black/[0.03] dark:border-white/5 flex flex-col items-start hover:-translate-y-2 transition-transform duration-500">
+               <div className="w-14 h-14 bg-gray-50 dark:bg-white/5 dark:bg-white dark:bg-[#0a0a0a]/5 border border-gray-100 dark:border-white/10 rounded-2xl flex items-center justify-center mb-8">
                  <Eye className="w-7 h-7 text-[#9B8924]" />
                </div>
-               <h3 className="text-3xl text-[#0A0A0A] mb-4" style={{ fontFamily: 'Georgia, serif' }}>Our Vision</h3>
-               <p className="text-[#0A0A0A]/60 leading-relaxed mb-8 flex-grow">
+               <h3 className="text-3xl text-[#0A0A0A] dark:text-white mb-4" style={{ fontFamily: 'Georgia, serif' }}>Our Vision</h3>
+               <p className="text-[#0A0A0A]/60 dark:text-white/60 leading-relaxed mb-8 flex-grow">
                  To build a future where every Nigerian, home or abroad, has the power to own land, build wealth, and take control of their tomorrow.
                </p>
-               <Link to="/properties" className="inline-flex items-center text-[#0A0A0A] font-semibold text-sm hover:text-[#9B8924] transition-colors group">
+               <Link to="/properties" className="inline-flex items-center text-[#0A0A0A] dark:text-white font-semibold text-sm hover:text-[#9B8924] transition-colors group">
                  View properties <ArrowRight className="ml-2 w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
                </Link>
              </div>
 
              {/* Core Values */}
-             <div className="bg-white rounded-3xl p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-black/[0.03] flex flex-col items-start hover:-translate-y-2 transition-transform duration-500">
-               <div className="w-14 h-14 bg-gray-50 border border-gray-100 rounded-2xl flex items-center justify-center mb-8">
+             <div className="bg-white dark:bg-[#0a0a0a] rounded-3xl p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-black/[0.03] dark:border-white/5 flex flex-col items-start hover:-translate-y-2 transition-transform duration-500">
+               <div className="w-14 h-14 bg-gray-50 dark:bg-white/5 dark:bg-white dark:bg-[#0a0a0a]/5 border border-gray-100 dark:border-white/10 rounded-2xl flex items-center justify-center mb-8">
                  <ShieldCheck className="w-7 h-7 text-[#9B8924]" />
                </div>
-               <h3 className="text-3xl text-[#0A0A0A] mb-4" style={{ fontFamily: 'Georgia, serif' }}>Core Values</h3>
-               <ul className="text-[#0A0A0A]/60 leading-relaxed space-y-3 mb-8 flex-grow w-full">
+               <h3 className="text-3xl text-[#0A0A0A] dark:text-white mb-4" style={{ fontFamily: 'Georgia, serif' }}>Core Values</h3>
+               <ul className="text-[#0A0A0A]/60 dark:text-white/60 leading-relaxed space-y-3 mb-8 flex-grow w-full">
                  <li className="flex items-center gap-3"><CheckCircle2 className="w-5 h-5 text-[#9B8924]" /> Trust Is Everything</li>
                  <li className="flex items-center gap-3"><CheckCircle2 className="w-5 h-5 text-[#9B8924]" /> Everyone Deserves a Start</li>
                  <li className="flex items-center gap-3"><CheckCircle2 className="w-5 h-5 text-[#9B8924]" /> Keep It Simple</li>
                  <li className="flex items-center gap-3"><CheckCircle2 className="w-5 h-5 text-[#9B8924]" /> Security Matters</li>
                  <li className="flex items-center gap-3"><CheckCircle2 className="w-5 h-5 text-[#9B8924]" /> Grow Together</li>
                </ul>
-               <Link to="/contact" className="inline-flex items-center text-[#0A0A0A] font-semibold text-sm hover:text-[#9B8924] transition-colors group">
+               <Link to="/contact" className="inline-flex items-center text-[#0A0A0A] dark:text-white font-semibold text-sm hover:text-[#9B8924] transition-colors group">
                  Join our team <ArrowRight className="ml-2 w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
                </Link>
              </div>
@@ -248,14 +250,14 @@ export default function Home() {
       </section>
 
       {/* 6. Featured properties */}
-      <section className="relative px-4 sm:px-6 lg:px-10 py-16 bg-white overflow-hidden">
+      <section className="relative px-4 sm:px-6 lg:px-10 py-16 bg-white dark:bg-[#0a0a0a] overflow-hidden">
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="mb-16 max-w-2xl text-center mx-auto">
             <p className="text-[#9B8924] text-xs md:text-sm font-bold tracking-[0.2em] uppercase mb-4">Investments</p>
-            <h2 className="text-4xl md:text-5xl text-[#0A0A0A] leading-tight mb-6" style={{ fontFamily: 'Georgia, serif' }}>
+            <h2 className="text-4xl md:text-5xl text-[#0A0A0A] dark:text-white leading-tight mb-6" style={{ fontFamily: 'Georgia, serif' }}>
               Featured Opportunities
             </h2>
-            <p className="text-lg text-[#0A0A0A]/60">Hand-picked investments currently open for funding.</p>
+            <p className="text-lg text-[#0A0A0A]/60 dark:text-white/60">Hand-picked investments currently open for funding.</p>
           </div>
           
           {featuredProperties.length > 0 ? (
@@ -268,8 +270,8 @@ export default function Home() {
             </div>
           ) : (
             <div className="text-center py-16 max-w-md mx-auto">
-              <Building2 className="w-10 h-10 text-[#0A0A0A]/20 mx-auto mb-4" />
-              <p className="text-[#0A0A0A]/50 font-medium mb-6">No active properties available at the moment. Check back soon for new opportunities.</p>
+              <Building2 className="w-10 h-10 text-[#0A0A0A]/20 dark:text-white/20 mx-auto mb-4" />
+              <p className="text-[#0A0A0A]/50 dark:text-white/50 font-medium mb-6">No active properties available at the moment. Check back soon for new opportunities.</p>
               <Link 
                 to="/properties"
                 className="inline-flex items-center text-[#9B8924] font-bold hover:opacity-70 transition-opacity"
@@ -285,13 +287,13 @@ export default function Home() {
       <HowItWorks />
 
       {/* 9. Who Is It For + Why People Love TerraShare */}
-      <section className="relative px-4 sm:px-6 lg:px-10 py-16 bg-[#FAF8F5] overflow-hidden">
+      <section className="relative px-4 sm:px-6 lg:px-10 py-16 bg-[#FAF8F5] dark:bg-[#111] overflow-hidden">
         {/* Subtle grid background */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
         
         <div className="max-w-7xl mx-auto mb-32 relative z-10 text-center">
           <p className="text-[#9B8924] text-xs md:text-sm font-bold tracking-[0.2em] uppercase mb-4">Audience</p>
-          <h2 className="text-4xl md:text-5xl text-[#0A0A0A] mb-12" style={{ fontFamily: 'Georgia, serif' }}>
+          <h2 className="text-4xl md:text-5xl text-[#0A0A0A] dark:text-white mb-12" style={{ fontFamily: 'Georgia, serif' }}>
             Who Is It For?
           </h2>
           <WhoIsItFor />
@@ -301,15 +303,15 @@ export default function Home() {
           <div className="grid lg:grid-cols-12 gap-16">
             <div className="lg:col-span-5">
               <p className="text-[#9B8924] text-xs md:text-sm font-bold tracking-[0.2em] uppercase mb-4">Why Terrashare</p>
-              <h2 className="text-4xl md:text-5xl text-[#0A0A0A] mb-8 leading-[1.1]" style={{ fontFamily: 'Georgia, serif' }}>
+              <h2 className="text-4xl md:text-5xl text-[#0A0A0A] dark:text-white mb-8 leading-[1.1]" style={{ fontFamily: 'Georgia, serif' }}>
                 Why People Love TerraShare
               </h2>
-              <p className="text-lg text-[#0A0A0A]/60 mb-10 leading-relaxed">
+              <p className="text-lg text-[#0A0A0A]/60 dark:text-white/60 mb-10 leading-relaxed">
                 We're changing how Nigerians invest in and own property, making it accessible, secure, and transparent.
               </p>
               <Link 
                 to="/about"
-                className="inline-flex h-12 items-center justify-center rounded-full bg-[#0A0A0A] px-8 text-sm font-bold text-white transition-transform hover:scale-105 shadow-lg shadow-black/10"
+                className="inline-flex h-12 items-center justify-center rounded-full bg-[#0A0A0A] dark:bg-white dark:bg-[#0a0a0a] px-8 text-sm font-bold text-white dark:text-[#0A0A0A] dark:text-white transition-transform hover:scale-105 shadow-lg shadow-black/10"
               >
                 Learn more
               </Link>
@@ -323,22 +325,22 @@ export default function Home() {
       </section>
 
       {/* 5. Split FAQ intro & 10. Mini CTA + FAQ */}
-      <section className="relative px-4 sm:px-6 lg:px-10 py-16 bg-[#FAF8F5] overflow-hidden">
+      <section className="relative px-4 sm:px-6 lg:px-10 py-16 bg-[#FAF8F5] dark:bg-[#111] overflow-hidden">
         {/* Subtle grid background */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
         
         <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-16 items-start relative z-10">
           <div className="lg:col-span-5">
             <p className="text-[#9B8924] text-xs md:text-sm font-bold tracking-[0.2em] uppercase mb-4">Support</p>
-            <h2 className="text-4xl md:text-5xl text-[#0A0A0A] mb-6 leading-[1.1]" style={{ fontFamily: 'Georgia, serif' }}>
+            <h2 className="text-4xl md:text-5xl text-[#0A0A0A] dark:text-white mb-6 leading-[1.1]" style={{ fontFamily: 'Georgia, serif' }}>
               Frequently Asked Questions
             </h2>
-            <p className="text-lg text-[#0A0A0A]/60 mb-10 leading-relaxed">
+            <p className="text-lg text-[#0A0A0A]/60 dark:text-white/60 mb-10 leading-relaxed">
               Your questions matter—explore our FAQs to get the answers you need.
             </p>
             <Link 
               to="/contact"
-              className="inline-flex h-12 items-center justify-center rounded-full bg-transparent border border-[#0A0A0A]/20 px-8 text-sm font-bold text-[#0A0A0A] transition-colors hover:bg-gray-50 mb-12 shadow-sm"
+              className="inline-flex h-12 items-center justify-center rounded-full bg-transparent border border-[#0A0A0A]/20 px-8 text-sm font-bold text-[#0A0A0A] dark:text-white transition-colors hover:bg-gray-50 dark:bg-white/5 dark:bg-white dark:bg-[#0a0a0a]/5 mb-12 shadow-sm"
             >
               Learn More
             </Link>
@@ -352,7 +354,7 @@ export default function Home() {
       </section>
       
       {/* 11. Closing CTA band */}
-      <section className="relative px-4 sm:px-6 lg:px-10 py-16 bg-[#0A0A0A] text-white overflow-hidden text-center">
+      <section className="relative px-4 sm:px-6 lg:px-10 py-16 bg-[#0A0A0A] dark:bg-white dark:bg-[#0a0a0a] text-white dark:text-[#0A0A0A] dark:text-white overflow-hidden text-center">
         {/* Subtle grid background for dark mode */}
         <div className="absolute inset-0 opacity-[0.05] pointer-events-none" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
         
@@ -362,7 +364,7 @@ export default function Home() {
           </h2>
           <Link 
             to="/signup"
-            className="inline-flex h-14 items-center justify-center rounded-full bg-white px-10 text-sm font-bold text-[#0A0A0A] transition-transform hover:scale-105 shadow-xl"
+            className="inline-flex h-14 items-center justify-center rounded-full bg-white dark:bg-[#0a0a0a] px-10 text-sm font-bold text-[#0A0A0A] dark:text-white transition-transform hover:scale-105 shadow-xl"
           >
             Invest Now
           </Link>

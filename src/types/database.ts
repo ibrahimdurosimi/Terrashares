@@ -9,6 +9,8 @@ export interface Database {
           email: string
           full_name: string | null
           phone: string | null
+          location: string | null
+          theme: 'light' | 'dark' | 'system' | null
           role: 'investor' | 'admin'
           created_at: string
         }
@@ -17,6 +19,8 @@ export interface Database {
           email: string
           full_name?: string | null
           phone?: string | null
+          location?: string | null
+          theme?: 'light' | 'dark' | 'system' | null
           role?: 'investor' | 'admin'
           created_at?: string
         }
@@ -25,6 +29,8 @@ export interface Database {
           email?: string
           full_name?: string | null
           phone?: string | null
+          location?: string | null
+          theme?: 'light' | 'dark' | 'system' | null
           role?: 'investor' | 'admin'
           created_at?: string
         }
@@ -155,6 +161,8 @@ export interface Database {
           name: string
           email: string
           phone: string | null
+          location: string | null
+          theme: 'light' | 'dark' | 'system' | null
           property_id: string | null
           message: string
           status: 'new' | 'contacted' | 'converted'
@@ -165,6 +173,8 @@ export interface Database {
           name: string
           email: string
           phone?: string | null
+          location?: string | null
+          theme?: 'light' | 'dark' | 'system' | null
           property_id?: string | null
           message: string
           status?: 'new' | 'contacted' | 'converted'
@@ -175,6 +185,8 @@ export interface Database {
           name?: string
           email?: string
           phone?: string | null
+          location?: string | null
+          theme?: 'light' | 'dark' | 'system' | null
           property_id?: string | null
           message?: string
           status?: 'new' | 'contacted' | 'converted'

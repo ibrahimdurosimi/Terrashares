@@ -7,6 +7,8 @@ CREATE TABLE IF NOT EXISTS public.users (
   email TEXT UNIQUE NOT NULL,
   full_name TEXT,
   phone TEXT,
+  location TEXT,
+  theme TEXT DEFAULT 'system',
   role TEXT NOT NULL DEFAULT 'investor' CHECK (role IN ('investor', 'admin')),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -164,11 +166,13 @@ CREATE POLICY "Admins can manage FAQs" ON public.faqs FOR ALL USING (public.is_a
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger AS $BODY$
 BEGIN
-  INSERT INTO public.users (id, email, full_name, role)
+  INSERT INTO public.users (id, email, full_name, phone, location, role)
   VALUES (
     new.id, 
     new.email, 
     new.raw_user_meta_data->>'full_name', 
+    new.raw_user_meta_data->>'phone',
+    new.raw_user_meta_data->>'location',
     COALESCE(new.raw_user_meta_data->>'role', 'investor')
   );
   RETURN new;

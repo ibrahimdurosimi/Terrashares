@@ -47,16 +47,16 @@ export function SocialProofToast() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 20, scale: 0.9 }}
           transition={{ type: "spring", stiffness: 400, damping: 25 }}
-          className="fixed bottom-6 left-6 z-50 bg-white rounded-2xl p-4 shadow-2xl border border-black/[0.05] flex items-center gap-4 max-w-sm"
+          className="fixed bottom-6 left-6 z-50 bg-white dark:bg-[#0a0a0a] rounded-2xl p-4 shadow-2xl border border-black/[0.05] flex items-center gap-4 max-w-sm"
         >
           <div className="w-10 h-10 rounded-full bg-[#9B8924]/10 flex items-center justify-center shrink-0">
             <MapPin className="w-5 h-5 text-[#9B8924]" />
           </div>
           <div>
-            <p className="text-sm text-[#0A0A0A] leading-tight">
+            <p className="text-sm text-[#0A0A0A] dark:text-white leading-tight">
               <span className="font-bold">{data.name}</span> {data.action} <span className="font-bold text-[#9B8924]">{data.property}</span>
             </p>
-            <p className="text-xs text-[#0A0A0A]/50 mt-1">{data.time}</p>
+            <p className="text-xs text-[#0A0A0A]/50 dark:text-white/50 mt-1">{data.time}</p>
           </div>
         </motion.div>
       )}

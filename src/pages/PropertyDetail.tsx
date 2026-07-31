@@ -51,15 +51,15 @@ export default function PropertyDetail() {
 
   if (loading) {
     return (
-      <div className="pt-32 pb-24 min-h-screen flex items-center justify-center bg-[#FAF8F5]">
-        <div className="w-12 h-12 border-4 border-[#0A0A0A]/10 border-t-[#9B8924] rounded-full animate-spin"></div>
+      <div className="pt-32 pb-24 min-h-screen flex items-center justify-center bg-[#FAF8F5] dark:bg-[#111]">
+        <div className="w-12 h-12 border-4 border-[#0A0A0A]/10 dark:border-white/10 border-t-[#9B8924] rounded-full animate-spin"></div>
       </div>
     );
   }
 
   if (!property) {
     return (
-      <div className="pt-32 pb-24 min-h-screen flex items-center justify-center bg-[#FAF8F5]">
+      <div className="pt-32 pb-24 min-h-screen flex items-center justify-center bg-[#FAF8F5] dark:bg-[#111]">
         <div className="text-center">
           <h2 className="text-2xl font-bold mb-4">Property not found</h2>
           <Link to="/properties" className="text-[#9B8924] hover:underline">Back to properties</Link>
@@ -121,15 +121,15 @@ export default function PropertyDetail() {
       ];
 
   return (
-    <div className="pt-24 pb-24 min-h-screen bg-white">
+    <div className="pt-24 pb-24 min-h-screen bg-white dark:bg-[#0a0a0a]">
       <div className="container mx-auto px-4 sm:px-6 lg:px-10 max-w-4xl">
         
-        <Link to="/properties" className="inline-flex items-center text-[#0A0A0A]/60 hover:text-[#0A0A0A] font-medium mb-6 transition-colors">
+        <Link to="/properties" className="inline-flex items-center text-[#0A0A0A]/60 dark:text-white/60 hover:text-[#0A0A0A] dark:text-white font-medium mb-6 transition-colors">
           <ArrowLeft className="w-4 h-4 mr-2" /> Back to properties
         </Link>
 
         {/* 1. Main Image */}
-        <div className="w-full aspect-[16/9] md:aspect-[21/9] bg-gray-100 rounded-3xl overflow-hidden relative mb-8 shadow-sm">
+        <div className="w-full aspect-[16/9] md:aspect-[21/9] bg-gray-100 dark:bg-gray-800 rounded-3xl overflow-hidden relative mb-8 shadow-sm">
           {property.image_urls && property.image_urls.length > 0 ? (
             <img 
               src={property.image_urls[0]} 
@@ -137,11 +137,11 @@ export default function PropertyDetail() {
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full bg-gray-200"></div>
+            <div className="w-full h-full bg-gray-200 dark:bg-gray-700"></div>
           )}
           
           {/* Closed Badge on Image */}
-          <div className="absolute bottom-4 right-4 bg-white px-6 py-2 rounded-full text-sm font-bold text-gray-700 shadow-md">
+          <div className="absolute bottom-4 right-4 bg-white dark:bg-[#0a0a0a] px-6 py-2 rounded-full text-sm font-bold text-gray-700 shadow-md">
             {property.status === 'closed' ? 'Closed' : 'Active'}
           </div>
         </div>
@@ -149,8 +149,8 @@ export default function PropertyDetail() {
         {/* 2. Header Info */}
         <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-8 gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{property.title}</h1>
-            <div className="flex items-center text-gray-600 gap-1.5 font-medium">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">{property.title}</h1>
+            <div className="flex items-center text-gray-600 dark:text-gray-400 gap-1.5 font-medium">
               <svg viewBox="0 0 24 24" className="w-5 h-5 text-green-600 fill-current shrink-0">
                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
               </svg>
@@ -158,14 +158,14 @@ export default function PropertyDetail() {
             </div>
           </div>
           <div className="text-left sm:text-right">
-            <p className="text-sm text-gray-500 mb-1">Returns</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Returns</p>
             <p className="text-2xl font-bold text-[#449175]">{property.returns_percent}%</p>
           </div>
         </div>
 
         {/* 3. Description */}
         <div className="mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-3">Description</h2>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">Description</h2>
           <p className="text-gray-700 leading-relaxed">
             {property.description}
           </p>
@@ -182,7 +182,7 @@ export default function PropertyDetail() {
           </button>
           <button 
             onClick={() => setIsPortfolioModalOpen(true)}
-            className="w-16 flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-2xl shadow-sm transition-colors"
+            className="w-16 flex items-center justify-center bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-2xl shadow-sm transition-colors"
             title="Add to Portfolio"
           >
             <BookmarkPlus className="w-6 h-6" />
@@ -191,11 +191,11 @@ export default function PropertyDetail() {
 
         {/* 5. Progress */}
         <div className="mb-10">
-          <div className="flex justify-between items-center text-sm font-medium mb-2 text-gray-600">
+          <div className="flex justify-between items-center text-sm font-medium mb-2 text-gray-600 dark:text-gray-400">
             <span>Asset progress</span>
             <span>{progressPercent}% invested</span>
           </div>
-          <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+          <div className="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded-full overflow-hidden">
             <div 
               className="bg-[#BFA15F] h-full transition-all duration-1000" 
               style={{ width: `${progressPercent}%` }}
@@ -205,30 +205,30 @@ export default function PropertyDetail() {
 
         {/* 6. Asset Details */}
         <div className="mb-12">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Asset details</h2>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Asset details</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <div className="bg-[#F8F9FA] p-4 rounded-xl">
-              <p className="text-sm text-gray-500 mb-1">Minimum investment</p>
-              <p className="font-bold text-gray-900">₦{property.min_investment.toLocaleString()}</p>
+            <div className="bg-[#F8F9FA] dark:bg-white/5 p-4 rounded-xl">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Minimum investment</p>
+              <p className="font-bold text-gray-900 dark:text-gray-100">₦{property.min_investment.toLocaleString()}</p>
             </div>
-            <div className="bg-[#F8F9FA] p-4 rounded-xl">
-              <p className="text-sm text-gray-500 mb-1">Returns</p>
-              <p className="font-bold text-gray-900">{property.returns_percent}%</p>
+            <div className="bg-[#F8F9FA] dark:bg-white/5 p-4 rounded-xl">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Returns</p>
+              <p className="font-bold text-gray-900 dark:text-gray-100">{property.returns_percent}%</p>
             </div>
-            <div className="bg-[#F8F9FA] p-4 rounded-xl">
-              <p className="text-sm text-gray-500 mb-1">Category</p>
-              <p className="font-bold text-gray-900">{getCategoryLabel(property.category)}</p>
+            <div className="bg-[#F8F9FA] dark:bg-white/5 p-4 rounded-xl">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Category</p>
+              <p className="font-bold text-gray-900 dark:text-gray-100">{getCategoryLabel(property.category)}</p>
             </div>
-            <div className="bg-[#F8F9FA] p-4 rounded-xl">
-              <p className="text-sm text-gray-500 mb-1">Payout Style</p>
-              <p className="font-bold text-gray-900">{getPayoutLabel(property.payout_style)}</p>
+            <div className="bg-[#F8F9FA] dark:bg-white/5 p-4 rounded-xl">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Payout Style</p>
+              <p className="font-bold text-gray-900 dark:text-gray-100">{getPayoutLabel(property.payout_style)}</p>
             </div>
-            <div className="bg-[#F8F9FA] p-4 rounded-xl">
-              <p className="text-sm text-gray-500 mb-1">Duration</p>
-              <p className="font-bold text-gray-900">{property.duration_months} Months</p>
+            <div className="bg-[#F8F9FA] dark:bg-white/5 p-4 rounded-xl">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Duration</p>
+              <p className="font-bold text-gray-900 dark:text-gray-100">{property.duration_months} Months</p>
             </div>
-            <div className="bg-[#F8F9FA] p-4 rounded-xl">
-              <p className="text-sm text-gray-500 mb-1">Status</p>
+            <div className="bg-[#F8F9FA] dark:bg-white/5 p-4 rounded-xl">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Status</p>
               <p className={`font-bold ${property.status === 'open' ? 'text-[#449175]' : 'text-[#449175]'}`}>
                 {property.status === 'open' ? 'Active' : 'Closed'}
               </p>
@@ -238,8 +238,8 @@ export default function PropertyDetail() {
 
         {/* 7. Property Value Over Time */}
         <div>
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Property value over time</h2>
-          <div className="h-[300px] w-full bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">Property value over time</h2>
+          <div className="h-[300px] w-full bg-white dark:bg-[#0a0a0a] rounded-2xl border border-gray-100 dark:border-white/10 p-4 shadow-sm">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <XAxis 
@@ -275,7 +275,7 @@ export default function PropertyDetail() {
 
         {/* 8. FAQs */}
         <div className="mt-16">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Frequently Asked Questions</h2>
           <FAQAccordion />
         </div>
       </div>
@@ -295,19 +295,19 @@ export default function PropertyDetail() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md bg-white rounded-3xl shadow-xl overflow-hidden"
+              className="w-full max-w-md bg-white dark:bg-[#0a0a0a] rounded-3xl shadow-xl overflow-hidden"
             >
               <div className="flex justify-between items-center p-6 border-b border-black/5">
-                <h3 className="text-xl font-bold text-gray-900">Invest in {property.title}</h3>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">Invest in {property.title}</h3>
                 <button
                   onClick={() => setIsInvestModalOpen(false)}
-                  className="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-500"
+                  className="p-2 rounded-full hover:bg-gray-100 dark:bg-gray-800 transition-colors text-gray-500 dark:text-gray-400"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
               <div className="p-6 space-y-4">
-                <p className="text-sm text-gray-600 mb-2">Choose how you'd like to get in touch with our investment managers to proceed with your investment.</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Choose how you'd like to get in touch with our investment managers to proceed with your investment.</p>
                 
                 <a 
                   href={`https://wa.me/2348000000000?text=${encodeURIComponent(`Hello! I am interested in investing in ${property.title} located at ${property.location}. The minimum investment is ₦${property.min_investment.toLocaleString()}. Please let me know how to proceed.`)}`}
@@ -326,14 +326,14 @@ export default function PropertyDetail() {
 
                 <a 
                   href={`mailto:invest@yourcompany.com?subject=${encodeURIComponent(`Investment Inquiry: ${property.title}`)}&body=${encodeURIComponent(`Hello,\n\nI am interested in investing in ${property.title} located at ${property.location}.\n\nThe minimum investment is ₦${property.min_investment.toLocaleString()}.\n\nPlease provide me with the next steps to proceed with this investment.\n\nThank you.`)}`}
-                  className="flex items-center w-full p-4 rounded-2xl bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-colors"
+                  className="flex items-center w-full p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:bg-gray-800 transition-colors"
                 >
                   <div className="w-12 h-12 rounded-full bg-[#0A0A0A] flex items-center justify-center mr-4 shrink-0 shadow-sm shadow-black/10">
                     <Mail className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-[#0A0A0A] mb-0.5">Send an Email</h4>
-                    <p className="text-xs text-gray-500 font-medium">Detailed correspondence</p>
+                    <h4 className="font-bold text-[#0A0A0A] dark:text-white mb-0.5">Send an Email</h4>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Detailed correspondence</p>
                   </div>
                 </a>
               </div>
@@ -357,13 +357,13 @@ export default function PropertyDetail() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md bg-white rounded-3xl shadow-xl overflow-hidden"
+              className="w-full max-w-md bg-white dark:bg-[#0a0a0a] rounded-3xl shadow-xl overflow-hidden"
             >
               <div className="flex justify-between items-center p-6 border-b border-black/5">
-                <h3 className="text-xl font-bold text-gray-900">Add to Portfolio</h3>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">Add to Portfolio</h3>
                 <button
                   onClick={() => setIsPortfolioModalOpen(false)}
-                  className="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-500"
+                  className="p-2 rounded-full hover:bg-gray-100 dark:bg-gray-800 transition-colors text-gray-500 dark:text-gray-400"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -375,15 +375,15 @@ export default function PropertyDetail() {
                   </div>
                 ) : (
                   <>
-                    <p className="text-sm text-gray-600 mb-4">How would you like to track this property?</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">How would you like to track this property?</p>
                     
                     <button 
                       onClick={() => handleAddToPortfolio('wishlist')}
-                      className="flex items-center text-left w-full p-4 rounded-2xl bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-colors"
+                      className="flex items-center text-left w-full p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:bg-gray-800 transition-colors"
                     >
                       <div>
-                        <h4 className="font-bold text-gray-900 mb-0.5">Add to Wishlist</h4>
-                        <p className="text-xs text-gray-500 font-medium">Track this property for future investment</p>
+                        <h4 className="font-bold text-gray-900 dark:text-gray-100 mb-0.5">Add to Wishlist</h4>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Track this property for future investment</p>
                       </div>
                     </button>
 

@@ -40,15 +40,15 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-white/5 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
           <Building2 className="w-12 h-12 text-[#9B8924]" />
         </div>
-        <h2 className="mt-6 text-center text-3xl font-black tracking-tight text-gray-900">
+        <h2 className="mt-6 text-center text-3xl font-black tracking-tight text-gray-900 dark:text-gray-100">
           Welcome back
         </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
+        <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
           Or{' '}
           <Link to="/signup" className="font-medium text-[#9B8924] hover:text-[#7a6b1c]">
             create an account
@@ -57,7 +57,7 @@ export default function Login() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow-sm border border-gray-100 sm:rounded-[2rem] sm:px-10">
+        <div className="bg-white dark:bg-[#0a0a0a] py-8 px-4 shadow-sm border border-gray-100 dark:border-white/10 sm:rounded-[2rem] sm:px-10">
           <form className="space-y-6" onSubmit={handleLogin}>
             {error && (
               <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm font-medium">
@@ -73,7 +73,7 @@ export default function Login() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-[#9B8924] focus:bg-white transition-colors"
+                  className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-[#9B8924] focus:bg-white dark:bg-[#0a0a0a] transition-colors"
                 />
               </div>
             </div>
@@ -86,7 +86,7 @@ export default function Login() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-[#9B8924] focus:bg-white transition-colors"
+                  className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-[#9B8924] focus:bg-white dark:bg-[#0a0a0a] transition-colors"
                 />
               </div>
             </div>
@@ -94,7 +94,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full h-12 flex justify-center items-center rounded-full bg-[#0A0A0A] text-white font-bold hover:bg-gray-800 transition-colors disabled:opacity-50"
+              className="w-full h-12 flex justify-center items-center rounded-full bg-[#0A0A0A] dark:bg-white text-white dark:text-[#0A0A0A] font-bold hover:bg-gray-800 transition-colors disabled:opacity-50"
             >
               {loading ? 'Signing in...' : 'Sign in'}
             </button>
