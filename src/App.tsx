@@ -16,6 +16,8 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/dashboard/Dashboard';
 import Profile from './pages/dashboard/Profile';
 import AdminLayout from './pages/admin/AdminLayout';
@@ -42,6 +44,8 @@ export default function App() {
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/dashboard/profile" element={<Profile />} />
             

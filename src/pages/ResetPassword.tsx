@@ -1,40 +1,42 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { Building2, AlertCircle } from 'lucide-react';
 
-export default function Login() {
-  const [email, setEmail] = useState('');
+export default function ResetPassword() {
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = async (e: any) => {
+  useEffect(() => {
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "PASSWORD_RECOVERY") {
+        // We are ready to reset
+      }
+    });
+  }, []);
+
+  const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (password !== confirmPassword) {
+      setError("Passwords don't match");
+      return;
+    }
+
     setLoading(true);
     setError(null);
     
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+    const { error } = await supabase.auth.updateUser({
+      password: password
     });
 
     if (error) {
-      if (error.message === "Failed to fetch" || error.message?.includes("Failed to fetch")) {
-        setError("Network error: Please check your Supabase URL and configuration.");
-      } else {
-        setError(error.message && error.message !== "{}" ? error.message : "Database error: Please run the latest SQL migration in your Supabase SQL editor to fix the user creation policies.");
-      }
+      setError(error.message);
       setLoading(false);
     } else {
-      // Check role
-      const { data: userData } = await supabase.from('users').select('role').eq('id', data.user.id).single();
-      if (userData ? (userData as any).role === 'admin' : false) {
-        navigate('/admin/properties');
-      } else {
-        navigate('/dashboard');
-      }
+      navigate('/login');
     }
   };
 
@@ -55,22 +57,11 @@ export default function Login() {
             <Building2 className="w-12 h-12 text-[#9B8924]" />
           </div>
           <h1 className="text-5xl font-black mb-6 leading-tight" style={{ fontFamily: 'Georgia, serif' }}>
-            Welcome back to Terrashare.
+            Set new password.
           </h1>
           <p className="text-xl mb-12 opacity-80 leading-relaxed">
-            Log in to access your portfolio, track property performance, and explore new investment opportunities. We're glad to have you back.
+            Please enter your new password below.
           </p>
-          
-          <div className="grid grid-cols-2 gap-8">
-            <div>
-              <div className="text-4xl font-black mb-2 text-[#9B8924]">15k+</div>
-              <div className="font-medium opacity-80 uppercase tracking-wider text-sm">Active Investors</div>
-            </div>
-            <div>
-              <div className="text-4xl font-black mb-2 text-[#9B8924]">₦20B+</div>
-              <div className="font-medium opacity-80 uppercase tracking-wider text-sm">Property Value</div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -81,16 +72,13 @@ export default function Login() {
             <Building2 className="w-12 h-12 text-[#9B8924]" />
           </div>
           <h2 className="text-3xl lg:text-4xl font-black tracking-tight text-[#0A0A0A] dark:text-white mb-2" style={{ fontFamily: 'Georgia, serif' }}>
-            Log in to your account
+            New Password
           </h2>
           <p className="text-[#0A0A0A]/60 dark:text-white/60 mb-10">
-            Don't have an account?{' '}
-            <Link to="/signup" className="font-bold text-[#9B8924] hover:underline">
-              Create an account
-            </Link>
+            Enter your new password
           </p>
 
-          <form className="space-y-6" onSubmit={handleLogin}>
+          <form className="space-y-6" onSubmit={handleUpdate}>
             {error && (
               <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-xl text-sm font-medium flex items-center gap-2">
                 <AlertCircle className="w-5 h-5 shrink-0" />
@@ -99,27 +87,24 @@ export default function Login() {
             )}
             
             <div>
-              <label className="block text-sm font-bold text-[#0A0A0A] dark:text-white/80 uppercase tracking-wider mb-2">Email Address</label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full h-14 px-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-black/5 dark:border-white/10 focus:ring-2 focus:ring-[#9B8924] focus:border-transparent transition-colors text-[#0A0A0A] dark:text-white"
-                placeholder="john@example.com"
-              />
-            </div>
-            
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <label className="block text-sm font-bold text-[#0A0A0A] dark:text-white/80 uppercase tracking-wider">Password</label>
-                <Link to="/forgot-password" className="text-sm font-bold text-[#9B8924] hover:underline">Forgot password?</Link>
-              </div>
+              <label className="block text-sm font-bold text-[#0A0A0A] dark:text-white/80 uppercase tracking-wider mb-2">New Password</label>
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className="w-full h-14 px-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-black/5 dark:border-white/10 focus:ring-2 focus:ring-[#9B8924] focus:border-transparent transition-colors text-[#0A0A0A] dark:text-white"
+                placeholder="••••••••"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-bold text-[#0A0A0A] dark:text-white/80 uppercase tracking-wider mb-2">Confirm New Password</label>
+              <input
+                type="password"
+                required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 className="w-full h-14 px-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-black/5 dark:border-white/10 focus:ring-2 focus:ring-[#9B8924] focus:border-transparent transition-colors text-[#0A0A0A] dark:text-white"
                 placeholder="••••••••"
               />
@@ -131,7 +116,7 @@ export default function Login() {
                 disabled={loading}
                 className="w-full h-14 flex justify-center items-center rounded-full bg-[#0A0A0A] dark:bg-white text-white dark:text-[#0A0A0A] font-bold hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50 shadow-xl shadow-black/10"
               >
-                {loading ? 'Logging in...' : 'Log In'}
+                {loading ? 'Updating...' : 'Update Password'}
               </button>
             </div>
           </form>

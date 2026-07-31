@@ -1,42 +1,55 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { Building2, AlertCircle } from 'lucide-react';
+import { Building2, AlertCircle, CheckCircle2, ArrowLeft } from 'lucide-react';
 
-export default function Login() {
+export default function ForgotPassword() {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [success, setSuccess] = useState(false);
 
-  const handleLogin = async (e: any) => {
+  const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
     
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
     });
 
     if (error) {
-      if (error.message === "Failed to fetch" || error.message?.includes("Failed to fetch")) {
-        setError("Network error: Please check your Supabase URL and configuration.");
-      } else {
-        setError(error.message && error.message !== "{}" ? error.message : "Database error: Please run the latest SQL migration in your Supabase SQL editor to fix the user creation policies.");
-      }
+      setError(error.message);
       setLoading(false);
     } else {
-      // Check role
-      const { data: userData } = await supabase.from('users').select('role').eq('id', data.user.id).single();
-      if (userData ? (userData as any).role === 'admin' : false) {
-        navigate('/admin/properties');
-      } else {
-        navigate('/dashboard');
-      }
+      setLoading(false);
+      setSuccess(true);
     }
   };
+
+  if (success) {
+    return (
+      <div className="min-h-screen bg-[#FAF8F5] dark:bg-[#0a0a0a] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
+          <div className="mx-auto w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-6">
+            <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
+          </div>
+          <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-4" style={{ fontFamily: 'Georgia, serif' }}>
+            Check your email
+          </h2>
+          <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
+            We've sent password reset instructions to <span className="font-bold text-gray-900 dark:text-white">{email}</span>.
+          </p>
+          <Link
+            to="/login"
+            className="inline-flex h-14 items-center justify-center rounded-full bg-[#0A0A0A] dark:bg-white px-10 text-sm font-bold text-white dark:text-[#0A0A0A] hover:bg-gray-800 transition-colors shadow-xl"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" /> Back to Login
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex bg-white dark:bg-[#0a0a0a]">
@@ -55,42 +68,32 @@ export default function Login() {
             <Building2 className="w-12 h-12 text-[#9B8924]" />
           </div>
           <h1 className="text-5xl font-black mb-6 leading-tight" style={{ fontFamily: 'Georgia, serif' }}>
-            Welcome back to Terrashare.
+            Reset your password.
           </h1>
           <p className="text-xl mb-12 opacity-80 leading-relaxed">
-            Log in to access your portfolio, track property performance, and explore new investment opportunities. We're glad to have you back.
+            Enter the email address associated with your account and we'll send you a link to reset your password.
           </p>
-          
-          <div className="grid grid-cols-2 gap-8">
-            <div>
-              <div className="text-4xl font-black mb-2 text-[#9B8924]">15k+</div>
-              <div className="font-medium opacity-80 uppercase tracking-wider text-sm">Active Investors</div>
-            </div>
-            <div>
-              <div className="text-4xl font-black mb-2 text-[#9B8924]">₦20B+</div>
-              <div className="font-medium opacity-80 uppercase tracking-wider text-sm">Property Value</div>
-            </div>
-          </div>
         </div>
       </div>
 
       {/* Right Side - Form */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center px-4 sm:px-12 lg:px-24 py-12 bg-white dark:bg-[#0a0a0a]">
         <div className="w-full max-w-md mx-auto">
+          <Link to="/login" className="inline-flex items-center text-sm font-bold text-[#9B8924] hover:underline mb-8">
+            <ArrowLeft className="w-4 h-4 mr-1" /> Back to login
+          </Link>
+          
           <div className="lg:hidden mb-8 flex justify-center">
             <Building2 className="w-12 h-12 text-[#9B8924]" />
           </div>
           <h2 className="text-3xl lg:text-4xl font-black tracking-tight text-[#0A0A0A] dark:text-white mb-2" style={{ fontFamily: 'Georgia, serif' }}>
-            Log in to your account
+            Forgot password?
           </h2>
           <p className="text-[#0A0A0A]/60 dark:text-white/60 mb-10">
-            Don't have an account?{' '}
-            <Link to="/signup" className="font-bold text-[#9B8924] hover:underline">
-              Create an account
-            </Link>
+            No worries, we'll send you reset instructions.
           </p>
 
-          <form className="space-y-6" onSubmit={handleLogin}>
+          <form className="space-y-6" onSubmit={handleReset}>
             {error && (
               <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-xl text-sm font-medium flex items-center gap-2">
                 <AlertCircle className="w-5 h-5 shrink-0" />
@@ -109,21 +112,6 @@ export default function Login() {
                 placeholder="john@example.com"
               />
             </div>
-            
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <label className="block text-sm font-bold text-[#0A0A0A] dark:text-white/80 uppercase tracking-wider">Password</label>
-                <Link to="/forgot-password" className="text-sm font-bold text-[#9B8924] hover:underline">Forgot password?</Link>
-              </div>
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full h-14 px-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-black/5 dark:border-white/10 focus:ring-2 focus:ring-[#9B8924] focus:border-transparent transition-colors text-[#0A0A0A] dark:text-white"
-                placeholder="••••••••"
-              />
-            </div>
 
             <div className="pt-4">
               <button
@@ -131,7 +119,7 @@ export default function Login() {
                 disabled={loading}
                 className="w-full h-14 flex justify-center items-center rounded-full bg-[#0A0A0A] dark:bg-white text-white dark:text-[#0A0A0A] font-bold hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50 shadow-xl shadow-black/10"
               >
-                {loading ? 'Logging in...' : 'Log In'}
+                {loading ? 'Sending...' : 'Reset Password'}
               </button>
             </div>
           </form>
