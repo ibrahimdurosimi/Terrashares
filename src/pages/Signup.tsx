@@ -1,48 +1,79 @@
-import React from "react";
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Building2, ArrowRight, ShieldCheck, CheckCircle2, AlertCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { Building2 } from 'lucide-react';
+import PhoneInput from 'react-phone-number-input';
+import 'react-phone-number-input/style.css';
 
 export default function Signup() {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [confirmEmail, setConfirmEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [phone, setPhone] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [phone, setPhone] = useState<string | undefined>('');
   const [location, setLocation] = useState('');
-  
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [success, setSuccess] = useState(false);
+
+  // Bot check
+  const [num1, setNum1] = useState(0);
+  const [num2, setNum2] = useState(0);
+  const [botAnswer, setBotAnswer] = useState('');
+
+  useEffect(() => {
+    setNum1(Math.floor(Math.random() * 10) + 1);
+    setNum2(Math.floor(Math.random() * 10) + 1);
+  }, []);
+
+  const getPasswordStrength = (pass: string) => {
+    let score = 0;
+    if (!pass) return { score: 0, text: '', color: 'bg-gray-200 dark:bg-gray-700' };
+    if (pass.length >= 8) score += 1;
+    if (/[A-Z]/.test(pass)) score += 1;
+    if (/[a-z]/.test(pass)) score += 1;
+    if (/[0-9]/.test(pass)) score += 1;
+    if (/[^A-Za-z0-9]/.test(pass)) score += 1;
+    
+    if (score <= 2) return { score, text: 'Weak', color: 'bg-red-500' };
+    if (score <= 4) return { score, text: 'Good', color: 'bg-yellow-500' };
+    return { score, text: 'Strong', color: 'bg-green-500' };
+  };
+
+  const passStrength = getPasswordStrength(password);
+  const emailsMatch = email && confirmEmail && email === confirmEmail;
+  const emailsMismatch = email && confirmEmail && email !== confirmEmail;
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
+    setError('');
 
-    // Validation
-    if (email !== confirmEmail) {
-      setError("Email addresses do not match.");
-      setLoading(false);
+    if (parseInt(botAnswer) !== num1 + num2) {
+      setError('Incorrect security question answer. Are you a bot?');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords don't match");
       return;
     }
     
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
-      setLoading(false);
+    if (email !== confirmEmail) {
+      setError("Emails don't match");
       return;
     }
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters long.");
-      setLoading(false);
+    if (!phone) {
+      setError("Phone number is required");
       return;
     }
 
-    const { data, error } = await supabase.auth.signUp({
+    setLoading(true);
+
+    const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -65,169 +96,262 @@ export default function Signup() {
       }
       setLoading(false);
     } else {
-      navigate('/dashboard');
+      setLoading(false);
+      setSuccess(true);
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-white/5 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="flex justify-center">
-          <Building2 className="w-12 h-12 text-[#9B8924]" />
-        </div>
-        <h2 className="mt-6 text-center text-3xl font-black tracking-tight text-gray-900 dark:text-gray-100">
-          Create an account
-        </h2>
-        <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-          Or{' '}
-          <Link to="/login" className="font-medium text-[#9B8924] hover:text-[#7a6b1c]">
-            sign in to your account
+  if (success) {
+    return (
+      <div className="min-h-screen bg-[#FAF8F5] dark:bg-[#0a0a0a] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
+          <div className="mx-auto w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-6">
+            <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
+          </div>
+          <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-4" style={{ fontFamily: 'Georgia, serif' }}>
+            Check your email
+          </h2>
+          <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
+            We've sent a validation link to <span className="font-bold text-gray-900 dark:text-white">{email}</span>. Please click the link to verify your account and start investing.
+          </p>
+          <Link
+            to="/login"
+            className="inline-flex h-14 items-center justify-center rounded-full bg-[#0A0A0A] dark:bg-white px-10 text-sm font-bold text-white dark:text-[#0A0A0A] hover:bg-gray-800 transition-colors shadow-xl"
+          >
+            Go to Login <ArrowRight className="w-4 h-4 ml-2" />
           </Link>
-        </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex bg-white dark:bg-[#0a0a0a]">
+      {/* Left Side - Marketing & Info */}
+      <div className="hidden lg:flex lg:w-1/2 bg-[#F7D0BC] dark:bg-[#1f120a] relative overflow-hidden items-center justify-center p-12">
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="https://images.unsplash.com/photo-1582407947304-fd86f028f716?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80" 
+            alt="Real Estate"
+            className="w-full h-full object-cover opacity-20 mix-blend-multiply dark:mix-blend-overlay grayscale-[30%]"
+          />
+        </div>
+        
+        <div className="relative z-10 max-w-lg text-[#0A0A0A] dark:text-white">
+          <div className="mb-8">
+            <Building2 className="w-12 h-12 text-[#9B8924]" />
+          </div>
+          <h1 className="text-5xl font-black mb-6 leading-tight" style={{ fontFamily: 'Georgia, serif' }}>
+            Welcome to the future of real estate.
+          </h1>
+          <p className="text-xl mb-12 opacity-80 leading-relaxed">
+            A personal note from the Terrashare Team: We built this platform because we believe premium property investment shouldn't be restricted to the ultra-wealthy. We are thrilled you're taking the first step to rewrite your financial future with us.
+          </p>
+          
+          <div className="grid grid-cols-2 gap-8">
+            <div>
+              <div className="text-4xl font-black mb-2 text-[#9B8924]">15k+</div>
+              <div className="font-medium opacity-80 uppercase tracking-wider text-sm">Active Investors</div>
+            </div>
+            <div>
+              <div className="text-4xl font-black mb-2 text-[#9B8924]">₦20B+</div>
+              <div className="font-medium opacity-80 uppercase tracking-wider text-sm">Property Value</div>
+            </div>
+            <div>
+              <div className="text-4xl font-black mb-2 text-[#9B8924]">16.4%</div>
+              <div className="font-medium opacity-80 uppercase tracking-wider text-sm">Average Hist. ROI</div>
+            </div>
+            <div>
+              <div className="text-4xl font-black mb-2 text-[#9B8924]">100%</div>
+              <div className="font-medium opacity-80 uppercase tracking-wider text-sm">Asset Backed</div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-2xl">
-        <div className="bg-white dark:bg-[#0a0a0a] py-8 px-4 shadow-sm border border-gray-100 dark:border-white/10 sm:rounded-[2rem] sm:px-10">
+      {/* Right Side - Form */}
+      <div className="w-full lg:w-1/2 flex flex-col justify-center px-4 sm:px-12 lg:px-24 py-12 bg-white dark:bg-[#0a0a0a] overflow-y-auto pt-24">
+        <div className="w-full max-w-md mx-auto lg:max-w-xl">
+          <div className="lg:hidden mb-8 flex justify-center">
+            <Building2 className="w-12 h-12 text-[#9B8924]" />
+          </div>
+          <h2 className="text-3xl lg:text-4xl font-black tracking-tight text-[#0A0A0A] dark:text-white mb-2" style={{ fontFamily: 'Georgia, serif' }}>
+            Create your account
+          </h2>
+          <p className="text-[#0A0A0A]/60 dark:text-white/60 mb-10">
+            Already have an account?{' '}
+            <Link to="/login" className="font-bold text-[#9B8924] hover:underline">
+              Log in instead
+            </Link>
+          </p>
+
           <form className="space-y-6" onSubmit={handleSignup}>
             {error && (
-              <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm font-medium">
+              <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-xl text-sm font-medium flex items-center gap-2">
+                <AlertCircle className="w-5 h-5 shrink-0" />
                 {error}
               </div>
             )}
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700">First Name</label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    required
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-[#9B8924] focus:bg-white dark:bg-[#0a0a0a] transition-colors"
-                    placeholder="John"
-                  />
-                </div>
+                <label className="block text-sm font-bold text-[#0A0A0A] dark:text-white/80 uppercase tracking-wider mb-2">First Name</label>
+                <input
+                  type="text"
+                  required
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  className="w-full h-14 px-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-black/5 dark:border-white/10 focus:ring-2 focus:ring-[#9B8924] focus:border-transparent transition-colors text-[#0A0A0A] dark:text-white"
+                  placeholder="John"
+                />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700">Last Name</label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    required
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-[#9B8924] focus:bg-white dark:bg-[#0a0a0a] transition-colors"
-                    placeholder="Doe"
-                  />
-                </div>
+                <label className="block text-sm font-bold text-[#0A0A0A] dark:text-white/80 uppercase tracking-wider mb-2">Last Name</label>
+                <input
+                  type="text"
+                  required
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  className="w-full h-14 px-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-black/5 dark:border-white/10 focus:ring-2 focus:ring-[#9B8924] focus:border-transparent transition-colors text-[#0A0A0A] dark:text-white"
+                  placeholder="Doe"
+                />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Email Address</label>
-                <div className="mt-2">
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-[#9B8924] focus:bg-white dark:bg-[#0a0a0a] transition-colors"
-                    placeholder="john@example.com"
-                  />
-                </div>
+                <label className="block text-sm font-bold text-[#0A0A0A] dark:text-white/80 uppercase tracking-wider mb-2">Email Address</label>
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full h-14 px-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-black/5 dark:border-white/10 focus:ring-2 focus:ring-[#9B8924] focus:border-transparent transition-colors text-[#0A0A0A] dark:text-white"
+                  placeholder="john@example.com"
+                />
               </div>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Confirm Email</label>
-                <div className="mt-2">
+              <div className="relative">
+                <label className="block text-sm font-bold text-[#0A0A0A] dark:text-white/80 uppercase tracking-wider mb-2">Confirm Email</label>
+                <div className="relative">
                   <input
                     type="email"
                     required
                     value={confirmEmail}
                     onChange={(e) => setConfirmEmail(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-[#9B8924] focus:bg-white dark:bg-[#0a0a0a] transition-colors"
+                    className={`w-full h-14 px-4 rounded-xl bg-gray-50 dark:bg-white/5 border ${emailsMismatch ? 'border-red-500 focus:ring-red-500' : 'border-black/5 dark:border-white/10 focus:ring-[#9B8924]'} focus:ring-2 focus:border-transparent transition-colors text-[#0A0A0A] dark:text-white pr-10`}
                     placeholder="john@example.com"
                   />
+                  {emailsMatch && (
+                    <CheckCircle2 className="w-5 h-5 text-green-500 absolute right-4 top-1/2 -translate-y-1/2" />
+                  )}
                 </div>
+                {emailsMismatch && (
+                  <p className="text-red-500 text-xs mt-1 absolute -bottom-5">Emails do not match</p>
+                )}
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-6 pt-2">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Password</label>
-                <div className="mt-2">
-                  <input
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-[#9B8924] focus:bg-white dark:bg-[#0a0a0a] transition-colors"
-                    placeholder="••••••••"
-                  />
-                </div>
+                <label className="block text-sm font-bold text-[#0A0A0A] dark:text-white/80 uppercase tracking-wider mb-2">Password</label>
+                <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full h-14 px-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-black/5 dark:border-white/10 focus:ring-2 focus:ring-[#9B8924] focus:border-transparent transition-colors text-[#0A0A0A] dark:text-white"
+                  placeholder="••••••••"
+                />
+                {/* Password Strength Indicator */}
+                {password && (
+                  <div className="mt-2 flex items-center gap-2">
+                    <div className="flex-grow flex gap-1 h-1.5">
+                      <div className={`flex-1 rounded-full ${passStrength.score >= 1 ? passStrength.color : 'bg-gray-200 dark:bg-gray-700'}`}></div>
+                      <div className={`flex-1 rounded-full ${passStrength.score >= 3 ? passStrength.color : 'bg-gray-200 dark:bg-gray-700'}`}></div>
+                      <div className={`flex-1 rounded-full ${passStrength.score >= 5 ? passStrength.color : 'bg-gray-200 dark:bg-gray-700'}`}></div>
+                    </div>
+                    <span className={`text-xs font-bold ${passStrength.score >= 5 ? 'text-green-500' : passStrength.score >= 3 ? 'text-yellow-500' : 'text-red-500'}`}>
+                      {passStrength.text}
+                    </span>
+                  </div>
+                )}
               </div>
-
+              
               <div>
-                <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
-                <div className="mt-2">
-                  <input
-                    type="password"
-                    required
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-[#9B8924] focus:bg-white dark:bg-[#0a0a0a] transition-colors"
-                    placeholder="••••••••"
-                  />
-                </div>
+                <label className="block text-sm font-bold text-[#0A0A0A] dark:text-white/80 uppercase tracking-wider mb-2">Confirm Password</label>
+                <input
+                  type="password"
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full h-14 px-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-black/5 dark:border-white/10 focus:ring-2 focus:ring-[#9B8924] focus:border-transparent transition-colors text-[#0A0A0A] dark:text-white"
+                  placeholder="••••••••"
+                />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Phone Number</label>
-                <div className="mt-2">
-                  <input
-                    type="tel"
-                    required
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
+              <div className="custom-phone-input">
+                <label className="block text-sm font-bold text-[#0A0A0A] dark:text-white/80 uppercase tracking-wider mb-2">Phone Number</label>
+                <div className="w-full h-14 px-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-black/5 dark:border-white/10 focus-within:ring-2 focus-within:ring-[#9B8924] focus-within:border-transparent transition-colors flex items-center">
+                  <PhoneInput
+                    international
+                    defaultCountry="NG"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-[#9B8924] focus:bg-white dark:bg-[#0a0a0a] transition-colors"
-                    placeholder="+234..."
+                    onChange={setPhone}
+                    className="w-full outline-none bg-transparent text-[#0A0A0A] dark:text-white"
                   />
                 </div>
               </div>
-
+              
               <div>
-                <label className="block text-sm font-medium text-gray-700">Location (City, Country)</label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    required
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-[#9B8924] focus:bg-white dark:bg-[#0a0a0a] transition-colors"
-                    placeholder="Lagos, Nigeria"
-                  />
-                </div>
+                <label className="block text-sm font-bold text-[#0A0A0A] dark:text-white/80 uppercase tracking-wider mb-2">City, Country</label>
+                <input
+                  type="text"
+                  required
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  className="w-full h-14 px-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-black/5 dark:border-white/10 focus:ring-2 focus:ring-[#9B8924] focus:border-transparent transition-colors text-[#0A0A0A] dark:text-white"
+                  placeholder="Lagos, Nigeria"
+                />
               </div>
+            </div>
+
+            {/* Security Check */}
+            <div className="pt-2">
+              <label className="block text-sm font-bold text-[#0A0A0A] dark:text-white/80 uppercase tracking-wider mb-2">Security Check: {num1} + {num2} = ?</label>
+              <input
+                type="number"
+                required
+                value={botAnswer}
+                onChange={(e) => setBotAnswer(e.target.value)}
+                className="w-full h-14 px-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-black/5 dark:border-white/10 focus:ring-2 focus:ring-[#9B8924] focus:border-transparent transition-colors text-[#0A0A0A] dark:text-white"
+                placeholder="Enter the sum to prove you're human"
+              />
             </div>
 
             <div className="pt-4">
               <button
                 type="submit"
-                disabled={loading}
-                className="w-full h-12 flex justify-center items-center rounded-xl bg-[#0A0A0A] dark:bg-white text-white dark:text-[#0A0A0A] font-bold hover:bg-gray-800 transition-colors disabled:opacity-50"
+                disabled={loading || !emailsMatch || passStrength.score <= 2}
+                className="w-full h-14 flex justify-center items-center rounded-full bg-[#0A0A0A] dark:bg-white text-white dark:text-[#0A0A0A] font-bold hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50 shadow-xl shadow-black/10"
               >
-                {loading ? 'Creating account...' : 'Create account'}
+                {loading ? 'Creating account...' : 'Create Account'}
               </button>
             </div>
             
-            <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-4">
-              By creating an account, you agree to our Terms of Service and Privacy Policy.
-            </p>
+            <div className="flex items-start gap-3 mt-4 text-sm text-gray-500 dark:text-gray-400">
+              <ShieldCheck className="w-5 h-5 text-[#9B8924] shrink-0 mt-0.5" />
+              <p>
+                By creating an account, you agree to our{' '}
+                <Link to="/terms" className="font-bold text-[#0A0A0A] dark:text-white hover:underline">Terms of Service</Link>{' '}
+                and{' '}
+                <Link to="/privacy" className="font-bold text-[#0A0A0A] dark:text-white hover:underline">Privacy Policy</Link>. 
+                We use secure encryption to protect your data.
+              </p>
+            </div>
           </form>
         </div>
       </div>

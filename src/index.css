@@ -1,2 +1,33 @@
 @import "tailwindcss";
 @custom-variant dark (&:is(.dark *));
+
+/* React Phone Number Input overrides */
+.PhoneInput {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.PhoneInputCountry {
+  display: flex;
+  align-items: center;
+  margin-right: 0.75rem;
+}
+
+.PhoneInputCountrySelect {
+  background: transparent;
+  color: inherit;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
+.PhoneInputInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: inherit;
+  font-size: inherit;
+  min-width: 0;
+}

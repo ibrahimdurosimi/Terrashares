@@ -65,7 +65,7 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       <SocialProofToast />
       {/* 2. Hero Section */}
-      <section className="relative px-4 sm:px-6 lg:px-10 -mt-20 pt-28 pb-0 overflow-hidden bg-transparent">
+      <section className="relative px-4 sm:px-6 lg:px-10 -mt-20 pt-28 pb-0 overflow-hidden bg-white dark:bg-[#0a0a0a]">
         <div className="flex flex-col items-center text-center relative z-10">
           <h1 className="text-5xl md:text-7xl font-black leading-[1.1] mb-8 max-w-4xl tracking-tight text-[#0A0A0A] dark:text-white">
             Invest in <AnimatedHeroText /><br/>build your <span className="text-[#9B8924] italic" style={{ fontFamily: 'Georgia, serif' }}>future.</span>
