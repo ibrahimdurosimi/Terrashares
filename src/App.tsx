@@ -5,6 +5,7 @@
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './components/ThemeProvider';
+import ScrollToTop from './components/ScrollToTop';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import Home from './pages/Home';
@@ -31,6 +32,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <Router>
+        <ScrollToTop />
       <div className="min-h-screen flex flex-col font-sans text-[#0A0A0A] dark:text-white bg-white dark:bg-[#0a0a0a] transition-colors">
         <Navbar />
         <main className="flex-grow pt-20">
