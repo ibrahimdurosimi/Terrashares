@@ -65,13 +65,13 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       <SocialProofToast />
       {/* 2. Hero Section */}
-      <section className="relative px-4 sm:px-6 lg:px-10 -mt-20 pt-28 pb-0 overflow-hidden bg-gradient-to-b from-[#F7D0BC] to-white dark:from-[#3a2012] dark:to-[#0a0a0a] dark:from-[#3a2012] dark:to-[#0a0a0a]">
+      <section className="relative px-4 sm:px-6 lg:px-10 -mt-20 pt-28 pb-0 overflow-hidden bg-transparent">
         <div className="flex flex-col items-center text-center relative z-10">
           <h1 className="text-5xl md:text-7xl font-black leading-[1.1] mb-8 max-w-4xl tracking-tight text-[#0A0A0A] dark:text-white">
             Invest in <AnimatedHeroText /><br/>build your <span className="text-[#9B8924] italic" style={{ fontFamily: 'Georgia, serif' }}>future.</span>
           </h1>
           
-          <p className="text-lg md:text-xl text-[#0A0A0A]/60 dark:text-white/60 mb-12 max-w-2xl leading-relaxed">
+          <p className="text-[20px] leading-[30px] font-sans text-center font-normal text-[#1b0404] no-underline not-italic w-[650px] max-w-full mb-12">
             Fractional real estate investment platform. Secure, transparent, and built for everyone to grow their wealth through high-yield assets.
           </p>
           
@@ -155,11 +155,11 @@ export default function Home() {
         </div>
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center relative z-10">
           <div>
-            <p className="text-[#9B8924] text-xs md:text-sm font-bold tracking-[0.2em] uppercase mb-4">Project Returns</p>
+            <p className="text-[#9B8924] font-bold text-[16px] leading-[18px] tracking-[0.2em] uppercase mb-4">Project Returns</p>
             <h2 className="text-4xl md:text-5xl text-[#0A0A0A] dark:text-white mb-6 leading-[1.1]" style={{ fontFamily: 'Georgia, serif' }}>
               See how your money grows
             </h2>
-            <p className="text-lg text-[#0A0A0A]/60 dark:text-white/60 mb-8 leading-relaxed">
+            <p className="text-[20px] font-sans leading-[26.25px] text-[#0A0A0A]/60 dark:text-white/60 mb-8">
               Real estate offers some of the most stable, high-yield returns. Use our demo calculator to project potential earnings over time based on historical performance.
             </p>
             <motion.div animate={{ y: [0, 10, 0] }} transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }} className="w-16 h-16 bg-[#F7D0BC]/20 rounded-full flex items-center justify-center">
