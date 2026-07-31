@@ -37,6 +37,7 @@ export default function AdminLayout() {
     { name: 'Properties', path: '/admin/properties' },
     { name: 'Leads', path: '/admin/leads' },
     { name: 'Investments', path: '/admin/investments' },
+    { name: 'Notifications', path: '/admin/notifications' },
     { name: 'FAQs', path: '/admin/faqs' },
   ];
 

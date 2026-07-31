@@ -22,6 +22,7 @@ import AdminLayout from './pages/admin/AdminLayout';
 import AdminProperties from './pages/admin/AdminProperties';
 import AdminLeads from './pages/admin/AdminLeads';
 import AdminInvestments from './pages/admin/AdminInvestments';
+import AdminNotifications from './pages/admin/AdminNotifications';
 import AdminFAQs from './pages/admin/AdminFAQs';
 
 export default function App() {
@@ -49,6 +50,7 @@ export default function App() {
               <Route path="properties" element={<AdminProperties />} />
               <Route path="leads" element={<AdminLeads />} />
               <Route path="investments" element={<AdminInvestments />} />
+              <Route path="notifications" element={<AdminNotifications />} />
               <Route path="faqs" element={<AdminFAQs />} />
             </Route>
           </Routes>

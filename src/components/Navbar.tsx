@@ -4,6 +4,7 @@ import { useTheme } from './ThemeProvider';
 import { cn } from '../lib/utils';
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { NotificationsDropdown } from './NotificationsDropdown';
 
 export function Navbar() {
   const [session, setSession] = useState<any>(null);
@@ -81,12 +82,15 @@ export function Navbar() {
             </button>
 
             {session ? (
-              <Link
-                to="/dashboard"
-                className="inline-flex h-10 items-center justify-center rounded-full bg-[#0A0A0A] dark:bg-white px-6 text-sm font-semibold text-white dark:text-[#0A0A0A] hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
-              >
-                Dashboard
-              </Link>
+              <div className="flex items-center gap-4">
+                <NotificationsDropdown userId={session.user.id} />
+                <Link
+                  to="/dashboard"
+                  className="inline-flex h-10 items-center justify-center rounded-full bg-[#0A0A0A] dark:bg-white px-6 text-sm font-semibold text-white dark:text-[#0A0A0A] hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
+                >
+                  Dashboard
+                </Link>
+              </div>
             ) : (
               <>
                 <Link
