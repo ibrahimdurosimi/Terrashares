@@ -33,7 +33,7 @@ export default function App() {
     <ThemeProvider>
       <Router>
         <ScrollToTop />
-      <div className="min-h-screen flex flex-col font-sans text-[#0A0A0A] dark:text-white bg-white dark:bg-[#0a0a0a] transition-colors">
+      <div className="min-h-screen flex flex-col font-sans text-[#171717] dark:text-white bg-white dark:bg-[#171717] transition-colors">
         <Navbar />
         <main className="flex-grow pt-20">
           <Routes>

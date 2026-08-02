@@ -43,8 +43,8 @@ export default function AdminLayout() {
 
   return (
     <div className="flex flex-col md:flex-row pb-24">
-      <div className="w-full md:w-64 bg-[#0A0A0A] text-white p-6 shrink-0 md:min-h-[calc(100vh-80px)] rounded-r-3xl my-8 md:my-0 shadow-xl border border-black/5">
-        <h2 className="text-xl font-bold mb-8 text-[#9B8924]">Admin Panel</h2>
+      <div className="w-full md:w-64 bg-[#171717] text-white p-6 shrink-0 md:min-h-[calc(100vh-80px)] rounded-r-3xl my-8 md:my-0 shadow-xl border border-black/5">
+        <h2 className="text-xl font-bold mb-8 text-[#9ABA1B]">Admin Panel</h2>
         <nav className="space-y-2">
           {links.map(link => {
             const active = location.pathname.startsWith(link.path);
@@ -53,7 +53,7 @@ export default function AdminLayout() {
                 key={link.path}
                 to={link.path}
                 className={`block px-4 py-3 rounded-xl transition-colors ${
-                  active ? 'bg-[#9B8924] text-white font-bold' : 'text-white/60 hover:text-white hover:bg-white/10'
+                  active ? 'bg-[#9ABA1B] text-white font-bold' : 'text-white/60 hover:text-white hover:bg-white/10'
                 }`}
               >
                 {link.name}

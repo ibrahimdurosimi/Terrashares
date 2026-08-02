@@ -1,3 +1,4 @@
+import React from 'react';
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
@@ -5,17 +6,33 @@ import { Database } from '../types/database';
 import { ArrowLeft, MapPin, X, MessageCircle, Mail, BookmarkPlus } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 import { motion, AnimatePresence } from 'motion/react';
+import { SuccessModal } from '../components/SuccessModal';
+import { ImageGallery } from '../components/ImageGallery';
 import { FAQAccordion } from '../components/FAQAccordion';
+import { PropertyROICalculator } from '../components/PropertyROICalculator';
 
 type Property = Database['public']['Tables']['properties']['Row'];
 type Valuation = Database['public']['Tables']['property_valuations']['Row'];
 
 export default function PropertyDetail() {
+
+  const handleInquirySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmittingInquiry(true);
+    setTimeout(() => {
+      setIsSubmittingInquiry(false);
+      setIsInvestModalOpen(false);
+      setInquirySubmitted(true);
+    }, 1500);
+  };
+
   const { slug } = useParams<{ slug: string }>();
   const [property, setProperty] = useState<Property | null>(null);
   const [valuations, setValuations] = useState<Valuation[]>([]);
   const [loading, setLoading] = useState(true);
   const [isInvestModalOpen, setIsInvestModalOpen] = useState(false);
+  const [inquirySubmitted, setInquirySubmitted] = useState(false);
+  const [isSubmittingInquiry, setIsSubmittingInquiry] = useState(false);
   const [isPortfolioModalOpen, setIsPortfolioModalOpen] = useState(false);
   const [portfolioStatus, setPortfolioStatus] = useState<'idle'|'success'>('idle');
 
@@ -51,18 +68,18 @@ export default function PropertyDetail() {
 
   if (loading) {
     return (
-      <div className="pt-32 pb-24 min-h-screen flex items-center justify-center bg-[#FAF8F5] dark:bg-[#111]">
-        <div className="w-12 h-12 border-4 border-[#0A0A0A]/10 dark:border-white/10 border-t-[#9B8924] rounded-full animate-spin"></div>
+      <div className="pt-32 pb-24 min-h-screen flex items-center justify-center bg-[#F5F8E8] dark:bg-[#111]">
+        <div className="w-12 h-12 border-4 border-[#171717]/10 dark:border-white/10 border-t-[#9ABA1B] rounded-full animate-spin"></div>
       </div>
     );
   }
 
   if (!property) {
     return (
-      <div className="pt-32 pb-24 min-h-screen flex items-center justify-center bg-[#FAF8F5] dark:bg-[#111]">
+      <div className="pt-32 pb-24 min-h-screen flex items-center justify-center bg-[#F5F8E8] dark:bg-[#111]">
         <div className="text-center">
           <h2 className="text-2xl font-bold mb-4">Property not found</h2>
-          <Link to="/properties" className="text-[#9B8924] hover:underline">Back to properties</Link>
+          <Link to="/properties" className="text-[#9ABA1B] hover:underline">Back to properties</Link>
         </div>
       </div>
     );
@@ -120,31 +137,47 @@ export default function PropertyDetail() {
         { name: 'Current', value: property.min_investment * (1 + property.returns_percent / 100) }
       ];
 
+  const propertyFaqs = [
+    {
+      question: `What is the minimum investment for ${property.title}?`,
+      answer: `The minimum investment for this property is ₦${property.min_investment.toLocaleString()}.`
+    },
+    {
+      question: `How does rental income work for this property?`,
+      answer: `This property offers a projected return of ${property.returns_percent}% over a duration of ${property.duration_months} months. Returns are paid out ${getPayoutLabel(property.payout_style).toLowerCase()}.`
+    },
+    {
+      question: `Can I withdraw my investment early?`,
+      answer: `Typically, investments are locked in for the full ${property.duration_months}-month duration to ensure the projected returns and property stability.`
+    },
+    {
+      question: `What type of property is this?`,
+      answer: `This is a ${getCategoryLabel(property.category).toLowerCase()} property located in ${property.location}.`
+    },
+    {
+      question: `How is the progress tracked?`,
+      answer: `The funding progress is currently at ${progressPercent}%. Once it reaches 100%, the investment opportunity will be closed.`
+    }
+  ];
+
   return (
-    <div className="pt-24 pb-24 min-h-screen bg-white dark:bg-[#0a0a0a]">
+    <div className="pt-24 pb-24 min-h-screen bg-white dark:bg-[#171717]">
       <div className="container mx-auto px-4 sm:px-6 lg:px-10 max-w-4xl">
         
-        <Link to="/properties" className="inline-flex items-center text-[#0A0A0A]/60 dark:text-white/60 hover:text-[#0A0A0A] dark:text-white font-medium mb-6 transition-colors">
+        <Link to="/properties" className="inline-flex items-center text-[#171717]/60 dark:text-white/60 hover:text-[#171717] dark:text-white font-medium mb-6 transition-colors">
           <ArrowLeft className="w-4 h-4 mr-2" /> Back to properties
         </Link>
 
         {/* 1. Main Image */}
-        <div className="w-full aspect-[16/9] md:aspect-[21/9] bg-gray-100 dark:bg-gray-800 rounded-3xl overflow-hidden relative mb-8 shadow-sm">
-          {property.image_urls && property.image_urls.length > 0 ? (
-            <img 
-              src={property.image_urls[0]} 
-              alt={property.title}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full bg-gray-200 dark:bg-gray-700"></div>
-          )}
-          
-          {/* Closed Badge on Image */}
-          <div className="absolute bottom-4 right-4 bg-white dark:bg-[#0a0a0a] px-6 py-2 rounded-full text-sm font-bold text-gray-700 shadow-md">
-            {property.status === 'closed' ? 'Closed' : 'Active'}
-          </div>
-        </div>
+        <ImageGallery 
+          images={property.image_urls || []} 
+          title={property.title}
+          badge={
+            <div className="bg-white dark:bg-[#171717] px-6 py-2 rounded-full text-sm font-bold text-[#171717] dark:text-white shadow-md">
+              {property.status === 'closed' ? 'Closed' : 'Active'}
+            </div>
+          }
+        />
 
         {/* 2. Header Info */}
         <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-8 gap-4">
@@ -197,7 +230,7 @@ export default function PropertyDetail() {
           </div>
           <div className="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded-full overflow-hidden">
             <div 
-              className="bg-[#BFA15F] h-full transition-all duration-1000" 
+              className="bg-[#9ABA1B] h-full transition-all duration-1000" 
               style={{ width: `${progressPercent}%` }}
             ></div>
           </div>
@@ -236,10 +269,19 @@ export default function PropertyDetail() {
           </div>
         </div>
 
+        {/* 6.5. ROI Calculator */}
+        <div className="mb-12">
+          <PropertyROICalculator 
+            minInvestment={property.min_investment}
+            returnsPercent={property.returns_percent}
+            durationMonths={property.duration_months}
+          />
+        </div>
+
         {/* 7. Property Value Over Time */}
         <div>
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">Property value over time</h2>
-          <div className="h-[300px] w-full bg-white dark:bg-[#0a0a0a] rounded-2xl border border-gray-100 dark:border-white/10 p-4 shadow-sm">
+          <div className="h-[300px] w-full bg-white dark:bg-[#171717] rounded-2xl border border-gray-100 dark:border-white/10 p-4 shadow-sm">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <XAxis 
@@ -263,10 +305,10 @@ export default function PropertyDetail() {
                 <Line 
                   type="monotone" 
                   dataKey="value" 
-                  stroke="#9B8924" 
+                  stroke="#9ABA1B" 
                   strokeWidth={3}
-                  dot={{ r: 4, fill: '#9B8924', strokeWidth: 0 }}
-                  activeDot={{ r: 6, fill: '#9B8924', stroke: '#fff', strokeWidth: 2 }}
+                  dot={{ r: 4, fill: '#9ABA1B', strokeWidth: 0 }}
+                  activeDot={{ r: 6, fill: '#9ABA1B', stroke: '#fff', strokeWidth: 2 }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -276,7 +318,7 @@ export default function PropertyDetail() {
         {/* 8. FAQs */}
         <div className="mt-16">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Frequently Asked Questions</h2>
-          <FAQAccordion />
+          <FAQAccordion faqs={propertyFaqs} />
         </div>
       </div>
 
@@ -295,7 +337,7 @@ export default function PropertyDetail() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md bg-white dark:bg-[#0a0a0a] rounded-3xl shadow-xl overflow-hidden"
+              className="w-full max-w-md bg-white dark:bg-[#171717] rounded-3xl shadow-xl overflow-hidden"
             >
               <div className="flex justify-between items-center p-6 border-b border-black/5">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">Invest in {property.title}</h3>
@@ -310,7 +352,7 @@ export default function PropertyDetail() {
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Choose how you'd like to get in touch with our investment managers to proceed with your investment.</p>
                 
                 <a 
-                  href={`https://wa.me/2348000000000?text=${encodeURIComponent(`Hello! I am interested in investing in ${property.title} located at ${property.location}. The minimum investment is ₦${property.min_investment.toLocaleString()}. Please let me know how to proceed.`)}`}
+                  href={`https://wa.me/2348174452207?text=${encodeURIComponent(`Hello! I am interested in investing in ${property.title} located at ${property.location}. The minimum investment is ₦${property.min_investment.toLocaleString()}. Please let me know how to proceed.`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center w-full p-4 rounded-2xl bg-[#25D366]/10 border border-[#25D366]/20 hover:bg-[#25D366]/20 transition-colors"
@@ -324,18 +366,24 @@ export default function PropertyDetail() {
                   </div>
                 </a>
 
-                <a 
-                  href={`mailto:invest@yourcompany.com?subject=${encodeURIComponent(`Investment Inquiry: ${property.title}`)}&body=${encodeURIComponent(`Hello,\n\nI am interested in investing in ${property.title} located at ${property.location}.\n\nThe minimum investment is ₦${property.min_investment.toLocaleString()}.\n\nPlease provide me with the next steps to proceed with this investment.\n\nThank you.`)}`}
-                  className="flex items-center w-full p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:bg-gray-800 transition-colors"
-                >
-                  <div className="w-12 h-12 rounded-full bg-[#0A0A0A] flex items-center justify-center mr-4 shrink-0 shadow-sm shadow-black/10">
-                    <Mail className="w-6 h-6 text-white" />
+                
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                    <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
                   </div>
-                  <div>
-                    <h4 className="font-bold text-[#0A0A0A] dark:text-white mb-0.5">Send an Email</h4>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Detailed correspondence</p>
+                  <div className="relative flex justify-center">
+                    <span className="px-2 bg-white dark:bg-[#171717] text-xs text-gray-500">OR DIRECT INQUIRY</span>
                   </div>
-                </a>
+                </div>
+                
+                <form onSubmit={handleInquirySubmit} className="space-y-4">
+                  <input type="text" placeholder="Your Name" required className="w-full h-12 px-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-black/5 dark:border-white/10 focus:ring-2 focus:ring-[#9ABA1B] focus:border-transparent transition-colors text-[#171717] dark:text-white" />
+                  <input type="email" placeholder="Your Email" required className="w-full h-12 px-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-black/5 dark:border-white/10 focus:ring-2 focus:ring-[#9ABA1B] focus:border-transparent transition-colors text-[#171717] dark:text-white" />
+                  <button type="submit" disabled={isSubmittingInquiry} className="w-full h-12 bg-[#171717] dark:bg-white text-white dark:text-[#171717] rounded-xl font-bold hover:bg-gray-800 transition-colors flex items-center justify-center">
+                    {isSubmittingInquiry ? 'Sending...' : 'Submit Inquiry'}
+                  </button>
+                </form>
+
               </div>
             </motion.div>
           </motion.div>
@@ -357,7 +405,7 @@ export default function PropertyDetail() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md bg-white dark:bg-[#0a0a0a] rounded-3xl shadow-xl overflow-hidden"
+              className="w-full max-w-md bg-white dark:bg-[#171717] rounded-3xl shadow-xl overflow-hidden"
             >
               <div className="flex justify-between items-center p-6 border-b border-black/5">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">Add to Portfolio</h3>
@@ -389,11 +437,11 @@ export default function PropertyDetail() {
 
                     <button 
                       onClick={() => handleAddToPortfolio('offline')}
-                      className="flex items-center text-left w-full p-4 rounded-2xl bg-[#9B8924]/10 border border-[#9B8924]/20 hover:bg-[#9B8924]/20 transition-colors"
+                      className="flex items-center text-left w-full p-4 rounded-2xl bg-[#9ABA1B]/10 border border-[#9ABA1B]/20 hover:bg-[#9ABA1B]/20 transition-colors"
                     >
                       <div>
-                        <h4 className="font-bold text-[#9B8924] mb-0.5">Invested Offline</h4>
-                        <p className="text-xs text-[#9B8924]/80 font-medium">I have already invested in this property offline</p>
+                        <h4 className="font-bold text-[#9ABA1B] mb-0.5">Invested Offline</h4>
+                        <p className="text-xs text-[#9ABA1B]/80 font-medium">I have already invested in this property offline</p>
                       </div>
                     </button>
                   </>
@@ -403,6 +451,21 @@ export default function PropertyDetail() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <SuccessModal
+        isOpen={inquirySubmitted}
+        onClose={() => setInquirySubmitted(false)}
+        title="Inquiry Sent!"
+        message={`Thank you for your interest in ${property.title}. Our investment team will contact you shortly with the next steps.`}
+        actionButton={
+          <button
+            onClick={() => setInquirySubmitted(false)}
+            className="w-full h-14 flex items-center justify-center rounded-full bg-[#171717] dark:bg-white text-white dark:text-[#171717] font-bold hover:bg-gray-800 transition-colors shadow-xl"
+          >
+            Done
+          </button>
+        }
+      />
     </div>
   );
 }

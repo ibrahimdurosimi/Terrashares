@@ -97,8 +97,8 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-24 min-h-screen bg-[#FAF8F5]">
-        <div className="w-12 h-12 border-4 border-[#0A0A0A]/10 border-t-[#9B8924] rounded-full animate-spin"></div>
+      <div className="flex items-center justify-center py-24 min-h-screen bg-[#F5F8E8]">
+        <div className="w-12 h-12 border-4 border-[#171717]/10 border-t-[#9ABA1B] rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -123,32 +123,32 @@ export default function Dashboard() {
   }, 0);
 
   return (
-    <div className="pt-32 pb-24 min-h-screen bg-[#FAF8F5]">
+    <div className="pt-32 pb-24 min-h-screen bg-[#F5F8E8]">
       <div className="container mx-auto px-4 sm:px-6 lg:px-10 max-w-6xl">
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6">
           <div>
-            <h1 className="text-3xl font-bold text-[#0A0A0A] mb-2 font-serif">My Portfolio</h1>
-            <p className="text-[#0A0A0A]/60 font-medium">Welcome back, {user?.user_metadata?.full_name || 'Investor'}</p>
+            <h1 className="text-3xl font-bold text-[#171717] mb-2 font-serif">My Portfolio</h1>
+            <p className="text-[#171717]/60 font-medium">Welcome back, {user?.user_metadata?.full_name || 'Investor'}</p>
           </div>
           <div className="flex items-center gap-4">
             {isAdmin && (
               <Link 
                 to="/admin"
-                className="flex items-center px-6 py-3 rounded-full bg-[#0A0A0A] text-white font-bold hover:bg-[#0A0A0A]/80 transition-colors shadow-sm"
+                className="flex items-center px-6 py-3 rounded-full bg-[#171717] text-white font-bold hover:bg-[#171717]/80 transition-colors shadow-sm"
               >
                 Admin Panel
               </Link>
             )}
             <Link 
               to="/dashboard/profile"
-              className="p-3 rounded-full bg-white border border-black/5 text-[#0A0A0A] hover:bg-gray-50 transition-colors shadow-sm"
+              className="p-3 rounded-full bg-white border border-black/5 text-[#171717] hover:bg-gray-50 transition-colors shadow-sm"
               title="Settings"
             >
               <Settings className="w-5 h-5" />
             </Link>
             <button 
               onClick={handleLogout}
-              className="flex items-center px-6 py-3 rounded-full bg-white border border-black/5 text-[#0A0A0A] font-bold hover:bg-gray-50 transition-colors shadow-sm"
+              className="flex items-center px-6 py-3 rounded-full bg-white border border-black/5 text-[#171717] font-bold hover:bg-gray-50 transition-colors shadow-sm"
             >
               <LogOut className="w-4 h-4 mr-2" /> Logout
             </button>
@@ -158,26 +158,26 @@ export default function Dashboard() {
         {/* Portfolio Summary */}
         <div className="grid md:grid-cols-3 gap-6 mb-12">
           <div className="bg-white p-8 rounded-[2rem] border border-black/5 shadow-sm">
-            <div className="flex items-center text-[#0A0A0A]/50 mb-4">
+            <div className="flex items-center text-[#171717]/50 mb-4">
               <Wallet className="w-5 h-5 mr-2" />
               <span className="font-bold uppercase tracking-wider text-sm">Total Invested</span>
             </div>
-            <p className="text-4xl font-black text-[#0A0A0A]">₦{totalInvested.toLocaleString()}</p>
+            <p className="text-4xl font-black text-[#171717]">₦{totalInvested.toLocaleString()}</p>
           </div>
           <div className="bg-white p-8 rounded-[2rem] border border-black/5 shadow-sm">
-            <div className="flex items-center text-[#0A0A0A]/50 mb-4">
+            <div className="flex items-center text-[#171717]/50 mb-4">
               <TrendingUp className="w-5 h-5 mr-2" />
               <span className="font-bold uppercase tracking-wider text-sm">Current Value</span>
             </div>
             <p className="text-4xl font-black text-[#449175]">₦{totalValue.toLocaleString(undefined, {maximumFractionDigits: 0})}</p>
             <p className="text-sm text-[#449175] font-medium mt-2">+₦{(totalValue - totalInvested).toLocaleString(undefined, {maximumFractionDigits: 0})} Appreciation</p>
           </div>
-          <div className="bg-[#0A0A0A] text-white p-8 rounded-[2rem] border border-black/5 shadow-sm">
+          <div className="bg-[#171717] text-white p-8 rounded-[2rem] border border-black/5 shadow-sm">
             <div className="flex items-center text-white/50 mb-4">
               <Building2 className="w-5 h-5 mr-2" />
               <span className="font-bold uppercase tracking-wider text-sm">Active Properties</span>
             </div>
-            <p className="text-4xl font-black text-[#BFA15F]">
+            <p className="text-4xl font-black text-[#9ABA1B]">
               {activeInvestments.length}
             </p>
           </div>
@@ -186,16 +186,16 @@ export default function Dashboard() {
         {/* Investments List */}
         <div className="bg-white rounded-[2rem] border border-black/5 shadow-sm overflow-hidden">
           <div className="p-8 border-b border-black/5 flex justify-between items-center">
-            <h2 className="text-xl font-bold text-[#0A0A0A]">Your Properties & Wishlist</h2>
+            <h2 className="text-xl font-bold text-[#171717]">Your Properties & Wishlist</h2>
           </div>
           
           {investments.length === 0 ? (
             <div className="p-12 text-center">
-              <Building2 className="w-16 h-16 text-[#0A0A0A]/20 mx-auto mb-4" />
-              <p className="text-[#0A0A0A]/50 mb-6 font-medium">You haven't added any properties to your portfolio yet.</p>
+              <Building2 className="w-16 h-16 text-[#171717]/20 mx-auto mb-4" />
+              <p className="text-[#171717]/50 mb-6 font-medium">You haven't added any properties to your portfolio yet.</p>
               <Link 
                 to="/properties"
-                className="inline-flex h-14 items-center justify-center rounded-full bg-[#0A0A0A] px-8 font-bold text-white transition-colors hover:bg-gray-800"
+                className="inline-flex h-14 items-center justify-center rounded-full bg-[#171717] px-8 font-bold text-white transition-colors hover:bg-gray-800"
               >
                 Browse Properties
               </Link>
@@ -216,7 +216,7 @@ export default function Dashboard() {
                   {investments.map((inv) => (
                     <tr key={inv.id} className="hover:bg-gray-50 transition-colors">
                       <td className="p-6">
-                        <Link to={`/properties/${inv.property?.slug}`} className="font-bold hover:text-[#9B8924] transition-colors">
+                        <Link to={`/properties/${inv.property?.slug}`} className="font-bold hover:text-[#9ABA1B] transition-colors">
                           {inv.property?.title || 'Unknown Property'}
                         </Link>
                         {inv.localType === 'wishlist' && (

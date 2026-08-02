@@ -88,23 +88,23 @@ export default function Properties() {
   };
 
   return (
-    <div className="pt-32 pb-32 min-h-screen bg-[#FAF8F5] dark:bg-[#111]">
+    <div className="pt-32 pb-32 min-h-screen bg-[#F5F8E8] dark:bg-[#111]">
       <div className="container mx-auto px-4 sm:px-6 lg:px-10">
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <h1 className="text-4xl md:text-6xl font-black tracking-tight text-[#0A0A0A] dark:text-white mb-6" style={{ fontFamily: 'Georgia, serif' }}>
+          <h1 className="text-4xl md:text-6xl font-black tracking-tight text-[#171717] dark:text-white mb-6" style={{ fontFamily: 'Georgia, serif' }}>
             Available Properties
           </h1>
-          <p className="text-lg md:text-xl text-[#0A0A0A]/60 dark:text-white/60 leading-relaxed max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-[#171717]/60 dark:text-white/60 leading-relaxed max-w-2xl mx-auto">
             Browse our curated selection of vetted commercial and residential properties. Find the perfect addition to your portfolio.
           </p>
         </div>
 
         {/* Mobile Filter Toggle */}
         <div className="lg:hidden flex justify-between items-center mb-6">
-          <span className="font-bold text-[#0A0A0A] dark:text-white">{properties.length} Results</span>
+          <span className="font-bold text-[#171717] dark:text-white">{properties.length} Results</span>
           <button 
             onClick={() => setShowMobileFilters(!showMobileFilters)}
-            className="flex items-center gap-2 bg-white dark:bg-[#0a0a0a] px-4 py-2 rounded-full border border-black/10 font-medium text-sm shadow-sm"
+            className="flex items-center gap-2 bg-white dark:bg-[#171717] px-4 py-2 rounded-full border border-black/10 font-medium text-sm shadow-sm"
           >
             <Filter className="w-4 h-4" /> Filters
           </button>
@@ -114,11 +114,11 @@ export default function Properties() {
           
           {/* Sidebar / Filters */}
           <div className={`lg:w-1/4 shrink-0 ${showMobileFilters ? 'block' : 'hidden lg:block'}`}>
-            <div className="bg-white dark:bg-[#0a0a0a] p-6 rounded-3xl border border-black/5 shadow-sm sticky top-32">
+            <div className="bg-white dark:bg-[#171717] p-6 rounded-3xl border border-black/5 shadow-sm sticky top-32">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="font-bold text-lg text-[#0A0A0A] dark:text-white">Filters</h3>
+                <h3 className="font-bold text-lg text-[#171717] dark:text-white">Filters</h3>
                 {showMobileFilters && (
-                  <button onClick={() => setShowMobileFilters(false)} className="lg:hidden text-[#0A0A0A]/60 dark:text-white/60">
+                  <button onClick={() => setShowMobileFilters(false)} className="lg:hidden text-[#171717]/60 dark:text-white/60">
                     <X className="w-5 h-5" />
                   </button>
                 )}
@@ -126,22 +126,22 @@ export default function Properties() {
 
               {/* Location Search */}
               <div className="mb-8">
-                <label className="block text-sm font-medium text-[#0A0A0A]/60 dark:text-white/60 mb-3">Location</label>
+                <label className="block text-sm font-medium text-[#171717]/60 dark:text-white/60 mb-3">Location</label>
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#0A0A0A] dark:text-white/40 w-4 h-4" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#171717] dark:text-white/40 w-4 h-4" />
                   <input 
                     type="text" 
                     placeholder="Search by city, area..." 
                     value={filterLocation}
                     onChange={(e) => setFilterLocation(e.target.value)}
-                    className="w-full pl-9 pr-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#9B8924] transition-all text-sm"
+                    className="w-full pl-9 pr-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#9ABA1B] transition-all text-sm"
                   />
                 </div>
               </div>
 
               {/* Property Type */}
               <div className="mb-8">
-                <label className="block text-sm font-medium text-[#0A0A0A]/60 dark:text-white/60 mb-3">Property Type</label>
+                <label className="block text-sm font-medium text-[#171717]/60 dark:text-white/60 mb-3">Property Type</label>
                 <div className="space-y-2">
                   {categories.map((cat) => (
                     <label key={cat.id} className="flex items-center gap-3 cursor-pointer group">
@@ -154,10 +154,10 @@ export default function Properties() {
                           onChange={() => setActiveCategory(cat.id as Category)}
                           className="peer sr-only"
                         />
-                        <div className="w-5 h-5 rounded-full border border-gray-300 peer-checked:border-[#0A0A0A] peer-checked:bg-[#0A0A0A] transition-all"></div>
-                        <div className="absolute w-2 h-2 rounded-full bg-white dark:bg-[#0a0a0a] opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                        <div className="w-5 h-5 rounded-full border border-gray-300 peer-checked:border-[#171717] peer-checked:bg-[#171717] transition-all"></div>
+                        <div className="absolute w-2 h-2 rounded-full bg-white dark:bg-[#171717] opacity-0 peer-checked:opacity-100 transition-opacity"></div>
                       </div>
-                      <span className={`text-sm ${activeCategory === cat.id ? 'font-medium text-[#0A0A0A] dark:text-white' : 'text-[#0A0A0A] dark:text-white/70 group-hover:text-[#0A0A0A] dark:text-white'}`}>
+                      <span className={`text-sm ${activeCategory === cat.id ? 'font-medium text-[#171717] dark:text-white' : 'text-[#171717] dark:text-white/70 group-hover:text-[#171717] dark:text-white'}`}>
                         {cat.label}
                       </span>
                     </label>
@@ -167,27 +167,27 @@ export default function Properties() {
 
               {/* Price Range */}
               <div>
-                <label className="block text-sm font-medium text-[#0A0A0A]/60 dark:text-white/60 mb-3">Min. Investment</label>
+                <label className="block text-sm font-medium text-[#171717]/60 dark:text-white/60 mb-3">Min. Investment</label>
                 <div className="flex items-center gap-2">
                   <div className="relative flex-1">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#0A0A0A] dark:text-white/40 text-sm">₦</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#171717] dark:text-white/40 text-sm">₦</span>
                     <input 
                       type="number"
                       placeholder="Min"
                       value={minPrice}
                       onChange={(e) => setMinPrice(e.target.value)}
-                      className="w-full pl-7 pr-3 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#9B8924] text-sm"
+                      className="w-full pl-7 pr-3 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#9ABA1B] text-sm"
                     />
                   </div>
-                  <span className="text-[#0A0A0A] dark:text-white/40">-</span>
+                  <span className="text-[#171717] dark:text-white/40">-</span>
                   <div className="relative flex-1">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#0A0A0A] dark:text-white/40 text-sm">₦</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#171717] dark:text-white/40 text-sm">₦</span>
                     <input 
                       type="number"
                       placeholder="Max"
                       value={maxPrice}
                       onChange={(e) => setMaxPrice(e.target.value)}
-                      className="w-full pl-7 pr-3 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#9B8924] text-sm"
+                      className="w-full pl-7 pr-3 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#9ABA1B] text-sm"
                     />
                   </div>
                 </div>
@@ -213,7 +213,7 @@ export default function Properties() {
           {/* Grid */}
           <div className="lg:w-3/4 flex-1">
             <div className="hidden lg:flex justify-between items-center mb-6">
-              <span className="font-medium text-[#0A0A0A]/60 dark:text-white/60 text-sm">
+              <span className="font-medium text-[#171717]/60 dark:text-white/60 text-sm">
                 Showing {properties.length} {properties.length === 1 ? 'property' : 'properties'}
               </span>
             </div>
@@ -228,7 +228,7 @@ export default function Properties() {
                   className="grid md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6"
                 >
                   {[1, 2, 3, 4, 5, 6].map((i) => (
-                    <div key={i} className="animate-pulse bg-white dark:bg-[#0a0a0a] rounded-3xl h-[350px] border border-black/5 p-6">
+                    <div key={i} className="animate-pulse bg-white dark:bg-[#171717] rounded-3xl h-[350px] border border-black/5 p-6">
                       <div className="flex gap-4 mb-4">
                         <div className="w-[72px] h-[72px] bg-gray-200 dark:bg-gray-700 rounded-2xl shrink-0"></div>
                         <div className="flex flex-col justify-center gap-2 w-full">
@@ -268,11 +268,11 @@ export default function Properties() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="text-center py-24 bg-white dark:bg-[#0a0a0a] rounded-[3rem] border border-black/5 shadow-sm"
+                  className="text-center py-24 bg-white dark:bg-[#171717] rounded-[3rem] border border-black/5 shadow-sm"
                 >
-                  <Building2 className="w-16 h-16 text-[#0A0A0A]/20 dark:text-white/20 mx-auto mb-6" />
-                  <h3 className="text-2xl font-bold text-[#0A0A0A] dark:text-white mb-2" style={{ fontFamily: 'Georgia, serif' }}>No properties found</h3>
-                  <p className="text-[#0A0A0A]/60 dark:text-white/60 max-w-md mx-auto">Try adjusting your filters to find new investment opportunities.</p>
+                  <Building2 className="w-16 h-16 text-[#171717]/20 dark:text-white/20 mx-auto mb-6" />
+                  <h3 className="text-2xl font-bold text-[#171717] dark:text-white mb-2" style={{ fontFamily: 'Georgia, serif' }}>No properties found</h3>
+                  <p className="text-[#171717]/60 dark:text-white/60 max-w-md mx-auto">Try adjusting your filters to find new investment opportunities.</p>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -287,16 +287,16 @@ export default function Properties() {
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-0 left-0 right-0 bg-white dark:bg-[#0a0a0a] border-t border-gray-200 dark:border-gray-700 shadow-[0_-8px_30px_rgb(0,0,0,0.08)] z-40 p-4"
+            className="fixed bottom-0 left-0 right-0 bg-white dark:bg-[#171717] border-t border-gray-200 dark:border-gray-700 shadow-[0_-8px_30px_rgb(0,0,0,0.08)] z-40 p-4"
           >
             <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="bg-[#FAF8F5] dark:bg-[#111] p-3 rounded-xl hidden sm:block">
-                  <Scale className="w-6 h-6 text-[#9B8924]" />
+                <div className="bg-[#F5F8E8] dark:bg-[#111] p-3 rounded-xl hidden sm:block">
+                  <Scale className="w-6 h-6 text-[#9ABA1B]" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-[#0A0A0A] dark:text-white">Compare Properties</h4>
-                  <p className="text-sm text-[#0A0A0A]/60 dark:text-white/60">{compareList.length} of 3 selected</p>
+                  <h4 className="font-bold text-[#171717] dark:text-white">Compare Properties</h4>
+                  <p className="text-sm text-[#171717]/60 dark:text-white/60">{compareList.length} of 3 selected</p>
                 </div>
               </div>
               
@@ -325,7 +325,7 @@ export default function Properties() {
                   <button
                     onClick={() => setShowCompareModal(true)}
                     disabled={compareList.length < 2}
-                    className="px-6 py-2.5 bg-[#0A0A0A] dark:bg-white text-white dark:text-[#0A0A0A] rounded-xl font-bold text-sm hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                    className="px-6 py-2.5 bg-[#171717] dark:bg-white text-white dark:text-[#171717] rounded-xl font-bold text-sm hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                   >
                     Compare Now
                   </button>
@@ -344,10 +344,10 @@ export default function Properties() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white dark:bg-[#0a0a0a] rounded-3xl w-full max-w-5xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
+              className="bg-white dark:bg-[#171717] rounded-3xl w-full max-w-5xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
             >
               <div className="p-6 border-b border-gray-100 dark:border-white/10 flex justify-between items-center shrink-0">
-                <h2 className="text-2xl font-bold text-[#0A0A0A] dark:text-white" style={{ fontFamily: 'Georgia, serif' }}>Compare Properties</h2>
+                <h2 className="text-2xl font-bold text-[#171717] dark:text-white" style={{ fontFamily: 'Georgia, serif' }}>Compare Properties</h2>
                 <button onClick={() => setShowCompareModal(false)} className="p-2 hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors">
                   <X className="w-6 h-6 text-gray-500 dark:text-gray-400" />
                 </button>
@@ -364,7 +364,7 @@ export default function Properties() {
                             <div className="relative pt-2">
                               <button 
                                 onClick={() => toggleCompare(p)} 
-                                className="absolute -top-2 -right-2 p-1.5 bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-gray-700 rounded-full shadow-sm hover:text-red-500 hover:border-red-200 z-10 text-gray-400 transition-colors"
+                                className="absolute -top-2 -right-2 p-1.5 bg-white dark:bg-[#171717] border border-gray-200 dark:border-gray-700 rounded-full shadow-sm hover:text-red-500 hover:border-red-200 z-10 text-gray-400 transition-colors"
                               >
                                 <X className="w-4 h-4" />
                               </button>
@@ -377,7 +377,7 @@ export default function Properties() {
                                   </div>
                                 )}
                               </div>
-                              <h3 className="font-bold text-[#0A0A0A] dark:text-white leading-tight mb-1">{p.title}</h3>
+                              <h3 className="font-bold text-[#171717] dark:text-white leading-tight mb-1">{p.title}</h3>
                               <p className="text-xs text-gray-500 dark:text-gray-400">{p.location}</p>
                             </div>
                           </th>
@@ -387,23 +387,23 @@ export default function Properties() {
                     <tbody className="divide-y divide-gray-100">
                       <tr>
                         <td className="p-4 text-sm font-medium text-gray-500 dark:text-gray-400">Property Type</td>
-                        {compareList.map(p => <td key={p.id} className="p-4 text-sm text-[#0A0A0A] dark:text-white capitalize">{p.category.replace('_', ' ')}</td>)}
+                        {compareList.map(p => <td key={p.id} className="p-4 text-sm text-[#171717] dark:text-white capitalize">{p.category.replace('_', ' ')}</td>)}
                       </tr>
                       <tr>
                         <td className="p-4 text-sm font-medium text-gray-500 dark:text-gray-400">Min. Investment</td>
-                        {compareList.map(p => <td key={p.id} className="p-4 text-sm font-bold text-[#0A0A0A] dark:text-white">₦{p.min_investment.toLocaleString()}</td>)}
+                        {compareList.map(p => <td key={p.id} className="p-4 text-sm font-bold text-[#171717] dark:text-white">₦{p.min_investment.toLocaleString()}</td>)}
                       </tr>
                       <tr>
                         <td className="p-4 text-sm font-medium text-gray-500 dark:text-gray-400">Expected Returns</td>
-                        {compareList.map(p => <td key={p.id} className="p-4 text-sm font-bold text-[#9B8924]">{p.returns_percent}%</td>)}
+                        {compareList.map(p => <td key={p.id} className="p-4 text-sm font-bold text-[#9ABA1B]">{p.returns_percent}%</td>)}
                       </tr>
                       <tr>
                         <td className="p-4 text-sm font-medium text-gray-500 dark:text-gray-400">Duration</td>
-                        {compareList.map(p => <td key={p.id} className="p-4 text-sm text-[#0A0A0A] dark:text-white">{p.duration_months} months</td>)}
+                        {compareList.map(p => <td key={p.id} className="p-4 text-sm text-[#171717] dark:text-white">{p.duration_months} months</td>)}
                       </tr>
                       <tr>
                         <td className="p-4 text-sm font-medium text-gray-500 dark:text-gray-400">Payout Style</td>
-                        {compareList.map(p => <td key={p.id} className="p-4 text-sm text-[#0A0A0A] dark:text-white capitalize">{p.payout_style.replace('_', ' ')}</td>)}
+                        {compareList.map(p => <td key={p.id} className="p-4 text-sm text-[#171717] dark:text-white capitalize">{p.payout_style.replace('_', ' ')}</td>)}
                       </tr>
                       <tr>
                         <td className="p-4 text-sm font-medium text-gray-500 dark:text-gray-400">Status</td>

@@ -15,7 +15,7 @@ interface PropertyCardProps {
 
 export function PropertyCard({ property, onCompareToggle, isCompared }: PropertyCardProps) {
   return (
-    <div className="bg-white dark:bg-[#0a0a0a] rounded-2xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-black/[0.03] dark:border-white/5 flex flex-col h-full hover:shadow-lg transition-shadow">
+    <div className="bg-white dark:bg-[#171717] rounded-2xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-black/[0.03] dark:border-white/5 flex flex-col h-full hover:shadow-lg transition-shadow">
       {/* Header */}
       <div className="flex gap-4 mb-4 relative">
         {onCompareToggle && (
@@ -23,8 +23,8 @@ export function PropertyCard({ property, onCompareToggle, isCompared }: Property
             onClick={(e) => { e.preventDefault(); onCompareToggle(property); }}
             className={`absolute top-0 right-0 p-2 rounded-full border transition-colors ${
               isCompared 
-                ? 'bg-[#0A0A0A] border-[#0A0A0A] text-white' 
-                : 'bg-white dark:bg-[#0a0a0a] border-gray-200 dark:border-gray-700 text-gray-400 hover:border-[#0A0A0A] hover:text-[#0A0A0A] dark:text-white'
+                ? 'bg-[#171717] border-[#171717] text-white' 
+                : 'bg-white dark:bg-[#171717] border-gray-200 dark:border-gray-700 text-gray-400 hover:border-[#171717] hover:text-[#171717] dark:text-white'
             }`}
             title={isCompared ? "Remove from comparison" : "Add to comparison"}
           >
@@ -68,7 +68,7 @@ export function PropertyCard({ property, onCompareToggle, isCompared }: Property
         </div>
         <div>
           <p className="text-xs text-gray-400 mb-1">Returns</p>
-          <p className="font-bold text-[#9B8924] text-sm">{property.returns_percent}%</p>
+          <p className="font-bold text-[#9ABA1B] text-sm">{property.returns_percent}%</p>
         </div>
         <div>
           <p className="text-xs text-gray-400 mb-1">Status</p>
@@ -85,7 +85,7 @@ export function PropertyCard({ property, onCompareToggle, isCompared }: Property
       {/* Button */}
       <Link
         to={`/properties/${property.slug}`}
-        className="w-full py-3.5 bg-[#0A0A0A] dark:bg-white text-white dark:text-[#0A0A0A] rounded-xl font-bold text-sm text-center hover:bg-gray-800 transition-colors"
+        className="w-full py-3.5 bg-[#171717] dark:bg-white text-white dark:text-[#171717] rounded-xl font-bold text-sm text-center hover:bg-gray-800 transition-colors"
       >
         Invest
       </Link>

@@ -64,7 +64,7 @@ export function NotificationsDropdown({ userId }: { userId: string }) {
     <div className="relative z-50" ref={dropdownRef}>
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-[#0A0A0A] dark:text-white"
+        className="relative p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-[#171717] dark:text-white"
         aria-label="Notifications"
       >
         <Bell className="w-5 h-5" />
@@ -76,9 +76,9 @@ export function NotificationsDropdown({ userId }: { userId: string }) {
       {isOpen && (
         <div className="absolute right-0 mt-2 w-80 max-h-96 overflow-y-auto bg-white dark:bg-[#111] rounded-2xl shadow-xl border border-black/5 dark:border-white/10 z-50">
           <div className="p-4 border-b border-black/5 dark:border-white/10 flex items-center justify-between sticky top-0 bg-white/90 dark:bg-[#111]/90 backdrop-blur-md">
-            <h3 className="font-bold text-[#0A0A0A] dark:text-white">Notifications</h3>
+            <h3 className="font-bold text-[#171717] dark:text-white">Notifications</h3>
             {unreadCount > 0 && (
-              <button onClick={markAllAsRead} className="text-xs text-[#9B8924] hover:underline">
+              <button onClick={markAllAsRead} className="text-xs text-[#9ABA1B] hover:underline">
                 Mark all as read
               </button>
             )}
@@ -100,7 +100,7 @@ export function NotificationsDropdown({ userId }: { userId: string }) {
                       <Bell className="w-5 h-5" />
                     </div>
                     <div>
-                      <h4 className={`text-sm ${notification.is_read ? 'text-[#0A0A0A]/80 dark:text-white/80' : 'font-bold text-[#0A0A0A] dark:text-white'}`}>
+                      <h4 className={`text-sm ${notification.is_read ? 'text-[#171717]/80 dark:text-white/80' : 'font-bold text-[#171717] dark:text-white'}`}>
                         {notification.title}
                       </h4>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">

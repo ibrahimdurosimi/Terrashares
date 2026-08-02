@@ -2,7 +2,12 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronRight } from 'lucide-react';
 
-const faqs = [
+export interface FAQItem {
+  question: string;
+  answer: string;
+}
+
+const defaultFaqs: FAQItem[] = [
   {
     question: "I am Nigerian but I don't reside in Nigeria; Can I still invest through Terrashare?",
     answer: "Yes, you can. Terrashare is open to both resident and non-resident Nigerians looking to invest in local real estate."
@@ -37,7 +42,11 @@ const faqs = [
   }
 ];
 
-export function FAQAccordion() {
+interface FAQAccordionProps {
+  faqs?: FAQItem[];
+}
+
+export function FAQAccordion({ faqs = defaultFaqs }: FAQAccordionProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
@@ -45,7 +54,7 @@ export function FAQAccordion() {
       {faqs.map((faq, index) => (
         <div 
           key={index} 
-          className="bg-white dark:bg-[#0a0a0a] rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm overflow-hidden"
+          className="bg-white dark:bg-[#171717] rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm overflow-hidden"
         >
           <button
             onClick={() => setOpenIndex(openIndex === index ? null : index)}

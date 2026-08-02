@@ -39,9 +39,9 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex bg-white dark:bg-[#0a0a0a]">
+    <div className="min-h-screen flex bg-white dark:bg-[#171717]">
       {/* Left Side - Marketing & Info */}
-      <div className="hidden lg:flex lg:w-1/2 bg-[#F7D0BC] dark:bg-[#1f120a] relative overflow-hidden items-center justify-center p-12">
+      <div className="hidden lg:flex lg:w-1/2 bg-[#9ABA1B] dark:bg-[#141c0d] relative overflow-hidden items-center justify-center p-12">
         <div className="absolute inset-0 z-0">
           <img 
             src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80" 
@@ -50,9 +50,9 @@ export default function Login() {
           />
         </div>
         
-        <div className="relative z-10 max-w-lg text-[#0A0A0A] dark:text-white">
+        <div className="relative z-10 max-w-lg text-[#171717] dark:text-white">
           <div className="mb-8">
-            <Building2 className="w-12 h-12 text-[#9B8924]" />
+            <Building2 className="w-12 h-12 text-[#9ABA1B]" />
           </div>
           <h1 className="text-5xl font-black mb-6 leading-tight" style={{ fontFamily: 'Georgia, serif' }}>
             Welcome back to Terrashare.
@@ -63,11 +63,11 @@ export default function Login() {
           
           <div className="grid grid-cols-2 gap-8">
             <div>
-              <div className="text-4xl font-black mb-2 text-[#9B8924]">15k+</div>
+              <div className="text-4xl font-black mb-2 text-[#9ABA1B]">15k+</div>
               <div className="font-medium opacity-80 uppercase tracking-wider text-sm">Active Investors</div>
             </div>
             <div>
-              <div className="text-4xl font-black mb-2 text-[#9B8924]">₦20B+</div>
+              <div className="text-4xl font-black mb-2 text-[#9ABA1B]">₦20B+</div>
               <div className="font-medium opacity-80 uppercase tracking-wider text-sm">Property Value</div>
             </div>
           </div>
@@ -75,17 +75,17 @@ export default function Login() {
       </div>
 
       {/* Right Side - Form */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center px-4 sm:px-12 lg:px-24 py-12 bg-white dark:bg-[#0a0a0a]">
+      <div className="w-full lg:w-1/2 flex flex-col justify-center px-4 sm:px-12 lg:px-24 py-12 bg-white dark:bg-[#171717]">
         <div className="w-full max-w-md mx-auto">
           <div className="lg:hidden mb-8 flex justify-center">
-            <Building2 className="w-12 h-12 text-[#9B8924]" />
+            <Building2 className="w-12 h-12 text-[#9ABA1B]" />
           </div>
-          <h2 className="text-3xl lg:text-4xl font-black tracking-tight text-[#0A0A0A] dark:text-white mb-2" style={{ fontFamily: 'Georgia, serif' }}>
+          <h2 className="text-3xl lg:text-4xl font-black tracking-tight text-[#171717] dark:text-white mb-2" style={{ fontFamily: 'Georgia, serif' }}>
             Log in to your account
           </h2>
-          <p className="text-[#0A0A0A]/60 dark:text-white/60 mb-10">
+          <p className="text-[#171717]/60 dark:text-white/60 mb-10">
             Don't have an account?{' '}
-            <Link to="/signup" className="font-bold text-[#9B8924] hover:underline">
+            <Link to="/signup" className="font-bold text-[#9ABA1B] hover:underline">
               Create an account
             </Link>
           </p>
@@ -99,28 +99,28 @@ export default function Login() {
             )}
             
             <div>
-              <label className="block text-sm font-bold text-[#0A0A0A] dark:text-white/80 uppercase tracking-wider mb-2">Email Address</label>
+              <label className="block text-sm font-bold text-[#171717] dark:text-white/80 uppercase tracking-wider mb-2">Email Address</label>
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full h-14 px-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-black/5 dark:border-white/10 focus:ring-2 focus:ring-[#9B8924] focus:border-transparent transition-colors text-[#0A0A0A] dark:text-white"
+                className="w-full h-14 px-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-black/5 dark:border-white/10 focus:ring-2 focus:ring-[#9ABA1B] focus:border-transparent transition-colors text-[#171717] dark:text-white"
                 placeholder="john@example.com"
               />
             </div>
             
             <div>
               <div className="flex justify-between items-center mb-2">
-                <label className="block text-sm font-bold text-[#0A0A0A] dark:text-white/80 uppercase tracking-wider">Password</label>
-                <Link to="/forgot-password" className="text-sm font-bold text-[#9B8924] hover:underline">Forgot password?</Link>
+                <label className="block text-sm font-bold text-[#171717] dark:text-white/80 uppercase tracking-wider">Password</label>
+                <Link to="/forgot-password" className="text-sm font-bold text-[#9ABA1B] hover:underline">Forgot password?</Link>
               </div>
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full h-14 px-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-black/5 dark:border-white/10 focus:ring-2 focus:ring-[#9B8924] focus:border-transparent transition-colors text-[#0A0A0A] dark:text-white"
+                className="w-full h-14 px-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-black/5 dark:border-white/10 focus:ring-2 focus:ring-[#9ABA1B] focus:border-transparent transition-colors text-[#171717] dark:text-white"
                 placeholder="••••••••"
               />
             </div>
@@ -129,7 +129,7 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full h-14 flex justify-center items-center rounded-full bg-[#0A0A0A] dark:bg-white text-white dark:text-[#0A0A0A] font-bold hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50 shadow-xl shadow-black/10"
+                className="w-full h-14 flex justify-center items-center rounded-full bg-[#171717] dark:bg-white text-white dark:text-[#171717] font-bold hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50 shadow-xl shadow-black/10"
               >
                 {loading ? 'Logging in...' : 'Log In'}
               </button>

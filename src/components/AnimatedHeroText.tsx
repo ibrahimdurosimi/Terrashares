@@ -22,7 +22,7 @@ export function AnimatedHeroText() {
           animate={{ y: 0, opacity: 1, position: 'relative' }}
           exit={{ y: -20, opacity: 0, position: 'absolute' }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="text-[#9B8924] italic inline-block w-full"
+          className="text-[#9ABA1B] italic inline-block w-full"
           style={{ fontFamily: 'Georgia, serif' }}
         >
           {words[index]},

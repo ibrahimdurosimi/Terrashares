@@ -83,13 +83,13 @@ export default function AdminNotifications() {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="flex items-center gap-3 mb-8">
-        <Bell className="w-8 h-8 text-[#9B8924]" />
-        <h1 className="text-3xl font-black text-[#0A0A0A] dark:text-white" style={{ fontFamily: 'Georgia, serif' }}>
+        <Bell className="w-8 h-8 text-[#9ABA1B]" />
+        <h1 className="text-3xl font-black text-[#171717] dark:text-white" style={{ fontFamily: 'Georgia, serif' }}>
           Send Notifications
         </h1>
       </div>
 
-      <div className="bg-white dark:bg-[#0a0a0a] rounded-3xl p-8 shadow-sm border border-black/5 dark:border-white/5">
+      <div className="bg-white dark:bg-[#171717] rounded-3xl p-8 shadow-sm border border-black/5 dark:border-white/5">
         {success && (
           <div className="mb-8 p-4 bg-green-50 text-green-700 rounded-xl flex items-center gap-2">
             <CheckCircle2 className="w-5 h-5" />
@@ -172,7 +172,7 @@ export default function AdminNotifications() {
           <button
             type="submit"
             disabled={sending}
-            className="h-12 px-8 rounded-full bg-[#0A0A0A] dark:bg-white text-white dark:text-[#0A0A0A] font-bold flex items-center gap-2 hover:bg-gray-800 transition-colors disabled:opacity-50"
+            className="h-12 px-8 rounded-full bg-[#171717] dark:bg-white text-white dark:text-[#171717] font-bold flex items-center gap-2 hover:bg-gray-800 transition-colors disabled:opacity-50"
           >
             {sending ? 'Sending...' : 'Send Notification'}
             <Send className="w-4 h-4" />
