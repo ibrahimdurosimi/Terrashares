@@ -65,7 +65,7 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       <SocialProofToast />
       {/* 2. Hero Section */}
-      <section className="relative px-4 sm:px-6 lg:px-10 -mt-20 pt-28 pb-0 overflow-hidden bg-gradient-to-b from-[#9ABA1B]/20 via-[#9ABA1B]/5 to-white dark:from-[#9ABA1B]/20 dark:via-[#9ABA1B]/5 dark:to-[#171717]">
+      <section className="relative px-4 sm:px-6 lg:px-10 -mt-20 pt-28 pb-0 overflow-hidden bg-white dark:bg-[#171717]">
         {/* Large Brand Watermark */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-5xl h-full flex items-center justify-center pointer-events-none opacity-[0.03] dark:opacity-[0.05] z-0">
           <Building2 className="w-full h-full text-[#9ABA1B]" />
@@ -100,7 +100,6 @@ export default function Home() {
         {/* Realistic Lagos skyline */}
         <div className="absolute bottom-0 left-0 right-0 w-full h-64 md:h-[500px] z-0 pointer-events-none">
           <div className="absolute inset-0 bg-gradient-to-t from-white via-white/80 to-transparent dark:from-[#171717] dark:via-[#171717]/80 dark:to-transparent z-10"></div>
-          <div className="absolute inset-0 bg-[#9ABA1B] mix-blend-color z-20 opacity-40"></div>
           <img 
             src="https://images.unsplash.com/photo-1618828665011-0abd973f7bb8?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" 
             alt="Lagos Skyline" 

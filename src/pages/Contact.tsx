@@ -49,7 +49,7 @@ export default function Contact() {
         }
       />
       {/* 1. Hero Section */}
-      <section className="relative px-4 sm:px-6 lg:px-10 pt-40 pb-20 overflow-hidden bg-gradient-to-b from-[#F5F8E8] to-white">
+      <section className="relative px-4 sm:px-6 lg:px-10 pt-40 pb-20 overflow-hidden bg-white dark:bg-[#171717]">
         <div className="absolute top-0 right-0 p-32 opacity-[0.03] pointer-events-none">
           <MessageCircle className="w-[500px] h-[500px]" />
         </div>
