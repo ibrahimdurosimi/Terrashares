@@ -186,7 +186,7 @@ export default function Signup() {
               </div>
             )}
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-bold text-[#171717] dark:text-white/80 uppercase tracking-wider mb-2">First Name</label>
                 <input
@@ -212,7 +212,7 @@ export default function Signup() {
               </div>
             </div>
 
-            <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-4 sm:gap-6 pt-2">
               <div>
                 <label className="block text-sm font-bold text-[#171717] dark:text-white/80 uppercase tracking-wider mb-2">Email Address</label>
                 <input
@@ -246,7 +246,7 @@ export default function Signup() {
               </div>
             </div>
 
-            <div className="space-y-6 pt-2">
+            <div className="grid grid-cols-2 gap-4 sm:gap-6 pt-2">
               <div>
                 <label className="block text-sm font-bold text-[#171717] dark:text-white/80 uppercase tracking-wider mb-2">Password</label>
                 <input
@@ -285,7 +285,7 @@ export default function Signup() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
+            <div className="grid grid-cols-2 gap-6 pt-2">
               <div className="custom-phone-input">
                 <label className="block text-sm font-bold text-[#171717] dark:text-white/80 uppercase tracking-wider mb-2">Phone Number</label>
                 <div className="w-full h-14 px-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-black/5 dark:border-white/10 focus-within:ring-2 focus-within:ring-[#9ABA1B] focus-within:border-transparent transition-colors flex items-center">

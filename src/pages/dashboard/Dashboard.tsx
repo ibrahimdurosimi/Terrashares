@@ -156,7 +156,7 @@ export default function Dashboard() {
         </div>
 
         {/* Portfolio Summary */}
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-12">
           <div className="bg-white p-8 rounded-[2rem] border border-black/5 shadow-sm">
             <div className="flex items-center text-[#171717]/50 mb-4">
               <Wallet className="w-5 h-5 mr-2" />

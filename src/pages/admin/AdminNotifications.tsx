@@ -98,7 +98,7 @@ export default function AdminNotifications() {
         )}
 
         <form onSubmit={handleSend} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-bold mb-2">Target Audience</label>
               <select
@@ -129,7 +129,7 @@ export default function AdminNotifications() {
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-bold mb-2">Notification Type</label>
               <select

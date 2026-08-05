@@ -59,7 +59,7 @@ export function Footer() {
             </div>
           </div>
           
-          <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-8">
+          <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-8">
             <div>
               <h3 className="font-bold text-[#171717] dark:text-white mb-6" style={{ fontFamily: 'Georgia, serif' }}>Company</h3>
               <ul className="space-y-4">

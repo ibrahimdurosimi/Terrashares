@@ -90,9 +90,9 @@ export default function Login() {
             </Link>
           </p>
 
-          <form className="space-y-6" onSubmit={handleLogin}>
+          <form className="grid grid-cols-2 gap-4 sm:gap-6" onSubmit={handleLogin}>
             {error && (
-              <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-xl text-sm font-medium flex items-center gap-2">
+              <div className="col-span-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-xl text-sm font-medium flex items-center gap-2">
                 <AlertCircle className="w-5 h-5 shrink-0" />
                 {error}
               </div>
@@ -112,8 +112,8 @@ export default function Login() {
             
             <div>
               <div className="flex justify-between items-center mb-2">
-                <label className="block text-sm font-bold text-[#171717] dark:text-white/80 uppercase tracking-wider">Password</label>
-                <Link to="/forgot-password" className="text-sm font-bold text-[#9ABA1B] hover:underline">Forgot password?</Link>
+                <label className="block text-sm font-bold text-[#171717] dark:text-white/80 uppercase tracking-wider truncate mr-2">Password</label>
+                <Link to="/forgot-password" className="text-xs sm:text-sm font-bold text-[#9ABA1B] hover:underline shrink-0 truncate">Forgot?</Link>
               </div>
               <input
                 type="password"
@@ -125,7 +125,7 @@ export default function Login() {
               />
             </div>
 
-            <div className="pt-4">
+            <div className="col-span-2 pt-4">
               <button
                 type="submit"
                 disabled={loading}
