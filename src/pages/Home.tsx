@@ -266,7 +266,7 @@ export default function Home() {
           </div>
           
           {featuredProperties.length > 0 ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
               {featuredProperties.map(property => (
                 <div key={property.id} className="hover:-translate-y-2 transition-transform duration-500">
                   <PropertyCard property={property as any} />

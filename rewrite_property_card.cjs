@@ -1,4 +1,6 @@
-import React from 'react';
+const fs = require('fs');
+
+const content = `import React from 'react';
 import { Link } from 'react-router-dom';
 import { Database } from '../types/database';
 type Property = Database['public']['Tables']['properties']['Row'];
@@ -19,11 +21,11 @@ export function PropertyCard({ property, onCompareToggle, isCompared }: Property
       {onCompareToggle && (
         <button
           onClick={(e) => { e.preventDefault(); onCompareToggle(property); }}
-          className={`absolute top-4 right-4 z-20 p-2 rounded-full border transition-colors shadow-sm ${
+          className={\`absolute top-4 right-4 z-20 p-2 rounded-full border transition-colors shadow-sm \${
             isCompared 
                ? 'bg-[#171717] border-[#171717] text-white' 
                : 'bg-white/90 backdrop-blur-sm border-gray-200 text-gray-700 hover:bg-white hover:text-black dark:bg-[#171717]/90 dark:border-gray-700 dark:text-gray-300'
-          }`}
+          }\`}
           title={isCompared ? "Remove from comparison" : "Add to comparison"}
         >
           {isCompared ? <Check className="w-4 h-4" /> : <Scale className="w-4 h-4" />}
@@ -43,11 +45,11 @@ export function PropertyCard({ property, onCompareToggle, isCompared }: Property
         )}
         
         {/* Status Badge */}
-        <div className={`absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold ${
+        <div className={\`absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold \${
           property.status === 'open' 
             ? 'bg-[#9ABA1B] text-white shadow-sm' 
             : 'bg-gray-800 text-white shadow-sm'
-        }`}>
+        }\`}>
           {property.status === 'open' ? 'Active' : 'Closed'}
         </div>
       </div>
@@ -78,7 +80,7 @@ export function PropertyCard({ property, onCompareToggle, isCompared }: Property
 
         {/* Button */}
         <Link
-          to={`/properties/${property.slug}`}
+          to={\`/properties/\${property.slug}\`}
           className="w-full py-2.5 md:py-3.5 bg-[#171717] dark:bg-white text-white dark:text-[#171717] rounded-xl font-bold text-xs sm:text-sm text-center hover:bg-gray-800 transition-colors inline-block"
         >
           View
@@ -87,3 +89,6 @@ export function PropertyCard({ property, onCompareToggle, isCompared }: Property
     </div>
   );
 }
+`;
+
+fs.writeFileSync('src/components/PropertyCard.tsx', content);

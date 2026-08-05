@@ -225,7 +225,7 @@ export default function Properties() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="grid md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6"
+                  className="grid grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-6"
                 >
                   {[1, 2, 3, 4, 5, 6].map((i) => (
                     <div key={i} className="animate-pulse bg-white dark:bg-[#171717] rounded-3xl h-[350px] border border-black/5 p-6">
@@ -251,7 +251,7 @@ export default function Properties() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
-                  className="grid md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6"
+                  className="grid grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-6"
                 >
                   {properties.map(property => (
                     <PropertyCard 
