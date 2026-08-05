@@ -72,11 +72,11 @@ export default function Home() {
         </div>
         
         <div className="flex flex-col items-center text-center relative z-10">
-          <h1 className="text-5xl md:text-7xl font-black leading-[1.1] mb-8 max-w-4xl tracking-tight text-[#171717] dark:text-white">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-black leading-[1.1] mb-6 md:mb-8 max-w-4xl tracking-tight text-[#171717] dark:text-white">
             Invest in <AnimatedHeroText /><br/>build your <span className="text-[#9ABA1B] italic" style={{ fontFamily: 'Georgia, serif' }}>future.</span>
           </h1>
           
-          <p className="text-[20px] leading-[30px] font-sans text-center font-normal text-[#171717] dark:text-gray-300 no-underline not-italic w-[650px] max-w-full mb-12">
+          <p className="text-lg md:text-[20px] leading-[28px] md:leading-[30px] font-sans text-center font-normal text-[#171717] dark:text-gray-300 no-underline not-italic w-[650px] max-w-full mb-8 md:mb-12 px-2">
             Fractional real estate investment platform. Secure, transparent, and built for everyone to grow their wealth through high-yield assets.
           </p>
           
@@ -158,10 +158,10 @@ export default function Home() {
         <div className="absolute right-[-10%] top-1/2 -translate-y-1/2 text-[15vw] font-black text-[#171717]/[0.02] dark:text-white/[0.02] pointer-events-none whitespace-nowrap" style={{ fontFamily: 'Georgia, serif' }}>
           CALCULATE
         </div>
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center relative z-10">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-8 md:gap-16 items-center relative z-10">
           <div>
             <p className="text-[#9ABA1B] font-bold text-[16px] leading-[18px] tracking-[0.2em] uppercase mb-4">Project Returns</p>
-            <h2 className="text-4xl md:text-5xl text-[#171717] dark:text-white mb-6 leading-[1.1]" style={{ fontFamily: 'Georgia, serif' }}>
+            <h2 className="text-3xl md:text-5xl text-[#171717] dark:text-white mb-6 leading-[1.1]" style={{ fontFamily: 'Georgia, serif' }}>
               See how your money grows
             </h2>
             <p className="text-[20px] font-sans leading-[26.25px] text-[#171717]/60 dark:text-white/60 mb-8">
@@ -183,10 +183,10 @@ export default function Home() {
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
         
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="grid lg:grid-cols-2 gap-16 mb-20 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 md:gap-16 mb-12 md:mb-20 items-center">
             <div>
               <p className="text-[#9ABA1B] text-xs md:text-sm font-bold tracking-[0.2em] uppercase mb-4">About Terrashare</p>
-              <h2 className="text-5xl md:text-6xl text-[#171717] dark:text-white leading-[1.1] mb-6" style={{ fontFamily: 'Georgia, serif' }}>
+              <h2 className="text-3xl sm:text-4xl md:text-6xl text-[#171717] dark:text-white leading-[1.1] mb-6" style={{ fontFamily: 'Georgia, serif' }}>
                 Property ownership shouldn't be out of reach.
               </h2>
               <p className="text-lg text-[#171717] dark:text-white/70 leading-relaxed mb-8">
@@ -308,7 +308,7 @@ export default function Home() {
           <div className="grid lg:grid-cols-12 gap-16">
             <div className="lg:col-span-5">
               <p className="text-[#9ABA1B] text-xs md:text-sm font-bold tracking-[0.2em] uppercase mb-4">Why Terrashare</p>
-              <h2 className="text-4xl md:text-5xl text-[#171717] dark:text-white mb-8 leading-[1.1]" style={{ fontFamily: 'Georgia, serif' }}>
+              <h2 className="text-3xl md:text-5xl text-[#171717] dark:text-white mb-8 leading-[1.1]" style={{ fontFamily: 'Georgia, serif' }}>
                 Why People Love TerraShare
               </h2>
               <p className="text-lg text-[#171717]/60 dark:text-white/60 mb-10 leading-relaxed">
