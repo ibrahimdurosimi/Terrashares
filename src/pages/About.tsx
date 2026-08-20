@@ -44,9 +44,9 @@ export default function About() {
           <div className="order-2 lg:order-1 relative">
             <div className="absolute inset-0 bg-gradient-to-tr from-[#9ABA1B]/20 to-transparent rounded-[2rem] transform -translate-x-4 translate-y-4"></div>
             <img 
-              src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
-              alt="Modern Real Estate" 
-              className="relative z-10 w-full h-[500px] object-cover rounded-[2rem] shadow-xl grayscale-[20%]"
+              src="https://images.unsplash.com/photo-1613977257363-707ba9348227?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
+              alt="Modern Nigerian Real Estate" 
+              className="relative z-10 w-full h-[500px] object-cover rounded-[2rem] shadow-xl"
             />
           </div>
           <div className="order-1 lg:order-2">
@@ -55,7 +55,7 @@ export default function About() {
             </h2>
             <div className="space-y-6 text-lg text-[#171717] dark:text-white/70 leading-relaxed">
               <p>
-                Historically, investing in real estate required massive upfront capital, endless paperwork, and deep local knowledge. This left millions of hardworking individuals—from young professionals in Lagos to the diaspora community abroad—locked out of the most reliable asset class in the world.
+                Historically, investing in Nigerian real estate required massive upfront capital, endless paperwork, and deep local knowledge. This left millions of hardworking individuals—from young professionals in Lagos to the diaspora community abroad—locked out of the most reliable asset class.
               </p>
               <p>
                 At Terrashare, we use technology to bridge this gap. By fractionalizing high-yield properties, we allow you to buy shares in premium real estate starting with an amount that fits your budget.
@@ -108,10 +108,10 @@ export default function About() {
         
         <div className="max-w-7xl mx-auto grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {[
-            { icon: <ShieldCheck className="w-6 h-6 text-[#9ABA1B]" />, title: "Absolute Security", desc: "Every property is vetted by top legal experts. Your capital is backed by physical assets." },
-            { icon: <Globe className="w-6 h-6 text-[#9ABA1B]" />, title: "Global Access", desc: "From Lagos to London, we source the best markets for maximum yield and appreciation." },
-            { icon: <Users className="w-6 h-6 text-[#9ABA1B]" />, title: "Community First", desc: "We win when you win. Our platform is built around shared growth and inclusive wealth." },
-            { icon: <Lightbulb className="w-6 h-6 text-[#9ABA1B]" />, title: "Radical Transparency", desc: "No hidden charges. Clear ROI projections. Full visibility into property management." }
+            { icon: <ShieldCheck className="w-6 h-6 text-[#9ABA1B]" />, title: "Absolute Security", desc: "Every property is vetted with genuine land titles (C of O, Governor's Consent, Gazette). Capital is backed by physical assets." },
+            { icon: <Globe className="w-6 h-6 text-[#9ABA1B]" />, title: "Diaspora Access", desc: "From Lagos to Abuja, and for Nigerians across the diaspora, we source verified high-yield opportunities." },
+            { icon: <Users className="w-6 h-6 text-[#9ABA1B]" />, title: "Community First", desc: "We win when you win. Our platform is built around shared growth and inclusive wealth for Nigerians." },
+            { icon: <Lightbulb className="w-6 h-6 text-[#9ABA1B]" />, title: "Radical Transparency", desc: "No hidden charges. Clear ROI projections. Full visibility into property management and construction." }
           ].map((value, idx) => (
             <div key={idx} className="bg-white dark:bg-[#171717] p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-black/[0.03] dark:border-white/5 hover:-translate-y-2 transition-transform duration-300">
               <div className="w-12 h-12 bg-gray-50 dark:bg-white/5 rounded-2xl flex items-center justify-center mb-6">

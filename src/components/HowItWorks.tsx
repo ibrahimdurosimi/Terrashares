@@ -29,29 +29,29 @@ const stepsData = {
     {
       step: 1,
       title: "Browse Curated Properties",
-      description: "Explore curated options in Nigeria, UK, Dubai, and the US"
+      description: "Explore verified high-yield properties across prime Nigerian locations like Lagos, Abuja, and Ibadan"
     },
     {
       step: 2,
       title: "Fund your wallet",
-      description: "Top up your Terrashare wallet in NGN, USD, or GBP using multiple payment options"
+      description: "Top up your Terrashare wallet in NGN using seamless bank transfer or debit card"
     },
     {
       step: 3,
       title: "Start Investing",
-      description: "Buy fractional shares, earn rental income, and watch your wealth grow"
+      description: "Buy fractional units from ₦50,000, earn high returns, and watch your wealth grow"
     }
   ],
   land: [
     {
       step: 1,
       title: "Browse Curated Properties",
-      description: "Select from high-growth, government-backed plots with verified titles and strong future value"
+      description: "Select from high-growth, verified Nigerian plots with genuine titles and strong appreciation potential"
     },
     {
       step: 2,
       title: "Fund your wallet",
-      description: "Start small with affordable monthly payments from as low as ₦50,000"
+      description: "Start small with flexible monthly payment plans designed for everyday Nigerians"
     },
     {
       step: 3,
@@ -62,8 +62,8 @@ const stepsData = {
 };
 
   const tabImages: Record<string, string> = {
-    home: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
-    fractional: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80",
+    home: "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1200&q=80",
+    fractional: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
     land: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80"
   };
 

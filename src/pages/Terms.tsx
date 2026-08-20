@@ -25,7 +25,7 @@ export default function Terms() {
             To use certain features of the Platform, you must register for an account. You are responsible for maintaining the confidentiality of your account information and for all activities that occur under your account. You must be at least 18 years old to create an account and invest.
           </p>
 
-          <h2 className="text-2xl font-bold text-[#171717] dark:text-white mt-8 mb-4">4. Property Shares</h2>
+          <h2 className="text-2xl font-bold text-[#171717] dark:text-white mt-8 mb-4">4. Property Units</h2>
           <p>
             When you invest through Terrashare, you are purchasing fractional ownership in specific properties. These shares are subject to holding periods and may not be immediately liquid. Secondary market trading is subject to platform availability and regulatory requirements.
           </p>

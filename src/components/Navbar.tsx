@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Building2, Sun, Moon, Menu, X } from 'lucide-react';
+import { Building2, Sun, Moon, Menu, X, ChevronDown } from 'lucide-react';
 import { useTheme } from './ThemeProvider';
 import { cn } from '../lib/utils';
 import { useEffect, useState } from 'react';
@@ -72,11 +72,22 @@ export function Navbar() {
           </div>
           
           <nav className="hidden lg:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
-            {navLinks.map((link) => (
-              <Link key={link.to} to={link.to} className="text-sm font-semibold text-[#171717] dark:text-white/80 hover:text-[#9ABA1B] dark:hover:text-white transition-colors">
-                {link.name}
-              </Link>
-            ))}
+            
+            <div className="relative group">
+              <button className="flex items-center gap-1 text-sm font-semibold text-[#171717] dark:text-white/80 hover:text-[#9ABA1B] dark:hover:text-white transition-colors">
+                Our Products <ChevronDown className="w-4 h-4" />
+              </button>
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 bg-white dark:bg-[#1a1a1a] border border-black/5 dark:border-white/10 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2 flex flex-col z-50">
+                <Link to="/properties" className="px-4 py-2 text-sm text-[#171717] dark:text-white/80 hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#9ABA1B]">Buy</Link>
+                <Link to="/properties?category=residential" className="px-4 py-2 text-sm text-[#171717] dark:text-white/80 hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#9ABA1B]">Completed Home</Link>
+                <Link to="/properties?category=mixed_use" className="px-4 py-2 text-sm text-[#171717] dark:text-white/80 hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#9ABA1B]">Ongoing Projects</Link>
+                <Link to="/properties?category=land" className="px-4 py-2 text-sm text-[#171717] dark:text-white/80 hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#9ABA1B]">Off-Plan Sales</Link>
+                <Link to="/properties?category=commercial" className="px-4 py-2 text-sm text-[#171717] dark:text-white/80 hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#9ABA1B]">Halal Mortgage</Link>
+              </div>
+            </div>
+            <Link to="/about" className="text-sm font-semibold text-[#171717] dark:text-white/80 hover:text-[#9ABA1B] dark:hover:text-white transition-colors">About</Link>
+            <Link to="/contact" className="text-sm font-semibold text-[#171717] dark:text-white/80 hover:text-[#9ABA1B] dark:hover:text-white transition-colors">Contact</Link>
+  
             {isAdmin && (
               <Link to="/admin" className="text-sm font-bold text-[#9ABA1B] hover:opacity-70 transition-opacity">Admin</Link>
             )}
@@ -102,18 +113,15 @@ export function Navbar() {
               </div>
             ) : (
               <>
-                <Link
-                  to="/login"
-                  className="hidden md:inline-flex h-10 items-center justify-center rounded-full border-2 border-[#171717]/10 dark:border-white/10 px-6 text-sm font-semibold text-[#171717] dark:text-white hover:border-[#171717] dark:hover:border-white transition-colors"
-                >
-                  Log in
-                </Link>
-                <Link
-                  to="/signup"
+                
+                <a
+                  href="https://wa.me/2348097701222"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="hidden sm:inline-flex h-10 items-center justify-center rounded-full bg-[#171717] dark:bg-white px-6 text-sm font-semibold text-white dark:text-[#171717] hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
                 >
                   Join now
-                </Link>
+                </a>
               </>
             )}
 
@@ -138,16 +146,20 @@ export function Navbar() {
             className="lg:hidden bg-white dark:bg-[#171717] border-b border-black/5 dark:border-white/5 overflow-hidden"
           >
             <div className="px-4 py-6 space-y-4 flex flex-col">
-              {navLinks.map((link) => (
-                <Link 
-                  key={link.to} 
-                  to={link.to} 
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-lg font-semibold text-[#171717] dark:text-white hover:text-[#9ABA1B] dark:hover:text-[#9ABA1B] transition-colors py-2"
-                >
-                  {link.name}
-                </Link>
-              ))}
+              
+                <div className="py-2">
+                  <div className="text-lg font-semibold text-[#171717] dark:text-white mb-2">Our Products</div>
+                  <div className="pl-4 flex flex-col gap-2">
+                    <Link to="/properties" onClick={() => setMobileMenuOpen(false)} className="text-[#171717]/70 dark:text-white/70 hover:text-[#9ABA1B]">Buy</Link>
+                    <Link to="/properties?category=residential" onClick={() => setMobileMenuOpen(false)} className="text-[#171717]/70 dark:text-white/70 hover:text-[#9ABA1B]">Completed Home</Link>
+                    <Link to="/properties?category=mixed_use" onClick={() => setMobileMenuOpen(false)} className="text-[#171717]/70 dark:text-white/70 hover:text-[#9ABA1B]">Ongoing Projects</Link>
+                    <Link to="/properties?category=land" onClick={() => setMobileMenuOpen(false)} className="text-[#171717]/70 dark:text-white/70 hover:text-[#9ABA1B]">Off-Plan Sales</Link>
+                    <Link to="/properties?category=commercial" onClick={() => setMobileMenuOpen(false)} className="text-[#171717]/70 dark:text-white/70 hover:text-[#9ABA1B]">Halal Mortgage</Link>
+                  </div>
+                </div>
+                <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="text-lg font-semibold text-[#171717] dark:text-white hover:text-[#9ABA1B] transition-colors py-2">About</Link>
+                <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="text-lg font-semibold text-[#171717] dark:text-white hover:text-[#9ABA1B] transition-colors py-2">Contact</Link>
+  
               {isAdmin && (
                 <Link 
                   to="/admin" 
@@ -169,20 +181,16 @@ export function Navbar() {
                   </Link>
                 ) : (
                   <>
-                    <Link
-                      to="/login"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex w-full h-12 items-center justify-center rounded-full border-2 border-[#171717]/10 dark:border-white/10 text-base font-semibold text-[#171717] dark:text-white"
-                    >
-                      Log in
-                    </Link>
-                    <Link
-                      to="/signup"
+                    
+                    <a
+                      href="https://wa.me/2348097701222"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       onClick={() => setMobileMenuOpen(false)}
                       className="flex w-full h-12 items-center justify-center rounded-full bg-[#171717] dark:bg-white text-base font-semibold text-white dark:text-[#171717]"
                     >
                       Join now
-                    </Link>
+                    </a>
                   </>
                 )}
               </div>

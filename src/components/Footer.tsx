@@ -44,14 +44,15 @@ export function Footer() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-16">
           <div className="lg:col-span-5">
             <Link to="/" className="flex items-center gap-2 mb-6">
-              <Building2 className="h-7 w-7 text-[#9ABA1B]" />
-              <span className="text-2xl text-[#171717] dark:text-white" style={{ fontFamily: 'Georgia, serif' }}>
-                Terrashare
-              </span>
+              <img src="/logo.png" alt="Terrashare" className="h-10 object-contain" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling.style.display = 'flex'; }} /><div className="hidden items-center gap-2" style={{display: "none"}}><Building2 className="h-7 w-7 text-[#9ABA1B]" /><span className="text-2xl text-[#171717] dark:text-white" style={{ fontFamily: 'Georgia, serif' }}>Terrashare</span></div>
             </Link>
-            <p className="text-[#171717]/60 dark:text-white/60 leading-relaxed mb-8 max-w-sm">
+            <p className="text-[#171717]/60 dark:text-white/60 leading-relaxed mb-6 max-w-sm">
               A real estate technology platform connecting capital providers, buyers, and everyday Nigerians to affordable property ownership.
             </p>
+            <div className="mb-8 text-sm text-[#171717]/80 dark:text-white/80">
+              <p className="font-bold mb-1">Office Address:</p>
+              <p>Block C270, opposite Providus Bank,<br/>Ikota Shopping Complex, Ajah.</p>
+            </div>
             <div className="flex gap-4">
               <a href="#" className="w-10 h-10 rounded-full bg-[#171717]/5 flex items-center justify-center text-[#171717] dark:text-white hover:bg-[#171717] hover:text-white transition-colors"><Twitter className="h-4 w-4" /></a>
               <a href="#" className="w-10 h-10 rounded-full bg-[#171717]/5 flex items-center justify-center text-[#171717] dark:text-white hover:bg-[#171717] hover:text-white transition-colors"><Mail className="h-4 w-4" /></a>
@@ -73,10 +74,11 @@ export function Footer() {
             <div>
               <h3 className="font-bold text-[#171717] dark:text-white mb-6" style={{ fontFamily: 'Georgia, serif' }}>Products</h3>
               <ul className="space-y-4">
-                <li><Link to="/properties" className="text-[#171717]/60 dark:text-white/60 hover:text-[#9ABA1B] transition-colors text-sm">All Services</Link></li>
-                <li><Link to="#" className="text-[#171717]/60 dark:text-white/60 hover:text-[#9ABA1B] transition-colors text-sm">Home Ownership</Link></li>
-                <li><Link to="#" className="text-[#171717]/60 dark:text-white/60 hover:text-[#9ABA1B] transition-colors text-sm">Fractional Ownership</Link></li>
-                <li><Link to="#" className="text-[#171717]/60 dark:text-white/60 hover:text-[#9ABA1B] transition-colors text-sm">Land Ownership</Link></li>
+                <li><Link to="/properties?category=all" className="text-[#171717]/60 dark:text-white/60 hover:text-[#9ABA1B] transition-colors text-sm">Buy</Link></li>
+                <li><Link to="/properties?category=residential" className="text-[#171717]/60 dark:text-white/60 hover:text-[#9ABA1B] transition-colors text-sm">Completed Home</Link></li>
+                <li><Link to="/properties?category=mixed_use" className="text-[#171717]/60 dark:text-white/60 hover:text-[#9ABA1B] transition-colors text-sm">Ongoing Projects</Link></li>
+                <li><Link to="/properties?category=land" className="text-[#171717]/60 dark:text-white/60 hover:text-[#9ABA1B] transition-colors text-sm">Off-Plan Sales</Link></li>
+                <li><Link to="/properties" className="text-[#171717]/60 dark:text-white/60 hover:text-[#9ABA1B] transition-colors text-sm">Halal Mortgage</Link></li>
               </ul>
             </div>
             

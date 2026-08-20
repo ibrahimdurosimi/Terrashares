@@ -16,6 +16,7 @@ export default function Properties() {
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(4);
 
   // Compare feature state
   const [compareList, setCompareList] = useState<Property[]>([]);
@@ -225,9 +226,9 @@ export default function Properties() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="grid grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-6"
+                  className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10"
                 >
-                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                  {[1, 2, 3, 4].map((i) => (
                     <div key={i} className="animate-pulse bg-white dark:bg-[#171717] rounded-3xl h-[350px] border border-black/5 p-6">
                       <div className="flex gap-4 mb-4">
                         <div className="w-[72px] h-[72px] bg-gray-200 dark:bg-gray-700 rounded-2xl shrink-0"></div>
@@ -246,14 +247,15 @@ export default function Properties() {
                   ))}
                 </motion.div>
               ) : properties.length > 0 ? (
+                <>
                 <motion.div 
                   key="grid"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
-                  className="grid grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-6"
+                  className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10"
                 >
-                  {properties.map(property => (
+                  {properties.slice(0, visibleCount).map(property => (
                     <PropertyCard 
                       key={property.id} 
                       property={property as any} 
@@ -262,6 +264,17 @@ export default function Properties() {
                     />
                   ))}
                 </motion.div>
+                  {properties.length > visibleCount && (
+                    <div className="flex justify-center mt-12 mb-8">
+                      <button
+                        onClick={() => setVisibleCount(prev => prev + 4)}
+                        className="px-8 py-4 rounded-full border-2 border-black/10 dark:border-white/10 font-bold text-[#171717] dark:text-white hover:border-[#9ABA1B] hover:text-[#9ABA1B] transition-colors"
+                      >
+                        Load More Properties
+                      </button>
+                    </div>
+                  )}
+                </>
               ) : (
                 <motion.div 
                   key="empty"

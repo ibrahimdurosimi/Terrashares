@@ -14,7 +14,7 @@ const defaultFaqs: FAQItem[] = [
   },
   {
     question: "How do I know Real Estate Investing is for me?",
-    answer: "Real estate is a stable, tangible asset class that historically appreciates over time. It's ideal for investors looking for long-term wealth preservation and steady returns."
+    answer: "Real estate is a stable, tangible asset class that historically appreciates over time. It is ideal for investors looking for long-term wealth preservation and steady returns."
   },
   {
     question: "What am I investing in?",
@@ -38,7 +38,7 @@ const defaultFaqs: FAQItem[] = [
   },
   {
     question: "How long does it take for my investment to mature?",
-    answer: "Maturity periods vary depending on the specific property asset. You can view the specific duration (typically 12-24 months) on each property's detail page."
+    answer: "6 months to 5 years."
   }
 ];
 

@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MapPin } from 'lucide-react';
 
-const names = ["Adam", "Chioma", "Oluwaseun", "Fatima", "Emeka", "Aisha", "Tunde", "Zainab", "Chinedu", "Blessing"];
-const properties = ["Lekki Gardens", "Eko Atlantic Phase 1", "Victoria Island Heights", "Abuja Central Plaza", "Ikoyi Luxury Villas", "Ikeja Tech Hub", "Banana Island View"];
-const actions = ["just invested in", "just bought a share of", "started their portfolio with"];
+const names = ["Chioma", "Oluwaseun", "Fatima", "Emeka", "Aisha", "Tunde", "Zainab", "Chinedu", "Blessing", "Femi", "Ngozi", "Ibrahim", "Yemi", "Adeola"];
+const properties = ["Lekki Phase 1 Luxury Terrace", "Eko Atlantic Horizon", "Guzape Hills Estate Abuja", "Ikoyi Waterfront Residences", "Victoria Island Heights", "Ibeju-Lekki Smart City Plots", "Banana Island View"];
+const actions = ["just invested in", "just bought a unit of", "started their portfolio with"];
 
 export function SocialProofToast() {
   const [visible, setVisible] = useState(false);
