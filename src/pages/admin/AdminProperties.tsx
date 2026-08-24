@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Database } from '../../types/database';
-import { Edit2, Trash2, Plus, X, LineChart as ChartIcon } from 'lucide-react';
+import { Edit2, Trash2, Plus, X, LineChart as ChartIcon, AlertTriangle, Loader2 } from 'lucide-react';
+import { ImageUploadDropzone } from '../../components/ImageUploadDropzone';
 
 type Property = Database['public']['Tables']['properties']['Row'];
 type Valuation = Database['public']['Tables']['property_valuations']['Row'];
@@ -16,14 +17,21 @@ export default function AdminProperties() {
   const [valuations, setValuations] = useState<Valuation[]>([]);
   const [valuationForm, setValuationForm] = useState({ recorded_date: '', value: 0 });
 
+  // Delete modal state
+  const [propertyToDelete, setPropertyToDelete] = useState<Property | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [actionSuccess, setActionSuccess] = useState<string | null>(null);
+
   useEffect(() => {
     fetchProperties();
   }, []);
 
   async function fetchProperties() {
     setLoading(true);
-    const { data } = await (supabase as any).from('properties').select('*').order('created_at', { ascending: false });
+    const { data, error } = await (supabase as any).from('properties').select('*').order('created_at', { ascending: false });
     if (data) setProperties(data);
+    if (error) console.error('Error fetching properties:', error);
     setLoading(false);
   }
 
@@ -31,20 +39,28 @@ export default function AdminProperties() {
     e.preventDefault();
     const { id, ...rest } = formData;
     
-    // Ensure image_urls is an array if we input comma separated
+    // Ensure image_urls is an array
     let processedData = { ...rest };
     if (typeof rest.image_urls === 'string') {
-        processedData.image_urls = (rest.image_urls as string).split(',').map((s: string) => s.trim()).filter((s: string) => s);
+      processedData.image_urls = (rest.image_urls as string).split(',').map((s: string) => s.trim()).filter((s: string) => s);
+    } else if (!Array.isArray(rest.image_urls)) {
+      processedData.image_urls = [];
     }
     
-    if (id) {
-      await (supabase as any).from('properties').update(processedData as any).eq('id', id);
-    } else {
-      await (supabase as any).from('properties').insert(processedData as any);
+    try {
+      if (id) {
+        await (supabase as any).from('properties').update(processedData as any).eq('id', id);
+        setActionSuccess('Property updated successfully.');
+      } else {
+        await (supabase as any).from('properties').insert(processedData as any);
+        setActionSuccess('Property created successfully.');
+      }
+      setTimeout(() => setActionSuccess(null), 3500);
+      setIsModalOpen(false);
+      fetchProperties();
+    } catch (err: any) {
+      console.error('Error saving property:', err);
     }
-    
-    setIsModalOpen(false);
-    fetchProperties();
   };
 
   const openNew = () => {
@@ -58,16 +74,66 @@ export default function AdminProperties() {
 
   const openEdit = (prop: Property) => {
     setFormData({
-        ...prop,
-        image_urls: prop.image_urls?.join(', ') as any
+      ...prop,
+      image_urls: prop.image_urls || []
     });
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this property?')) {
-      await (supabase as any).from('properties').delete().eq('id', id);
-      fetchProperties();
+  const requestDelete = (prop: Property) => {
+    setPropertyToDelete(prop);
+    setDeleteError(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!propertyToDelete) return;
+    setIsDeleting(true);
+    setDeleteError(null);
+
+    try {
+      // 1. Delete associated valuations to prevent foreign key errors
+      const { error: valError } = await (supabase as any)
+        .from('property_valuations')
+        .delete()
+        .eq('property_id', propertyToDelete.id);
+      
+      if (valError) {
+        console.warn('Valuation cleanup warning:', valError);
+      }
+
+      // 2. Disassociate leads referencing this property
+      const { error: leadsError } = await (supabase as any)
+        .from('leads')
+        .update({ property_id: null })
+        .eq('property_id', propertyToDelete.id);
+
+      if (leadsError) {
+        console.warn('Leads disassociation warning:', leadsError);
+      }
+
+      // 3. Delete property record
+      const { error: propError } = await (supabase as any)
+        .from('properties')
+        .delete()
+        .eq('id', propertyToDelete.id);
+
+      if (propError) {
+        console.error('Failed to delete property:', propError);
+        setDeleteError(propError.message || 'Failed to delete property. Check database constraints or permissions.');
+        setIsDeleting(false);
+        return;
+      }
+
+      // Success
+      setProperties(prev => prev.filter(p => p.id !== propertyToDelete.id));
+      setActionSuccess(`"${propertyToDelete.title}" was deleted.`);
+      setTimeout(() => setActionSuccess(null), 3500);
+      setPropertyToDelete(null);
+    } catch (err: any) {
+      console.error('Error during deletion:', err);
+      setDeleteError(err.message || 'An unexpected error occurred while deleting.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -146,7 +212,7 @@ export default function AdminProperties() {
                     <td className="p-6 text-right space-x-2">
                       <button onClick={() => openValuations(prop.id)} className="text-[#171717]/60 hover:text-blue-600 p-2 transition-colors" title="Manage Valuations"><ChartIcon className="w-5 h-5" /></button>
                       <button onClick={() => openEdit(prop)} className="text-[#171717]/60 hover:text-[#9ABA1B] p-2 transition-colors" title="Edit"><Edit2 className="w-5 h-5" /></button>
-                      <button onClick={() => handleDelete(prop.id)} className="text-[#171717]/60 hover:text-red-600 p-2 transition-colors" title="Delete"><Trash2 className="w-5 h-5" /></button>
+                      <button onClick={() => requestDelete(prop)} className="text-[#171717]/60 hover:text-red-600 p-2 transition-colors" title="Delete Property"><Trash2 className="w-5 h-5" /></button>
                     </td>
                   </tr>
                 ))}
@@ -155,6 +221,73 @@ export default function AdminProperties() {
           </div>
         )}
       </div>
+
+      {/* Success Notification */}
+      {actionSuccess && (
+        <div className="fixed bottom-6 right-6 z-50 bg-[#171717] text-white px-6 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 border border-white/10 animate-fade-in">
+          <div className="w-2.5 h-2.5 rounded-full bg-[#9ABA1B]" />
+          <span className="text-sm font-medium">{actionSuccess}</span>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {propertyToDelete && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
+          <div className="bg-white dark:bg-[#1f1f1f] rounded-[2rem] border border-black/10 dark:border-white/10 shadow-2xl w-full max-w-md p-6 sm:p-8 relative">
+            <div className="w-12 h-12 rounded-2xl bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 flex items-center justify-center mb-5">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+
+            <h3 className="text-2xl font-bold text-[#171717] dark:text-white mb-2" style={{ fontFamily: 'Georgia, serif' }}>
+              Delete Property?
+            </h3>
+            
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
+              Are you sure you want to permanently delete <strong className="text-[#171717] dark:text-white">"{propertyToDelete.title}"</strong>? 
+              This will also remove all associated valuations for this property.
+            </p>
+
+            {deleteError && (
+              <div className="mb-4 p-3 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-700 dark:text-red-300 rounded-xl text-xs leading-relaxed">
+                {deleteError}
+              </div>
+            )}
+
+            <div className="flex gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  if (!isDeleting) {
+                    setPropertyToDelete(null);
+                    setDeleteError(null);
+                  }
+                }}
+                disabled={isDeleting}
+                className="flex-1 py-3 px-4 rounded-xl border border-gray-300 dark:border-gray-700 font-bold text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              
+              <button
+                type="button"
+                onClick={confirmDelete}
+                disabled={isDeleting}
+                className="flex-1 py-3 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-sm transition-colors flex items-center justify-center gap-2 shadow-lg shadow-red-600/20 disabled:opacity-50"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" /> Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-4 h-4" /> Delete
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Property Form Modal */}
       {isModalOpen && (
@@ -180,8 +313,13 @@ export default function AdminProperties() {
                   <input type="text" required value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors" />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-[#171717] mb-2">Image URLs (comma separated)</label>
-                  <input type="text" value={formData.image_urls as any} onChange={e => setFormData({...formData, image_urls: e.target.value as any})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors" />
+                  <label className="block text-sm font-bold text-[#171717] mb-2">Category</label>
+                  <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value as any})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors">
+                    <option value="residential">Residential</option>
+                    <option value="commercial">Commercial</option>
+                    <option value="land">Land</option>
+                    <option value="mixed_use">Mixed Use</option>
+                  </select>
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-[#171717] mb-2">Min Investment (₦)</label>
@@ -190,15 +328,6 @@ export default function AdminProperties() {
                 <div>
                   <label className="block text-sm font-bold text-[#171717] mb-2">Returns (%)</label>
                   <input type="number" step="0.1" required value={formData.returns_percent} onChange={e => setFormData({...formData, returns_percent: Number(e.target.value)})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors" />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-[#171717] mb-2">Category</label>
-                  <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value as any})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors">
-                    <option value="residential">Residential</option>
-                    <option value="commercial">Commercial</option>
-                    <option value="land">Land</option>
-                    <option value="mixed_use">Mixed Use</option>
-                  </select>
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-[#171717] mb-2">Payout Style</label>
@@ -222,10 +351,18 @@ export default function AdminProperties() {
                   <label className="block text-sm font-bold text-[#171717] mb-2">Total Funding Needed / Units</label>
                   <input type="number" required value={formData.total_units || 0} onChange={e => setFormData({...formData, total_units: Number(e.target.value)})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors" />
                 </div>
-                <div>
+                <div className="col-span-2">
                   <label className="block text-sm font-bold text-[#171717] mb-2">Amount Funded / Units Sold</label>
                   <input type="number" required value={formData.units_sold || 0} onChange={e => setFormData({...formData, units_sold: Number(e.target.value)})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors" />
                 </div>
+              </div>
+
+              {/* Property Image Upload Section */}
+              <div className="pt-2">
+                <ImageUploadDropzone 
+                  images={Array.isArray(formData.image_urls) ? formData.image_urls : []}
+                  onChange={(newImages) => setFormData({ ...formData, image_urls: newImages })}
+                />
               </div>
               
               <div>
@@ -277,7 +414,11 @@ export default function AdminProperties() {
                       <td className="p-4">{new Date(val.recorded_date).toLocaleDateString()}</td>
                       <td className="p-4">₦{val.value.toLocaleString()}</td>
                       <td className="p-4 text-right">
-                        <button onClick={() => handleDeleteValuation(val.id)} className="text-red-500 hover:text-red-700">
+                        <button 
+                          onClick={() => handleDeleteValuation(val.id)} 
+                          className="text-red-500 hover:text-red-700 p-1 rounded-lg transition-colors"
+                          title="Delete Valuation"
+                        >
                           <Trash2 className="w-4 h-4 inline" />
                         </button>
                       </td>

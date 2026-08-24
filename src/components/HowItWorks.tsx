@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import howItWorksHomeImg from '../assets/images/regenerated_image_1787234211112.jpg';
 
 const tabs = [
   { id: 'home', label: 'Home Ownership' },
@@ -62,7 +63,7 @@ const stepsData = {
 };
 
   const tabImages: Record<string, string> = {
-    home: "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1200&q=80",
+    home: howItWorksHomeImg,
     fractional: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
     land: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80"
   };

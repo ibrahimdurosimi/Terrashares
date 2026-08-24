@@ -14,6 +14,7 @@ import { AnimatedHeroText } from '../components/AnimatedHeroText';
 import { AnimatedCounter } from '../components/AnimatedCounter';
 import { motion } from 'motion/react';
 import teamHumanTouchImg from '../assets/images/regenerated_image_1787233145158.png';
+import aboutTerrashareImg from '../assets/images/regenerated_image_1787234208742.jpg';
 
 type Property = Database['public']['Tables']['properties']['Row'];
 
@@ -218,7 +219,7 @@ export default function Home() {
               </Link>
             </div>
             <div className="relative rounded-[3rem] overflow-hidden shadow-2xl h-[300px] md:h-[400px]">
-              <img src="https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1000&q=80" alt="Modern Nigerian Real Estate" className="w-full h-full object-cover" />
+              <img src={aboutTerrashareImg} alt="Modern Nigerian Real Estate" className="w-full h-full object-cover" />
             </div>
           </div>
 
