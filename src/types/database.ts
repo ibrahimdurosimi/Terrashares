@@ -43,11 +43,11 @@ export interface Database {
           location: string
           description: string
           image_urls: string[] | null
-          min_investment: number
-          returns_percent: number
-          duration_months: number
-          payout_style: 'after_maturity' | 'monthly'
-          category: 'residential' | 'commercial' | 'land' | 'mixed_use'
+          min_investment: number | null
+          returns_percent: number | null
+          duration_months: number | null
+          payout_style: string | null
+          category: string
           type_details: Json
           is_fractional: boolean
           unit_value: number | null
@@ -55,6 +55,13 @@ export interface Database {
           units_sold: number | null
           status: 'open' | 'closed'
           created_at: string
+          property_type: 'land' | 'house'
+          property_type_needs_review: boolean
+          acquisition_type: 'investment' | 'ownership'
+          ownership_subtype: 'co-ownership' | 'full-ownership' | null
+          documentation_charges: number
+          price_per_slot: number | null
+          payment_method: 'down_payment_spread' | 'full_payment' | 'halal_mortgage' | null
         }
         Insert: {
           id?: string
@@ -63,18 +70,25 @@ export interface Database {
           location: string
           description: string
           image_urls?: string[] | null
-          min_investment: number
-          returns_percent: number
-          duration_months: number
-          payout_style: 'after_maturity' | 'monthly'
-          category: 'residential' | 'commercial' | 'land' | 'mixed_use'
+          min_investment?: number | null
+          returns_percent?: number | null
+          duration_months?: number | null
+          payout_style?: string | null
+          category: string
           type_details?: Json
           is_fractional?: boolean
           unit_value?: number | null
           total_units?: number | null
           units_sold?: number | null
-          status?: 'open' | 'closed'
+          status: 'open' | 'closed'
           created_at?: string
+          property_type: 'land' | 'house'
+          property_type_needs_review?: boolean
+          acquisition_type: 'investment' | 'ownership'
+          ownership_subtype?: 'co-ownership' | 'full-ownership' | null
+          documentation_charges: number
+          price_per_slot?: number | null
+          payment_method?: 'down_payment_spread' | 'full_payment' | 'halal_mortgage' | null
         }
         Update: {
           id?: string
@@ -83,11 +97,11 @@ export interface Database {
           location?: string
           description?: string
           image_urls?: string[] | null
-          min_investment?: number
-          returns_percent?: number
-          duration_months?: number
-          payout_style?: 'after_maturity' | 'monthly'
-          category?: 'residential' | 'commercial' | 'land' | 'mixed_use'
+          min_investment?: number | null
+          returns_percent?: number | null
+          duration_months?: number | null
+          payout_style?: string | null
+          category?: string
           type_details?: Json
           is_fractional?: boolean
           unit_value?: number | null
@@ -95,6 +109,13 @@ export interface Database {
           units_sold?: number | null
           status?: 'open' | 'closed'
           created_at?: string
+          property_type?: 'land' | 'house'
+          property_type_needs_review?: boolean
+          acquisition_type?: 'investment' | 'ownership'
+          ownership_subtype?: 'co-ownership' | 'full-ownership' | null
+          documentation_charges?: number
+          price_per_slot?: number | null
+          payment_method?: 'down_payment_spread' | 'full_payment' | 'halal_mortgage' | null
         }
       }
       property_valuations: {

@@ -47,6 +47,27 @@ export default function AdminProperties() {
       processedData.image_urls = [];
     }
     
+    // Clean data based on selected paths
+    if (processedData.acquisition_type === 'investment') {
+      processedData.ownership_subtype = null;
+      processedData.payment_method = null;
+      processedData.total_units = null;
+      processedData.price_per_slot = null;
+      processedData.units_sold = null;
+    } else { // ownership
+      processedData.returns_percent = null;
+      processedData.min_investment = null;
+      processedData.payout_style = null;
+      
+      if (processedData.ownership_subtype === 'full-ownership') {
+        processedData.total_units = null;
+        processedData.price_per_slot = null;
+        processedData.units_sold = null;
+      } else { // co-ownership
+        processedData.duration_months = null;
+      }
+    }
+    
     try {
       if (id) {
         await (supabase as any).from('properties').update(processedData as any).eq('id', id);
@@ -65,9 +86,12 @@ export default function AdminProperties() {
 
   const openNew = () => {
     setFormData({
-      title: '', slug: '', location: '', description: '', min_investment: 0, returns_percent: 0, 
-      duration_months: 13, payout_style: 'after_maturity', category: 'residential', 
-      status: 'open', is_fractional: true, type_details: {}, image_urls: [], total_units: 100, units_sold: 0
+      title: '', slug: '', location: '', description: '', 
+      min_investment: 0, returns_percent: 0, duration_months: 13, payout_style: 'after_maturity', 
+      category: 'residential', status: 'open', is_fractional: true, type_details: {}, image_urls: [], 
+      total_units: 100, units_sold: 0,
+      property_type: 'land', acquisition_type: 'investment', ownership_subtype: null,
+      documentation_charges: 0, price_per_slot: 0, payment_method: null
     });
     setIsModalOpen(true);
   };
@@ -75,7 +99,13 @@ export default function AdminProperties() {
   const openEdit = (prop: Property) => {
     setFormData({
       ...prop,
-      image_urls: prop.image_urls || []
+      image_urls: prop.image_urls || [],
+      property_type: prop.property_type || 'land',
+      acquisition_type: prop.acquisition_type || 'investment',
+      ownership_subtype: prop.ownership_subtype || null,
+      documentation_charges: prop.documentation_charges || 0,
+      price_per_slot: prop.price_per_slot || 0,
+      payment_method: prop.payment_method || null
     });
     setIsModalOpen(true);
   };
@@ -202,13 +232,26 @@ export default function AdminProperties() {
                       <p className="font-bold text-[#171717]">{prop.title}</p>
                       <p className="text-xs text-[#171717]/50">{prop.location}</p>
                     </td>
-                    <td className="p-6 capitalize">{prop.category.replace('_', ' ')}</td>
+                    <td className="p-6 capitalize">
+                      {prop.category.replace('_', ' ')}
+                      {prop.property_type_needs_review && (
+                        <span className="block mt-1 text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full w-max">
+                          Needs Review
+                        </span>
+                      )}
+                    </td>
                     <td className="p-6">
                       <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${prop.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                         {prop.status}
                       </span>
                     </td>
-                    <td className="p-6 font-bold">₦{prop.min_investment.toLocaleString()}</td>
+                    <td className="p-6 font-bold">
+                      {prop.acquisition_type === 'investment' 
+                        ? `₦${(prop.min_investment || 0).toLocaleString()}`
+                        : prop.ownership_subtype === 'co-ownership' 
+                          ? `₦${(prop.price_per_slot || 0).toLocaleString()} / slot`
+                          : '-'}
+                    </td>
                     <td className="p-6 text-right space-x-2">
                       <button onClick={() => openValuations(prop.id)} className="text-[#171717]/60 hover:text-blue-600 p-2 transition-colors" title="Manage Valuations"><ChartIcon className="w-5 h-5" /></button>
                       <button onClick={() => openEdit(prop)} className="text-[#171717]/60 hover:text-[#9ABA1B] p-2 transition-colors" title="Edit"><Edit2 className="w-5 h-5" /></button>
@@ -299,22 +342,71 @@ export default function AdminProperties() {
             <h2 className="text-3xl font-bold mb-8 text-[#171717]">{formData.id ? 'Edit Property' : 'Add Property'}</h2>
             
             <form onSubmit={handleSave} className="space-y-6">
-              <div className="grid grid-cols-2 md:grid-cols-2 gap-6">
+              
+              {/* Type Selection */}
+              <div className="bg-black/5 p-6 rounded-2xl space-y-6 mb-6">
+                <div>
+                  <label className="block text-sm font-bold text-[#171717] mb-3">Property Type</label>
+                  <div className="flex gap-4">
+                    {(['land', 'house'] as const).map(type => (
+                      <label key={type} className="flex-1 cursor-pointer">
+                        <input type="radio" name="property_type" value={type} checked={formData.property_type === type} onChange={e => setFormData({...formData, property_type: e.target.value as any, property_type_needs_review: false})} className="sr-only" />
+                        <div className={`text-center py-3 px-4 rounded-xl font-bold border-2 transition-all ${formData.property_type === type ? 'border-[#9ABA1B] bg-[#9ABA1B]/10 text-[#9ABA1B]' : 'border-transparent bg-white text-[#171717]/60 hover:bg-white/80'}`}>
+                          {type === 'land' ? 'Land' : 'House'}
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-[#171717] mb-3">Acquisition Type</label>
+                  <div className="flex gap-4">
+                    {(['investment', 'ownership'] as const).map(type => (
+                      <label key={type} className="flex-1 cursor-pointer">
+                        <input type="radio" name="acquisition_type" value={type} checked={formData.acquisition_type === type} onChange={e => setFormData({...formData, acquisition_type: e.target.value as any})} className="sr-only" />
+                        <div className={`text-center py-3 px-4 rounded-xl font-bold border-2 transition-all ${formData.acquisition_type === type ? 'border-[#9ABA1B] bg-[#9ABA1B]/10 text-[#9ABA1B]' : 'border-transparent bg-white text-[#171717]/60 hover:bg-white/80'}`}>
+                          {type === 'investment' ? 'Investment (Fixed-Return)' : 'Ownership'}
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {formData.acquisition_type === 'ownership' && (
+                  <div>
+                    <label className="block text-sm font-bold text-[#171717] mb-3">Ownership Sub-type</label>
+                    <div className="flex gap-4">
+                      {(['co-ownership', 'full-ownership'] as const).map(type => (
+                        <label key={type} className="flex-1 cursor-pointer">
+                          <input type="radio" name="ownership_subtype" value={type} checked={formData.ownership_subtype === type} onChange={e => setFormData({...formData, ownership_subtype: e.target.value as any})} className="sr-only" />
+                          <div className={`text-center py-3 px-4 rounded-xl font-bold border-2 transition-all ${formData.ownership_subtype === type ? 'border-[#9ABA1B] bg-[#9ABA1B]/10 text-[#9ABA1B]' : 'border-transparent bg-white text-[#171717]/60 hover:bg-white/80'}`}>
+                            {type === 'co-ownership' ? 'Fractional Co-Ownership' : 'Buy-to-Own'}
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Shared Fields */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-bold text-[#171717] mb-2">Title</label>
-                  <input type="text" required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors" />
+                  <input type="text" required value={formData.title || ''} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors" />
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-[#171717] mb-2">Slug</label>
-                  <input type="text" required value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors" />
+                  <input type="text" required value={formData.slug || ''} onChange={e => setFormData({...formData, slug: e.target.value})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors" />
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-[#171717] mb-2">Location</label>
-                  <input type="text" required value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors" />
+                  <input type="text" required value={formData.location || ''} onChange={e => setFormData({...formData, location: e.target.value})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors" />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-[#171717] mb-2">Category</label>
-                  <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value as any})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors">
+                  <label className="block text-sm font-bold text-[#171717] mb-2">Public Filter Category (Legacy)</label>
+                  <select required value={formData.category || 'residential'} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors">
                     <option value="residential">Residential</option>
                     <option value="commercial">Commercial</option>
                     <option value="land">Land</option>
@@ -322,40 +414,95 @@ export default function AdminProperties() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-[#171717] mb-2">Min Investment (₦)</label>
-                  <input type="number" required value={formData.min_investment} onChange={e => setFormData({...formData, min_investment: Number(e.target.value)})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors" />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-[#171717] mb-2">Returns (%)</label>
-                  <input type="number" step="0.1" required value={formData.returns_percent} onChange={e => setFormData({...formData, returns_percent: Number(e.target.value)})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors" />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-[#171717] mb-2">Payout Style</label>
-                  <select value={formData.payout_style} onChange={e => setFormData({...formData, payout_style: e.target.value as any})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors">
-                    <option value="after_maturity">After Maturity</option>
-                    <option value="monthly">Monthly</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-[#171717] mb-2">Duration (Months)</label>
-                  <input type="number" required value={formData.duration_months} onChange={e => setFormData({...formData, duration_months: Number(e.target.value)})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors" />
-                </div>
-                <div>
                   <label className="block text-sm font-bold text-[#171717] mb-2">Status</label>
-                  <select value={formData.status} onChange={e => setFormData({...formData, status: e.target.value as any})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors">
+                  <select required value={formData.status || 'open'} onChange={e => setFormData({...formData, status: e.target.value as any})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors">
                     <option value="open">Open</option>
                     <option value="closed">Closed</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-[#171717] mb-2">Total Funding Needed / Units</label>
-                  <input type="number" required value={formData.total_units || 0} onChange={e => setFormData({...formData, total_units: Number(e.target.value)})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors" />
-                </div>
-                <div className="col-span-2">
-                  <label className="block text-sm font-bold text-[#171717] mb-2">Amount Funded / Units Sold</label>
-                  <input type="number" required value={formData.units_sold || 0} onChange={e => setFormData({...formData, units_sold: Number(e.target.value)})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors" />
+                  <label className="block text-sm font-bold text-[#171717] mb-2">Documentation Charges (₦)</label>
+                  <input type="number" required min="0" value={formData.documentation_charges || 0} onChange={e => setFormData({...formData, documentation_charges: Number(e.target.value)})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors" />
                 </div>
               </div>
+
+              {/* Investment-only Fields */}
+              {formData.acquisition_type === 'investment' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-[#171717]/5 p-6 rounded-2xl">
+                  <div className="col-span-1 md:col-span-2 mb-2">
+                    <h3 className="font-bold text-[#171717]">Investment Details</h3>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-[#171717] mb-2">Returns (%)</label>
+                    <input type="number" required step="0.1" min="0" value={formData.returns_percent || 0} onChange={e => setFormData({...formData, returns_percent: Number(e.target.value)})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-[#171717] mb-2">Duration (Months)</label>
+                    <input type="number" required min="1" value={formData.duration_months || 0} onChange={e => setFormData({...formData, duration_months: Number(e.target.value)})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-[#171717] mb-2">Min Investment (₦)</label>
+                    <input type="number" required min="0" value={formData.min_investment || 0} onChange={e => setFormData({...formData, min_investment: Number(e.target.value)})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-[#171717] mb-2">Payout Style</label>
+                    <select required value={formData.payout_style || 'after_maturity'} onChange={e => setFormData({...formData, payout_style: e.target.value})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors">
+                      <option value="after_maturity">After Maturity</option>
+                      <option value="monthly">Monthly</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+
+              {/* Full Ownership Fields */}
+              {formData.acquisition_type === 'ownership' && formData.ownership_subtype === 'full-ownership' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-[#171717]/5 p-6 rounded-2xl">
+                  <div className="col-span-1 md:col-span-2 mb-2">
+                    <h3 className="font-bold text-[#171717]">Full Ownership Details</h3>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-[#171717] mb-2">Duration (Months)</label>
+                    <input type="number" required min="0" value={formData.duration_months || 0} onChange={e => setFormData({...formData, duration_months: Number(e.target.value)})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-[#171717] mb-2">Payment Method</label>
+                    <select required value={formData.payment_method || 'full_payment'} onChange={e => setFormData({...formData, payment_method: e.target.value as any})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors">
+                      <option value="full_payment">Full Payment</option>
+                      <option value="down_payment_spread">Down Payment + Spread</option>
+                      <option value="halal_mortgage">Halal Mortgage</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+
+              {/* Co-ownership Fields */}
+              {formData.acquisition_type === 'ownership' && formData.ownership_subtype === 'co-ownership' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-[#171717]/5 p-6 rounded-2xl">
+                  <div className="col-span-1 md:col-span-2 mb-2">
+                    <h3 className="font-bold text-[#171717]">Fractional Co-Ownership Details</h3>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-[#171717] mb-2">Total Slots</label>
+                    <input type="number" required min="1" value={formData.total_units || 0} onChange={e => setFormData({...formData, total_units: Number(e.target.value)})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-[#171717] mb-2">Slots Sold</label>
+                    <input type="number" required min="0" value={formData.units_sold || 0} onChange={e => setFormData({...formData, units_sold: Number(e.target.value)})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-[#171717] mb-2">Price per Slot (₦)</label>
+                    <input type="number" required min="0" value={formData.price_per_slot || 0} onChange={e => setFormData({...formData, price_per_slot: Number(e.target.value)})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-[#171717] mb-2">Payment Method</label>
+                    <select required value={formData.payment_method || 'full_payment'} onChange={e => setFormData({...formData, payment_method: e.target.value as any})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors">
+                      <option value="full_payment">Full Payment</option>
+                      <option value="down_payment_spread">Down Payment + Spread</option>
+                      <option value="halal_mortgage">Halal Mortgage</option>
+                    </select>
+                  </div>
+                </div>
+              )}
 
               {/* Property Image Upload Section */}
               <div className="pt-2">
@@ -367,7 +514,7 @@ export default function AdminProperties() {
               
               <div>
                 <label className="block text-sm font-bold text-[#171717] mb-2">Description</label>
-                <textarea required value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors h-32 resize-none"></textarea>
+                <textarea required value={formData.description || ''} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors h-32 resize-none"></textarea>
               </div>
 
               <div className="pt-6 flex justify-end">
