@@ -114,14 +114,12 @@ export function Navbar() {
             ) : (
               <>
                 
-                <a
-                  href="https://wa.me/2348097701222"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  to="/signup"
                   className="hidden sm:inline-flex h-10 items-center justify-center rounded-full bg-[#171717] dark:bg-white px-6 text-sm font-semibold text-white dark:text-[#171717] hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
                 >
                   Join now
-                </a>
+                </Link>
               </>
             )}
 
@@ -182,15 +180,13 @@ export function Navbar() {
                 ) : (
                   <>
                     
-                    <a
-                      href="https://wa.me/2348097701222"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <Link
+                      to="/signup"
                       onClick={() => setMobileMenuOpen(false)}
                       className="flex w-full h-12 items-center justify-center rounded-full bg-[#171717] dark:bg-white text-base font-semibold text-white dark:text-[#171717]"
                     >
                       Join now
-                    </a>
+                    </Link>
                   </>
                 )}
               </div>

@@ -45,13 +45,13 @@ export default function Properties() {
         if (minPrice) {
           const min = parseFloat(minPrice);
           if (!isNaN(min)) {
-            filteredData = filteredData.filter(p => p.min_investment >= min);
+            filteredData = filteredData.filter(p => (p.min_investment || p.price_per_slot || 0) >= min);
           }
         }
         if (maxPrice) {
           const max = parseFloat(maxPrice);
           if (!isNaN(max)) {
-            filteredData = filteredData.filter(p => p.min_investment <= max);
+            filteredData = filteredData.filter(p => (p.min_investment || p.price_per_slot || 0) <= max);
           }
         }
         
@@ -80,7 +80,6 @@ export default function Properties() {
         return newList;
       } else {
         if (prev.length >= 3) {
-          alert('You can only compare up to 3 properties.');
           return prev;
         }
         return [...prev, property];
@@ -403,20 +402,24 @@ export default function Properties() {
                         {compareList.map(p => <td key={p.id} className="p-4 text-sm text-[#171717] dark:text-white capitalize">{p.category.replace('_', ' ')}</td>)}
                       </tr>
                       <tr>
-                        <td className="p-4 text-sm font-medium text-gray-500 dark:text-gray-400">Min. Investment</td>
-                        {compareList.map(p => <td key={p.id} className="p-4 text-sm font-bold text-[#171717] dark:text-white">₦{p.min_investment.toLocaleString()}</td>)}
+                        <td className="p-4 text-sm font-medium text-gray-500 dark:text-gray-400">Min. Investment / Price per Slot</td>
+                        {compareList.map(p => (
+                          <td key={p.id} className="p-4 text-sm font-bold text-[#171717] dark:text-white">
+                            {p.acquisition_type === 'investment' && p.min_investment ? `₦${p.min_investment.toLocaleString()}` : p.ownership_subtype === 'co-ownership' && p.price_per_slot ? `₦${p.price_per_slot.toLocaleString()}` : '-'}
+                          </td>
+                        ))}
                       </tr>
                       <tr>
                         <td className="p-4 text-sm font-medium text-gray-500 dark:text-gray-400">Expected Returns</td>
-                        {compareList.map(p => <td key={p.id} className="p-4 text-sm font-bold text-[#9ABA1B]">{p.returns_percent}%</td>)}
+                        {compareList.map(p => <td key={p.id} className="p-4 text-sm font-bold text-[#9ABA1B]">{p.returns_percent || 0}%</td>)}
                       </tr>
                       <tr>
                         <td className="p-4 text-sm font-medium text-gray-500 dark:text-gray-400">Duration</td>
-                        {compareList.map(p => <td key={p.id} className="p-4 text-sm text-[#171717] dark:text-white">{p.duration_months} months</td>)}
+                        {compareList.map(p => <td key={p.id} className="p-4 text-sm text-[#171717] dark:text-white">{p.duration_months ? `${p.duration_months} months` : '-'}</td>)}
                       </tr>
                       <tr>
-                        <td className="p-4 text-sm font-medium text-gray-500 dark:text-gray-400">Payout Style</td>
-                        {compareList.map(p => <td key={p.id} className="p-4 text-sm text-[#171717] dark:text-white capitalize">{p.payout_style.replace('_', ' ')}</td>)}
+                        <td className="p-4 text-sm font-medium text-gray-500 dark:text-gray-400">Payout / Payment</td>
+                        {compareList.map(p => <td key={p.id} className="p-4 text-sm text-[#171717] dark:text-white capitalize">{p.payout_style ? p.payout_style.replace('_', ' ') : p.payment_method ? p.payment_method.replace(/_/g, ' ') : '-'}</td>)}
                       </tr>
                       <tr>
                         <td className="p-4 text-sm font-medium text-gray-500 dark:text-gray-400">Status</td>

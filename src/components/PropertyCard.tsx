@@ -91,14 +91,44 @@ export function PropertyCard({ property, onCompareToggle, isCompared }: Property
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-3.5 sm:mb-5 mt-auto pt-3 sm:pt-4 border-t border-black/5 dark:border-white/5">
-          <div>
-            <p className="text-[10px] sm:text-xs uppercase tracking-wider text-gray-400 mb-0.5 font-bold">Min. Inv.</p>
-            <p className="font-black text-[#171717] dark:text-white text-xs sm:text-sm md:text-base lg:text-lg tracking-tight truncate">₦{property.min_investment >= 1000000 ? `${(property.min_investment / 1000000).toLocaleString()}M` : property.min_investment.toLocaleString()}</p>
-          </div>
-          <div>
-            <p className="text-[10px] sm:text-xs uppercase tracking-wider text-gray-400 mb-0.5 font-bold">Returns</p>
-            <p className="font-black text-[#9ABA1B] text-xs sm:text-sm md:text-base lg:text-lg tracking-tight">{property.returns_percent}%</p>
-          </div>
+          {property.acquisition_type === 'investment' ? (
+            <>
+              <div>
+                <p className="text-[10px] sm:text-xs uppercase tracking-wider text-gray-400 mb-0.5 font-bold">Min. Inv.</p>
+                <p className="font-black text-[#171717] dark:text-white text-xs sm:text-sm md:text-base lg:text-lg tracking-tight truncate">
+                  {property.min_investment ? `₦${property.min_investment >= 1000000 ? `${(property.min_investment / 1000000).toLocaleString()}M` : property.min_investment.toLocaleString()}` : '-'}
+                </p>
+              </div>
+              <div>
+                <p className="text-[10px] sm:text-xs uppercase tracking-wider text-gray-400 mb-0.5 font-bold">Returns</p>
+                <p className="font-black text-[#9ABA1B] text-xs sm:text-sm md:text-base lg:text-lg tracking-tight">{property.returns_percent || 0}%</p>
+              </div>
+            </>
+          ) : property.ownership_subtype === 'co-ownership' ? (
+            <>
+              <div>
+                <p className="text-[10px] sm:text-xs uppercase tracking-wider text-gray-400 mb-0.5 font-bold">Per Slot</p>
+                <p className="font-black text-[#171717] dark:text-white text-xs sm:text-sm md:text-base lg:text-lg tracking-tight truncate">
+                  {property.price_per_slot ? `₦${property.price_per_slot >= 1000000 ? `${(property.price_per_slot / 1000000).toLocaleString()}M` : property.price_per_slot.toLocaleString()}` : '-'}
+                </p>
+              </div>
+              <div>
+                <p className="text-[10px] sm:text-xs uppercase tracking-wider text-gray-400 mb-0.5 font-bold">Type</p>
+                <p className="font-black text-[#9ABA1B] text-xs sm:text-sm md:text-base lg:text-lg tracking-tight truncate">Co-own</p>
+              </div>
+            </>
+          ) : (
+            <>
+              <div>
+                <p className="text-[10px] sm:text-xs uppercase tracking-wider text-gray-400 mb-0.5 font-bold">Type</p>
+                <p className="font-black text-[#171717] dark:text-white text-xs sm:text-sm md:text-base lg:text-lg tracking-tight truncate">Buy-to-Own</p>
+              </div>
+              <div>
+                <p className="text-[10px] sm:text-xs uppercase tracking-wider text-gray-400 mb-0.5 font-bold">Duration</p>
+                <p className="font-black text-[#9ABA1B] text-xs sm:text-sm md:text-base lg:text-lg tracking-tight truncate">{property.duration_months || '-'} Mos</p>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Button */}

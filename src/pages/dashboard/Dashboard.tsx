@@ -9,7 +9,7 @@ type Investment = Database['public']['Tables']['investments']['Row'];
 type Property = Database['public']['Tables']['properties']['Row'];
 
 type InvestmentWithProperty = Investment & {
-  property: Property | null;
+  property: Partial<Property> | null;
   isLocal?: boolean;
   localType?: 'wishlist' | 'offline';
 };
@@ -57,13 +57,21 @@ export default function Dashboard() {
 
       // Read local portfolio
       const key = `terrashare_portfolio_${session.user.id}`;
-      const localData = JSON.parse(localStorage.getItem(key) || '[]');
+      let localData: any[] = [];
+      try {
+        const stored = localStorage.getItem(key);
+        if (stored) localData = JSON.parse(stored);
+      } catch (err) {
+        console.warn('Failed to parse local portfolio data:', err);
+      }
       
       const localInvestments: InvestmentWithProperty[] = localData.map((item: any) => ({
         id: item.id,
         user_id: session.user.id,
         property_id: item.property_id,
         amount: item.min_investment || 0, // Fallback to min investment
+        units_purchased: 1,
+        matures_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
         status: item.type === 'offline' ? 'confirmed' : 'pending',
         invested_at: item.added_at,
         isLocal: true,

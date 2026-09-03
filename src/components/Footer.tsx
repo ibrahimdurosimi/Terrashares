@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Building2, Facebook, Twitter, Instagram, Linkedin, Mail, Info } from 'lucide-react';
 
 export function Footer() {
+  const [logoError, setLogoError] = useState(false);
   return (
     <footer className="bg-[#F5F8E8] dark:bg-[#111] pt-12 pb-8">
       <div className="container mx-auto px-4 sm:px-6 lg:px-10">
@@ -44,7 +46,19 @@ export function Footer() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-16">
           <div className="lg:col-span-5">
             <Link to="/" className="flex items-center gap-2 mb-6">
-              <img src="/logo.png" alt="Terrashare" className="h-10 object-contain" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling.style.display = 'flex'; }} /><div className="hidden items-center gap-2" style={{display: "none"}}><Building2 className="h-7 w-7 text-[#9ABA1B]" /><span className="text-2xl text-[#171717] dark:text-white" style={{ fontFamily: 'Georgia, serif' }}>Terrashare</span></div>
+              {!logoError ? (
+                <img 
+                  src="/logo.png" 
+                  alt="Terrashare" 
+                  className="h-10 object-contain" 
+                  onError={() => setLogoError(true)} 
+                />
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Building2 className="h-7 w-7 text-[#9ABA1B]" />
+                  <span className="text-2xl text-[#171717] dark:text-white" style={{ fontFamily: 'Georgia, serif' }}>Terrashare</span>
+                </div>
+              )}
             </Link>
             <p className="text-[#171717]/60 dark:text-white/60 leading-relaxed mb-6 max-w-sm">
               A real estate technology platform connecting capital providers, buyers, and everyday Nigerians to affordable property ownership.

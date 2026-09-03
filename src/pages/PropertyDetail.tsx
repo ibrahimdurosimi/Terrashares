@@ -90,18 +90,25 @@ export default function PropertyDetail() {
     ? Math.round((property.units_sold / property.total_units) * 100)
     : (property.status === 'closed' ? 100 : 0);
 
-  const getCategoryLabel = (cat: string) => cat.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-  const getPayoutLabel = (style: string) => style.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  const getCategoryLabel = (cat?: string | null) => cat ? cat.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : '';
+  const getPayoutLabel = (style?: string | null) => style ? style.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : '';
 
   const handleAddToPortfolio = async (type: 'wishlist' | 'offline') => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
-      alert("Please login to add to your portfolio.");
+      // Redirect or inform gently
+      window.location.href = '/login';
       return;
     }
     
     const key = `terrashare_portfolio_${session.user.id}`;
-    const existing = JSON.parse(localStorage.getItem(key) || '[]');
+    let existing: any[] = [];
+    try {
+      const stored = localStorage.getItem(key);
+      if (stored) existing = JSON.parse(stored);
+    } catch (err) {
+      console.warn('Failed to parse portfolio:', err);
+    }
     
     // Check if already exists
     if (!existing.some((item: any) => item.property_id === property?.id)) {
@@ -128,28 +135,40 @@ export default function PropertyDetail() {
   };
 
   // Sample data if none provided
+  const isCoOwnership = property.ownership_subtype === 'co-ownership';
+  const isInvestment = property.acquisition_type === 'investment';
+
   const chartData = valuations.length > 0 
     ? valuations.map(v => ({ name: new Date(v.recorded_date).toLocaleDateString(undefined, {month: 'short', year: 'numeric'}), value: v.value }))
-    : [
+    : (isInvestment && property.min_investment) ? [
         { name: 'Jan 2023', value: property.min_investment },
         { name: 'Jul 2023', value: property.min_investment * 1.05 },
         { name: 'Jan 2024', value: property.min_investment * 1.12 },
-        { name: 'Current', value: property.min_investment * (1 + property.returns_percent / 100) }
-      ];
+        { name: 'Current', value: property.min_investment * (1 + (property.returns_percent || 0) / 100) }
+      ] : (isCoOwnership && property.price_per_slot) ? [
+        { name: 'Jan 2023', value: property.price_per_slot },
+        { name: 'Jul 2023', value: property.price_per_slot * 1.05 },
+        { name: 'Jan 2024', value: property.price_per_slot * 1.12 },
+        { name: 'Current', value: property.price_per_slot * (1 + (property.returns_percent || 0) / 100) }
+      ] : [];
 
   const propertyFaqs = [
-    {
+    ...(isInvestment && property.min_investment ? [{
       question: `What is the minimum investment for ${property.title}?`,
       answer: `The minimum investment for this property is ₦${property.min_investment.toLocaleString()}.`
     },
     {
       question: `How does rental income work for this property?`,
-      answer: `This property offers a projected return of ${property.returns_percent}% over a duration of ${property.duration_months} months. Returns are paid out ${getPayoutLabel(property.payout_style).toLowerCase()}.`
-    },
-    {
+      answer: `This property offers a projected return of ${property.returns_percent || 0}% over a duration of ${property.duration_months || 0} months. Returns are paid out ${getPayoutLabel(property.payout_style || '').toLowerCase()}.`
+    }] : []),
+    ...(isCoOwnership && property.price_per_slot ? [{
+      question: `What is the price per slot for ${property.title}?`,
+      answer: `The price per slot for this property is ₦${property.price_per_slot.toLocaleString()}.`
+    }] : []),
+    ...(property.duration_months ? [{
       question: `Can I withdraw my investment early?`,
       answer: `Typically, investments are locked in for the full ${property.duration_months}-month duration to ensure the projected returns and property stability.`
-    },
+    }] : []),
     {
       question: `What type of property is this?`,
       answer: `This is a ${getCategoryLabel(property.category).toLowerCase()} property located in ${property.location}.`
@@ -191,8 +210,17 @@ export default function PropertyDetail() {
             </div>
           </div>
           <div className="text-left sm:text-right">
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Returns</p>
-            <p className="text-2xl font-bold text-[#449175]">{property.returns_percent}%</p>
+            {isInvestment && property.returns_percent ? (
+              <>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Returns</p>
+                <p className="text-2xl font-bold text-[#449175]">{property.returns_percent}%</p>
+              </>
+            ) : isCoOwnership && property.price_per_slot ? (
+              <>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Price per slot</p>
+                <p className="text-2xl font-bold text-[#449175]">₦{property.price_per_slot.toLocaleString()}</p>
+              </>
+            ) : null}
           </div>
         </div>
 
@@ -240,26 +268,59 @@ export default function PropertyDetail() {
         <div className="mb-12">
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Asset details</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <div className="bg-[#F8F9FA] dark:bg-white/5 p-4 rounded-xl">
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Minimum investment</p>
-              <p className="font-bold text-gray-900 dark:text-gray-100">₦{property.min_investment.toLocaleString()}</p>
-            </div>
-            <div className="bg-[#F8F9FA] dark:bg-white/5 p-4 rounded-xl">
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Returns</p>
-              <p className="font-bold text-gray-900 dark:text-gray-100">{property.returns_percent}%</p>
-            </div>
+            {isInvestment ? (
+              <>
+                <div className="bg-[#F8F9FA] dark:bg-white/5 p-4 rounded-xl">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Minimum investment</p>
+                  <p className="font-bold text-gray-900 dark:text-gray-100">
+                    {property.min_investment ? `₦${property.min_investment.toLocaleString()}` : '-'}
+                  </p>
+                </div>
+                <div className="bg-[#F8F9FA] dark:bg-white/5 p-4 rounded-xl">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Returns</p>
+                  <p className="font-bold text-gray-900 dark:text-gray-100">{property.returns_percent}%</p>
+                </div>
+              </>
+            ) : isCoOwnership ? (
+              <>
+                <div className="bg-[#F8F9FA] dark:bg-white/5 p-4 rounded-xl">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Price per slot</p>
+                  <p className="font-bold text-gray-900 dark:text-gray-100">
+                    {property.price_per_slot ? `₦${property.price_per_slot.toLocaleString()}` : '-'}
+                  </p>
+                </div>
+                <div className="bg-[#F8F9FA] dark:bg-white/5 p-4 rounded-xl">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Total slots</p>
+                  <p className="font-bold text-gray-900 dark:text-gray-100">{property.total_units || '-'}</p>
+                </div>
+              </>
+            ) : (
+              <div className="bg-[#F8F9FA] dark:bg-white/5 p-4 rounded-xl">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Acquisition Type</p>
+                <p className="font-bold text-gray-900 dark:text-gray-100">Buy-to-Own</p>
+              </div>
+            )}
             <div className="bg-[#F8F9FA] dark:bg-white/5 p-4 rounded-xl">
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Category</p>
               <p className="font-bold text-gray-900 dark:text-gray-100">{getCategoryLabel(property.category)}</p>
             </div>
-            <div className="bg-[#F8F9FA] dark:bg-white/5 p-4 rounded-xl">
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Payout Style</p>
-              <p className="font-bold text-gray-900 dark:text-gray-100">{getPayoutLabel(property.payout_style)}</p>
-            </div>
-            <div className="bg-[#F8F9FA] dark:bg-white/5 p-4 rounded-xl">
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Duration</p>
-              <p className="font-bold text-gray-900 dark:text-gray-100">{property.duration_months} Months</p>
-            </div>
+            {isInvestment ? (
+              <>
+                <div className="bg-[#F8F9FA] dark:bg-white/5 p-4 rounded-xl">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Payout Style</p>
+                  <p className="font-bold text-gray-900 dark:text-gray-100">{getPayoutLabel(property.payout_style)}</p>
+                </div>
+                <div className="bg-[#F8F9FA] dark:bg-white/5 p-4 rounded-xl">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Duration</p>
+                  <p className="font-bold text-gray-900 dark:text-gray-100">{property.duration_months} Months</p>
+                </div>
+              </>
+            ) : property.payment_method ? (
+              <div className="bg-[#F8F9FA] dark:bg-white/5 p-4 rounded-xl">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Payment Method</p>
+                <p className="font-bold text-gray-900 dark:text-gray-100">{getPayoutLabel(property.payment_method)}</p>
+              </div>
+            ) : null}
             <div className="bg-[#F8F9FA] dark:bg-white/5 p-4 rounded-xl">
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Status</p>
               <p className={`font-bold ${property.status === 'open' ? 'text-[#449175]' : 'text-[#449175]'}`}>
@@ -270,13 +331,15 @@ export default function PropertyDetail() {
         </div>
 
         {/* 6.5. ROI Calculator */}
-        <div className="mb-12">
-          <PropertyROICalculator 
-            minInvestment={property.min_investment}
-            returnsPercent={property.returns_percent}
-            durationMonths={property.duration_months}
-          />
-        </div>
+        {isInvestment && property.min_investment && property.returns_percent && property.duration_months && (
+          <div className="mb-12">
+            <PropertyROICalculator 
+              minInvestment={property.min_investment}
+              returnsPercent={property.returns_percent}
+              durationMonths={property.duration_months}
+            />
+          </div>
+        )}
 
         {/* 7. Property Value Over Time */}
         <div>
@@ -352,7 +415,7 @@ export default function PropertyDetail() {
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Choose how you'd like to get in touch with our investment managers to proceed with your investment.</p>
                 
                 <a 
-                  href={`https://wa.me/2348174452207?text=${encodeURIComponent(`Hello! I am interested in investing in ${property.title} located at ${property.location}. The minimum investment is ₦${property.min_investment.toLocaleString()}. Please let me know how to proceed.`)}`}
+                  href={`https://wa.me/2348174452207?text=${encodeURIComponent(`Hello! I am interested in acquiring ${property.title} located at ${property.location}.${isInvestment && property.min_investment ? ` The minimum investment is ₦${property.min_investment.toLocaleString()}.` : isCoOwnership && property.price_per_slot ? ` The price per slot is ₦${property.price_per_slot.toLocaleString()}.` : ''} Please let me know how to proceed.`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center w-full p-4 rounded-2xl bg-[#25D366]/10 border border-[#25D366]/20 hover:bg-[#25D366]/20 transition-colors"
