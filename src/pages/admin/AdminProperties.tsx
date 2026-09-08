@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Database } from '../../types/database';
-import { Edit2, Trash2, Plus, X, LineChart as ChartIcon, AlertTriangle, Loader2 } from 'lucide-react';
+import { Edit2, Trash2, Plus, X, LineChart as ChartIcon, AlertTriangle, Loader2, Eye, EyeOff } from 'lucide-react';
 import { ImageUploadDropzone } from '../../components/ImageUploadDropzone';
+import { isPropertyPublished } from '../../utils/propertyUtils';
 
 type Property = Database['public']['Tables']['properties']['Row'];
 type Valuation = Database['public']['Tables']['property_valuations']['Row'];
@@ -13,6 +14,9 @@ export default function AdminProperties() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isValuationModalOpen, setIsValuationModalOpen] = useState(false);
   const [formData, setFormData] = useState<Partial<Property>>({});
+  const [modalIsPublished, setModalIsPublished] = useState<boolean>(true);
+  const [isTogglingPublishId, setIsTogglingPublishId] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<'all' | 'published' | 'unpublished'>('all');
   const [currentPropId, setCurrentPropId] = useState<string | null>(null);
   const [valuations, setValuations] = useState<Valuation[]>([]);
   const [valuationForm, setValuationForm] = useState({ recorded_date: '', value: 0 });
@@ -35,6 +39,52 @@ export default function AdminProperties() {
     setLoading(false);
   }
 
+  const handleTogglePublish = async (prop: Property) => {
+    const currentPublished = isPropertyPublished(prop);
+    const nextPublished = !currentPublished;
+    setIsTogglingPublishId(prop.id);
+    
+    const currentDetails = (prop.type_details && typeof prop.type_details === 'object') ? prop.type_details : {};
+    const updatedDetails = {
+      ...currentDetails,
+      is_published: nextPublished,
+    };
+
+    try {
+      const { error } = await (supabase as any)
+        .from('properties')
+        .update({
+          type_details: updatedDetails,
+        })
+        .eq('id', prop.id);
+
+      if (error) throw error;
+
+      // Optimistically update local state
+      setProperties(prev => prev.map(p => {
+        if (p.id === prop.id) {
+          return {
+            ...p,
+            type_details: updatedDetails as any,
+          };
+        }
+        return p;
+      }));
+
+      setActionSuccess(
+        nextPublished
+          ? `"${prop.title}" published successfully. It is now live on the website.`
+          : `"${prop.title}" unpublished. It will no longer appear on the website.`
+      );
+      setTimeout(() => setActionSuccess(null), 4000);
+    } catch (err: any) {
+      console.error('Error toggling publish status:', err);
+      alert(err?.message || 'Failed to update publication status.');
+    } finally {
+      setIsTogglingPublishId(null);
+    }
+  };
+
   const handleSave = async (e: any) => {
     e.preventDefault();
     const { id, ...rest } = formData;
@@ -46,6 +96,15 @@ export default function AdminProperties() {
     } else if (!Array.isArray(rest.image_urls)) {
       processedData.image_urls = [];
     }
+
+    // Set published flag in type_details
+    const existingDetails = (processedData.type_details && typeof processedData.type_details === 'object') 
+      ? processedData.type_details 
+      : {};
+    processedData.type_details = {
+      ...existingDetails,
+      is_published: modalIsPublished,
+    };
     
     // Clean data based on selected paths
     if (processedData.acquisition_type === 'investment') {
@@ -93,6 +152,7 @@ export default function AdminProperties() {
       property_type: 'land', acquisition_type: 'investment', ownership_subtype: null,
       documentation_charges: 0, price_per_slot: 0, payment_method: null
     });
+    setModalIsPublished(true);
     setIsModalOpen(true);
   };
 
@@ -107,6 +167,7 @@ export default function AdminProperties() {
       price_per_slot: prop.price_per_slot || 0,
       payment_method: prop.payment_method || null
     });
+    setModalIsPublished(isPropertyPublished(prop));
     setIsModalOpen(true);
   };
 
@@ -200,13 +261,54 @@ export default function AdminProperties() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-[#171717]">Manage Properties</h1>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <div>
+          <h1 className="text-3xl font-bold text-[#171717]">Manage Properties</h1>
+          <p className="text-sm text-[#171717]/60 mt-1">
+            Publish or unpublish properties to control what appears on the website front end.
+          </p>
+        </div>
         <button 
           onClick={openNew}
-          className="flex items-center px-6 py-3 bg-[#171717] text-white rounded-full hover:bg-gray-800 transition-colors font-medium shadow-sm"
+          className="flex items-center px-6 py-3 bg-[#171717] text-white rounded-full hover:bg-gray-800 transition-colors font-medium shadow-sm shrink-0"
         >
           <Plus className="w-4 h-4 mr-2" /> Add Property
+        </button>
+      </div>
+
+      {/* Filter Tabs */}
+      <div className="flex flex-wrap items-center gap-2 mb-6">
+        <button
+          onClick={() => setStatusFilter('all')}
+          className={`px-4 py-2 rounded-full text-xs font-semibold transition-all ${
+            statusFilter === 'all'
+              ? 'bg-[#171717] text-white shadow-sm'
+              : 'bg-white/80 text-[#171717]/70 hover:bg-white hover:text-[#171717] border border-black/5'
+          }`}
+        >
+          All Properties ({properties.length})
+        </button>
+        <button
+          onClick={() => setStatusFilter('published')}
+          className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold transition-all ${
+            statusFilter === 'published'
+              ? 'bg-emerald-700 text-white shadow-sm'
+              : 'bg-white/80 text-emerald-800 hover:bg-emerald-50 border border-emerald-200'
+          }`}
+        >
+          <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+          Published ({properties.filter(isPropertyPublished).length})
+        </button>
+        <button
+          onClick={() => setStatusFilter('unpublished')}
+          className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold transition-all ${
+            statusFilter === 'unpublished'
+              ? 'bg-amber-600 text-white shadow-sm'
+              : 'bg-white/80 text-amber-800 hover:bg-amber-50 border border-amber-200'
+          }`}
+        >
+          <EyeOff className="w-3.5 h-3.5" />
+          Unpublished / Hidden ({properties.filter(p => !isPropertyPublished(p)).length})
         </button>
       </div>
 
@@ -215,50 +317,107 @@ export default function AdminProperties() {
           <div className="p-12 text-center text-[#171717]/50">Loading properties...</div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[800px]">
+            <table className="w-full text-left border-collapse min-w-[850px]">
               <thead>
                 <tr className="bg-black/5 border-b border-black/5 text-sm text-[#171717]/50 uppercase tracking-wider">
                   <th className="p-6 font-medium">Property</th>
                   <th className="p-6 font-medium">Category</th>
-                  <th className="p-6 font-medium">Status</th>
+                  <th className="p-6 font-medium">Visibility & Status</th>
                   <th className="p-6 font-medium">Min Invest</th>
                   <th className="p-6 font-medium text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-black/5 text-[#171717]">
-                {properties.map(prop => (
-                  <tr key={prop.id} className="hover:bg-white/50 transition-colors">
-                    <td className="p-6">
-                      <p className="font-bold text-[#171717]">{prop.title}</p>
-                      <p className="text-xs text-[#171717]/50">{prop.location}</p>
-                    </td>
-                    <td className="p-6 capitalize">
-                      {prop.category.replace('_', ' ')}
-                      {prop.property_type_needs_review && (
-                        <span className="block mt-1 text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full w-max">
-                          Needs Review
-                        </span>
-                      )}
-                    </td>
-                    <td className="p-6">
-                      <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${prop.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                        {prop.status}
-                      </span>
-                    </td>
-                    <td className="p-6 font-bold">
-                      {prop.acquisition_type === 'investment' 
-                        ? `₦${(prop.min_investment || 0).toLocaleString()}`
-                        : prop.ownership_subtype === 'co-ownership' 
-                          ? `₦${(prop.price_per_slot || 0).toLocaleString()} / slot`
-                          : '-'}
-                    </td>
-                    <td className="p-6 text-right space-x-2">
-                      <button onClick={() => openValuations(prop.id)} className="text-[#171717]/60 hover:text-blue-600 p-2 transition-colors" title="Manage Valuations"><ChartIcon className="w-5 h-5" /></button>
-                      <button onClick={() => openEdit(prop)} className="text-[#171717]/60 hover:text-[#9ABA1B] p-2 transition-colors" title="Edit"><Edit2 className="w-5 h-5" /></button>
-                      <button onClick={() => requestDelete(prop)} className="text-[#171717]/60 hover:text-red-600 p-2 transition-colors" title="Delete Property"><Trash2 className="w-5 h-5" /></button>
-                    </td>
-                  </tr>
-                ))}
+                {properties
+                  .filter(prop => {
+                    if (statusFilter === 'published') return isPropertyPublished(prop);
+                    if (statusFilter === 'unpublished') return !isPropertyPublished(prop);
+                    return true;
+                  })
+                  .map(prop => {
+                    const isPublished = isPropertyPublished(prop);
+                    const isToggling = isTogglingPublishId === prop.id;
+
+                    return (
+                      <tr key={prop.id} className={`hover:bg-white/50 transition-colors ${!isPublished ? 'bg-amber-50/20' : ''}`}>
+                        <td className="p-6">
+                          <div className="flex items-center gap-2">
+                            <p className="font-bold text-[#171717]">{prop.title}</p>
+                            {!isPublished && (
+                              <span className="text-[10px] font-semibold bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded-full">
+                                Hidden
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs text-[#171717]/50">{prop.location}</p>
+                        </td>
+                        <td className="p-6 capitalize">
+                          {prop.category.replace('_', ' ')}
+                          {prop.property_type_needs_review && (
+                            <span className="block mt-1 text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full w-max">
+                              Needs Review
+                            </span>
+                          )}
+                        </td>
+                        <td className="p-6">
+                          <div className="flex flex-col gap-1.5 items-start">
+                            {isPublished ? (
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-100/90 text-emerald-800 border border-emerald-200">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                                Published (Live)
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-900 border border-amber-300">
+                                <EyeOff className="w-3 h-3 text-amber-700" />
+                                Unpublished (Hidden)
+                              </span>
+                            )}
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${prop.status === 'open' ? 'text-gray-500 bg-gray-100' : 'text-red-700 bg-red-100'}`}>
+                              {prop.status}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="p-6 font-bold">
+                          {prop.acquisition_type === 'investment' 
+                            ? `₦${(prop.min_investment || 0).toLocaleString()}`
+                            : prop.ownership_subtype === 'co-ownership' 
+                              ? `₦${(prop.price_per_slot || 0).toLocaleString()} / slot`
+                              : '-'}
+                        </td>
+                        <td className="p-6 text-right space-x-2 whitespace-nowrap">
+                          {/* Unpublish / Publish Button */}
+                          <button
+                            onClick={() => handleTogglePublish(prop)}
+                            disabled={isToggling}
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all shadow-sm ${
+                              isPublished
+                                ? 'bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300'
+                                : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300'
+                            } disabled:opacity-50`}
+                            title={isPublished ? "Unpublish this property so it does not appear on the website front end" : "Publish this property to make it visible on the website"}
+                          >
+                            {isToggling ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            ) : isPublished ? (
+                              <>
+                                <EyeOff className="w-3.5 h-3.5 text-amber-700" />
+                                <span>Unpublish</span>
+                              </>
+                            ) : (
+                              <>
+                                <Eye className="w-3.5 h-3.5 text-emerald-700" />
+                                <span>Publish</span>
+                              </>
+                            )}
+                          </button>
+
+                          <button onClick={() => openValuations(prop.id)} className="text-[#171717]/60 hover:text-blue-600 p-2 transition-colors inline-block" title="Manage Valuations"><ChartIcon className="w-5 h-5" /></button>
+                          <button onClick={() => openEdit(prop)} className="text-[#171717]/60 hover:text-[#9ABA1B] p-2 transition-colors inline-block" title="Edit"><Edit2 className="w-5 h-5" /></button>
+                          <button onClick={() => requestDelete(prop)} className="text-[#171717]/60 hover:text-red-600 p-2 transition-colors inline-block" title="Delete Property"><Trash2 className="w-5 h-5" /></button>
+                        </td>
+                      </tr>
+                    );
+                  })}
               </tbody>
             </table>
           </div>
@@ -414,10 +573,25 @@ export default function AdminProperties() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-[#171717] mb-2">Status</label>
+                  <label className="block text-sm font-bold text-[#171717] mb-2">Status (Offering)</label>
                   <select required value={formData.status || 'open'} onChange={e => setFormData({...formData, status: e.target.value as any})} className="w-full px-4 py-3 bg-white border border-black/5 focus:ring-2 focus:ring-[#9ABA1B] rounded-xl transition-colors">
                     <option value="open">Open</option>
                     <option value="closed">Closed</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-[#171717] mb-2">Website Visibility</label>
+                  <select 
+                    value={modalIsPublished ? 'published' : 'unpublished'} 
+                    onChange={e => setModalIsPublished(e.target.value === 'published')} 
+                    className={`w-full px-4 py-3 font-semibold border rounded-xl transition-colors ${
+                      modalIsPublished 
+                        ? 'bg-emerald-50 border-emerald-300 text-emerald-900 focus:ring-2 focus:ring-emerald-500' 
+                        : 'bg-amber-50 border-amber-300 text-amber-900 focus:ring-2 focus:ring-amber-500'
+                    }`}
+                  >
+                    <option value="published">Published (Visible to Visitors)</option>
+                    <option value="unpublished">Unpublished (Hidden from Website)</option>
                   </select>
                 </div>
                 <div>

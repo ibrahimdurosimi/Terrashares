@@ -13,6 +13,7 @@ import { SocialProofToast } from '../components/SocialProofToast';
 import { AnimatedHeroText } from '../components/AnimatedHeroText';
 import { AnimatedCounter } from '../components/AnimatedCounter';
 import { motion } from 'motion/react';
+import { isPropertyPublished } from '../utils/propertyUtils';
 import teamHumanTouchImg from '../assets/images/regenerated_image_1787233145158.png';
 import aboutTerrashareImg from '../assets/images/regenerated_image_1787234208742.jpg';
 
@@ -68,11 +69,11 @@ export default function Home() {
         .from('properties')
         .select('*')
         .eq('status', 'open')
-        .order('created_at', { ascending: false })
-        .limit(6);
+        .order('created_at', { ascending: false });
         
       if (props && props.length > 0) {
-        setFeaturedProperties(props);
+        const published = props.filter(isPropertyPublished).slice(0, 6);
+        setFeaturedProperties(published);
       }
 
       const { count: propsCount } = await supabase.from('properties').select('*', { count: 'exact', head: true });

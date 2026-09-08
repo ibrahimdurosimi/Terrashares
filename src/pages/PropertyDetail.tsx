@@ -3,9 +3,10 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { Database } from '../types/database';
-import { ArrowLeft, MapPin, X, MessageCircle, Mail, BookmarkPlus } from 'lucide-react';
+import { ArrowLeft, MapPin, X, MessageCircle, Mail, BookmarkPlus, EyeOff } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 import { motion, AnimatePresence } from 'motion/react';
+import { isPropertyPublished } from '../utils/propertyUtils';
 import { SuccessModal } from '../components/SuccessModal';
 import { ImageGallery } from '../components/ImageGallery';
 import { FAQAccordion } from '../components/FAQAccordion';
@@ -36,6 +37,8 @@ export default function PropertyDetail() {
   const [isPortfolioModalOpen, setIsPortfolioModalOpen] = useState(false);
   const [portfolioStatus, setPortfolioStatus] = useState<'idle'|'success'>('idle');
 
+  const [isUnpublished, setIsUnpublished] = useState(false);
+
   useEffect(() => {
     async function fetchPropertyDetails() {
       if (!slug) return;
@@ -47,17 +50,21 @@ export default function PropertyDetail() {
         .single();
         
       if (propData) {
-        setProperty(propData);
-        
-        // Fetch valuations for chart
-        const { data: valData } = await supabase
-          .from('property_valuations')
-          .select('*')
-          .eq('property_id', (propData as any).id)
-          .order('recorded_date', { ascending: true });
+        if (!isPropertyPublished(propData)) {
+          setIsUnpublished(true);
+        } else {
+          setProperty(propData);
           
-        if (valData) {
-          setValuations(valData);
+          // Fetch valuations for chart
+          const { data: valData } = await supabase
+            .from('property_valuations')
+            .select('*')
+            .eq('property_id', (propData as any).id)
+            .order('recorded_date', { ascending: true });
+            
+          if (valData) {
+            setValuations(valData);
+          }
         }
       }
       setLoading(false);
@@ -70,6 +77,30 @@ export default function PropertyDetail() {
     return (
       <div className="pt-32 pb-24 min-h-screen flex items-center justify-center bg-[#F5F8E8] dark:bg-[#111]">
         <div className="w-12 h-12 border-4 border-[#171717]/10 dark:border-white/10 border-t-[#9ABA1B] rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (isUnpublished) {
+    return (
+      <div className="pt-32 pb-24 min-h-screen flex items-center justify-center bg-[#F5F8E8] dark:bg-[#111] px-4">
+        <div className="max-w-md w-full text-center bg-white dark:bg-[#1a1a1a] p-8 rounded-3xl shadow-sm border border-black/5">
+          <div className="w-14 h-14 bg-amber-50 dark:bg-amber-950/30 text-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <EyeOff className="w-7 h-7" />
+          </div>
+          <h2 className="text-2xl font-bold mb-2 text-[#171717] dark:text-white" style={{ fontFamily: 'Georgia, serif' }}>
+            Property Unavailable
+          </h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
+            This property listing is currently unpublished and not visible to the public.
+          </p>
+          <Link 
+            to="/properties" 
+            className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-[#171717] text-white font-medium hover:bg-black transition-colors"
+          >
+            Browse Active Properties
+          </Link>
+        </div>
       </div>
     );
   }
