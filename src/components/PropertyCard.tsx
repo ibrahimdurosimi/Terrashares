@@ -2,7 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Database } from '../types/database';
 type Property = Database['public']['Tables']['properties']['Row'];
-import { Scale, Check, MapPin, Building, Key } from 'lucide-react';
+import { Scale, Check, MapPin, Building, Key, Video } from 'lucide-react';
+import { getPropertyVideos } from '../utils/mediaUtils';
 
 interface PropertyCardProps {
   key?: React.Key | string | number;
@@ -14,6 +15,8 @@ interface PropertyCardProps {
 export function PropertyCard({ property, onCompareToggle, isCompared }: PropertyCardProps) {
   const isBeechwoodOutright = property.slug === '4-bed-detached-beechwood';
   const isSoldOut = property.status === 'closed';
+  const videos = getPropertyVideos(property);
+  const hasVideos = videos.length > 0;
 
   return (
     <div className="bg-white dark:bg-[#171717] rounded-2xl sm:rounded-3xl md:rounded-[2rem] p-3 sm:p-5 md:p-6 lg:p-7 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.03] dark:border-white/5 flex flex-col h-full hover:shadow-xl transition-all duration-300 relative overflow-hidden group hover:-translate-y-1">
@@ -54,15 +57,24 @@ export function PropertyCard({ property, onCompareToggle, isCompared }: Property
           </div>
         )}
 
-        {!isSoldOut && (
-          <div className={`absolute top-2.5 left-2.5 sm:top-3.5 sm:left-3.5 px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider shadow-md z-10 ${
-            property.status === 'open' 
-              ? 'bg-[#9ABA1B] text-white' 
-              : 'bg-gray-800 text-white'
-          }`}>
-            {property.status === 'open' ? 'Active' : 'Closed'}
-          </div>
-        )}
+        <div className="absolute top-2.5 left-2.5 sm:top-3.5 sm:left-3.5 flex items-center gap-1.5 z-10">
+          {!isSoldOut && (
+            <div className={`px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider shadow-md ${
+              property.status === 'open' 
+                ? 'bg-[#9ABA1B] text-white' 
+                : 'bg-gray-800 text-white'
+            }`}>
+              {property.status === 'open' ? 'Active' : 'Closed'}
+            </div>
+          )}
+
+          {hasVideos && (
+            <div className="px-2 sm:px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold bg-black/65 backdrop-blur-md text-white shadow-md flex items-center gap-1 border border-white/10" title="Includes video tour">
+              <Video className="w-3 h-3 text-[#9ABA1B]" />
+              <span className="hidden xs:inline">Video</span>
+            </div>
+          )}
+        </div>
 
         {isBeechwoodOutright && !isSoldOut && (
           <div className="absolute bottom-2.5 left-2.5 right-2.5 sm:bottom-3 sm:left-3 sm:right-3 bg-white/95 dark:bg-[#171717]/95 backdrop-blur-md rounded-lg sm:rounded-xl p-2 sm:p-2.5 shadow-lg border border-black/5 dark:border-white/10 z-10">

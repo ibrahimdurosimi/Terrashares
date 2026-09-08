@@ -97,3 +97,45 @@ export async function uploadToCloudinary(
   const rawUrl = result.secure_url || result.url;
   return optimizeCloudinaryUrl(rawUrl);
 }
+
+/**
+ * Uploads a video file to Cloudinary
+ */
+export async function uploadVideoToCloudinary(
+  file: File,
+  folder = 'terrashare/properties/videos'
+): Promise<string> {
+  const { cloudName, uploadPreset } = getCloudinaryConfig();
+
+  if (!cloudName || !uploadPreset) {
+    throw new Error(
+      'Cloudinary configuration missing. Please provide your Cloud Name and Unsigned Upload Preset in Settings.'
+    );
+  }
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', uploadPreset);
+  if (folder) {
+    formData.append('folder', folder);
+  }
+
+  const response = await fetch(
+    `https://api.cloudinary.com/v1_1/${cloudName}/video/upload`,
+    {
+      method: 'POST',
+      body: formData,
+    }
+  );
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    const errorMsg =
+      errorData.error?.message ||
+      `Video upload failed with status ${response.status} (${response.statusText})`;
+    throw new Error(errorMsg);
+  }
+
+  const result = await response.json();
+  return result.secure_url || result.url;
+}

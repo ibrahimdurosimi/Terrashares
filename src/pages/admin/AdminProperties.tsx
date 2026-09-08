@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Database } from '../../types/database';
-import { Edit2, Trash2, Plus, X, LineChart as ChartIcon, AlertTriangle, Loader2, Eye, EyeOff } from 'lucide-react';
+import { Edit2, Trash2, Plus, X, LineChart as ChartIcon, AlertTriangle, Loader2, Eye, EyeOff, Video } from 'lucide-react';
 import { ImageUploadDropzone } from '../../components/ImageUploadDropzone';
+import { PropertyVideoManager } from '../../components/admin/PropertyVideoManager';
+import { PropertyVideo } from '../../types/media';
+import { getPropertyVideos } from '../../utils/mediaUtils';
 import { isPropertyPublished } from '../../utils/propertyUtils';
 
 type Property = Database['public']['Tables']['properties']['Row'];
@@ -15,6 +18,7 @@ export default function AdminProperties() {
   const [isValuationModalOpen, setIsValuationModalOpen] = useState(false);
   const [formData, setFormData] = useState<Partial<Property>>({});
   const [modalIsPublished, setModalIsPublished] = useState<boolean>(true);
+  const [modalVideos, setModalVideos] = useState<PropertyVideo[]>([]);
   const [isTogglingPublishId, setIsTogglingPublishId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<'all' | 'published' | 'unpublished'>('all');
   const [currentPropId, setCurrentPropId] = useState<string | null>(null);
@@ -97,14 +101,16 @@ export default function AdminProperties() {
       processedData.image_urls = [];
     }
 
-    // Set published flag in type_details
+    // Set published flag and video assets in type_details
     const existingDetails = (processedData.type_details && typeof processedData.type_details === 'object') 
-      ? processedData.type_details 
+      ? (processedData.type_details as Record<string, any>) 
       : {};
     processedData.type_details = {
       ...existingDetails,
       is_published: modalIsPublished,
-    };
+      videos: modalVideos,
+      video_urls: modalVideos.map(v => v.url),
+    } as any;
     
     // Clean data based on selected paths
     if (processedData.acquisition_type === 'investment') {
@@ -153,6 +159,7 @@ export default function AdminProperties() {
       documentation_charges: 0, price_per_slot: 0, payment_method: null
     });
     setModalIsPublished(true);
+    setModalVideos([]);
     setIsModalOpen(true);
   };
 
@@ -168,6 +175,7 @@ export default function AdminProperties() {
       payment_method: prop.payment_method || null
     });
     setModalIsPublished(isPropertyPublished(prop));
+    setModalVideos(getPropertyVideos(prop));
     setIsModalOpen(true);
   };
 
@@ -337,12 +345,19 @@ export default function AdminProperties() {
                   .map(prop => {
                     const isPublished = isPropertyPublished(prop);
                     const isToggling = isTogglingPublishId === prop.id;
+                    const propVideos = getPropertyVideos(prop);
 
                     return (
                       <tr key={prop.id} className={`hover:bg-white/50 transition-colors ${!isPublished ? 'bg-amber-50/20' : ''}`}>
                         <td className="p-6">
                           <div className="flex items-center gap-2">
                             <p className="font-bold text-[#171717]">{prop.title}</p>
+                            {propVideos.length > 0 && (
+                              <span className="text-[10px] font-bold bg-red-50 text-red-700 border border-red-200 px-2 py-0.5 rounded-full inline-flex items-center gap-1" title={`${propVideos.length} video(s) attached`}>
+                                <Video className="w-2.5 h-2.5" />
+                                {propVideos.length} {propVideos.length === 1 ? 'Video' : 'Videos'}
+                              </span>
+                            )}
                             {!isPublished && (
                               <span className="text-[10px] font-semibold bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded-full">
                                 Hidden
@@ -683,6 +698,14 @@ export default function AdminProperties() {
                 <ImageUploadDropzone 
                   images={Array.isArray(formData.image_urls) ? formData.image_urls : []}
                   onChange={(newImages) => setFormData({ ...formData, image_urls: newImages })}
+                />
+              </div>
+
+              {/* Property Video Media Assets Section */}
+              <div className="pt-4 border-t border-black/5">
+                <PropertyVideoManager 
+                  videos={modalVideos} 
+                  onChange={setModalVideos} 
                 />
               </div>
               

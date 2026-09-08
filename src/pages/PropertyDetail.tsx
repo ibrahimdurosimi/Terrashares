@@ -7,8 +7,10 @@ import { ArrowLeft, MapPin, X, MessageCircle, Mail, BookmarkPlus, EyeOff } from 
 import { LineChart, Line, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 import { motion, AnimatePresence } from 'motion/react';
 import { isPropertyPublished } from '../utils/propertyUtils';
+import { getPropertyVideos } from '../utils/mediaUtils';
 import { SuccessModal } from '../components/SuccessModal';
 import { ImageGallery } from '../components/ImageGallery';
+import { PropertyVideoShowcase } from '../components/PropertyVideoShowcase';
 import { FAQAccordion } from '../components/FAQAccordion';
 import { PropertyROICalculator } from '../components/PropertyROICalculator';
 
@@ -210,6 +212,8 @@ export default function PropertyDetail() {
     }
   ];
 
+  const propertyVideos = getPropertyVideos(property);
+
   return (
     <div className="pt-24 pb-24 min-h-screen bg-white dark:bg-[#171717]">
       <div className="container mx-auto px-4 sm:px-6 lg:px-10 max-w-4xl">
@@ -218,9 +222,10 @@ export default function PropertyDetail() {
           <ArrowLeft className="w-4 h-4 mr-2" /> Back to properties
         </Link>
 
-        {/* 1. Main Image */}
+        {/* 1. Main Image & Video Gallery */}
         <ImageGallery 
           images={property.image_urls || []} 
+          videos={propertyVideos}
           title={property.title}
           badge={
             <div className="bg-white dark:bg-[#171717] px-6 py-2 rounded-full text-sm font-bold text-[#171717] dark:text-white shadow-md">
@@ -370,6 +375,14 @@ export default function PropertyDetail() {
               durationMonths={property.duration_months}
             />
           </div>
+        )}
+
+        {/* Dedicated Video Tour Showcase */}
+        {propertyVideos.length > 0 && (
+          <PropertyVideoShowcase 
+            videos={propertyVideos} 
+            propertyTitle={property.title} 
+          />
         )}
 
         {/* 7. Property Value Over Time */}
