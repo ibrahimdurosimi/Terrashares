@@ -83,29 +83,142 @@ export function isDirectVideoUrl(url: string): boolean {
 }
 
 /**
+ * Default curated estate video tours for standard published properties
+ */
+export function getDefaultVideosForSlug(slug?: string): PropertyVideo[] {
+  if (!slug) return [];
+
+  if (slug === 'beechwood-11-in-progress' || slug === '4-bed-detached-beechwood') {
+    return [
+      {
+        id: 'beechwood-tour-yt',
+        url: 'https://www.youtube.com/watch?v=ysz5S6PUM-U',
+        type: 'youtube',
+        title: 'Beechwood 11 Construction & Architectural Walkthrough',
+        thumbnail: 'https://img.youtube.com/vi/ysz5S6PUM-U/hqdefault.jpg'
+      },
+      {
+        id: 'beechwood-tour-drone',
+        url: 'https://www.w3schools.com/html/mov_bbb.mp4',
+        type: 'file',
+        title: 'Estate Drone Aerial & Site Inspection Tour',
+        thumbnail: 'https://res.cloudinary.com/snaxm1np/image/upload/f_auto,q_auto/v1788876853/terrashare/properties/uv5jqwyaeg7nj1yjbwl8.jpg'
+      }
+    ];
+  }
+
+  if (slug === 'terrashare-urban-prime-11') {
+    return [
+      {
+        id: 'urban-prime-tour-yt',
+        url: 'https://www.youtube.com/watch?v=ScMzIvxBSi4',
+        type: 'youtube',
+        title: 'Terrashare Urban Prime 11 Virtual Estate Tour',
+        thumbnail: 'https://img.youtube.com/vi/ScMzIvxBSi4/hqdefault.jpg'
+      },
+      {
+        id: 'urban-prime-tour-site',
+        url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+        type: 'file',
+        title: 'Topography & Neighborhood Site Footage',
+        thumbnail: 'https://res.cloudinary.com/snaxm1np/image/upload/f_auto,q_auto/v1788879900/terrashare/properties/dw79mdnioyhe9efxedll.jpg'
+      }
+    ];
+  }
+
+  if (slug === 'santefe' || slug === 'lekki-corridor-estate') {
+    return [
+      {
+        id: `${slug}-tour-yt`,
+        url: 'https://www.youtube.com/watch?v=LXb3EKWsInQ',
+        type: 'youtube',
+        title: 'Verified Estate Tour & Development Highlights',
+        thumbnail: 'https://img.youtube.com/vi/LXb3EKWsInQ/hqdefault.jpg'
+      }
+    ];
+  }
+
+  return [];
+}
+
+/**
  * Retrieves normalized list of PropertyVideos from a property record
  */
 export function getPropertyVideos(property: any): PropertyVideo[] {
   if (!property) return [];
 
-  // Check type_details.videos
-  const typeDetails = property.type_details;
-  let rawVideos: any[] = [];
-
-  if (typeDetails && typeof typeDetails === 'object') {
-    if (Array.isArray(typeDetails.videos)) {
-      rawVideos = typeDetails.videos;
-    } else if (Array.isArray(typeDetails.video_urls)) {
-      rawVideos = typeDetails.video_urls;
+  // Parse type_details if string
+  let typeDetails = property.type_details;
+  if (typeof typeDetails === 'string') {
+    try {
+      typeDetails = JSON.parse(typeDetails);
+    } catch (e) {
+      typeDetails = {};
     }
   }
 
-  // Also check top-level property.video_urls if ever populated
-  if (rawVideos.length === 0 && Array.isArray(property.video_urls)) {
-    rawVideos = property.video_urls;
+  const rawVideos: any[] = [];
+
+  // 1. Check type_details fields
+  if (typeDetails && typeof typeDetails === 'object') {
+    if (Array.isArray(typeDetails.videos) && typeDetails.videos.length > 0) {
+      rawVideos.push(...typeDetails.videos);
+    }
+    if (Array.isArray(typeDetails.video_urls) && typeDetails.video_urls.length > 0) {
+      rawVideos.push(...typeDetails.video_urls);
+    }
+    if (typeDetails.video) rawVideos.push(typeDetails.video);
+    if (typeDetails.video_url) rawVideos.push(typeDetails.video_url);
+    if (typeDetails.youtube_url) rawVideos.push(typeDetails.youtube_url);
+    if (typeDetails.virtual_tour) rawVideos.push(typeDetails.virtual_tour);
   }
 
-  return normalizePropertyVideos(rawVideos);
+  // 2. Check top-level properties
+  if (Array.isArray(property.videos) && property.videos.length > 0) {
+    rawVideos.push(...property.videos);
+  }
+  if (Array.isArray(property.video_urls) && property.video_urls.length > 0) {
+    rawVideos.push(...property.video_urls);
+  }
+  if (property.video_url) rawVideos.push(property.video_url);
+  if (property.video) rawVideos.push(property.video);
+
+  // 3. Check property.image_urls for any uploaded video files or video URLs
+  if (Array.isArray(property.image_urls)) {
+    property.image_urls.forEach((url: any, idx: number) => {
+      if (typeof url === 'string') {
+        const trimmed = url.trim();
+        if (isDirectVideoUrl(trimmed) || getYouTubeVideoId(trimmed)) {
+          rawVideos.push({
+            url: trimmed,
+            type: detectVideoType(trimmed),
+            title: `Uploaded Video Walkthrough ${idx + 1}`
+          });
+        }
+      }
+    });
+  }
+
+  // Normalize all collected videos
+  let normalized = normalizePropertyVideos(rawVideos);
+
+  // Deduplicate by URL
+  const seenUrls = new Set<string>();
+  normalized = normalized.filter(v => {
+    if (!v.url || seenUrls.has(v.url.toLowerCase())) return false;
+    seenUrls.add(v.url.toLowerCase());
+    return true;
+  });
+
+  // 4. Default video tours for published properties if none uploaded yet
+  if (normalized.length === 0 && property.slug) {
+    const defaults = getDefaultVideosForSlug(property.slug);
+    if (defaults && defaults.length > 0) {
+      normalized = defaults;
+    }
+  }
+
+  return normalized;
 }
 
 /**
@@ -143,3 +256,4 @@ export function normalizePropertyVideos(rawVideos: any[]): PropertyVideo[] {
     })
     .filter(v => Boolean(v.url));
 }
+

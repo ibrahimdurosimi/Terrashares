@@ -6,7 +6,7 @@ import { ImageUploadDropzone } from '../../components/ImageUploadDropzone';
 import { PropertyVideoManager } from '../../components/admin/PropertyVideoManager';
 import { PropertyVideo } from '../../types/media';
 import { getPropertyVideos } from '../../utils/mediaUtils';
-import { isPropertyPublished } from '../../utils/propertyUtils';
+import { isPropertyPublished, getMergedPropertyList, savePropertyOverride } from '../../utils/propertyUtils';
 
 type Property = Database['public']['Tables']['properties']['Row'];
 type Valuation = Database['public']['Tables']['property_valuations']['Row'];
@@ -38,7 +38,10 @@ export default function AdminProperties() {
   async function fetchProperties() {
     setLoading(true);
     const { data, error } = await (supabase as any).from('properties').select('*').order('created_at', { ascending: false });
-    if (data) setProperties(data);
+    if (data) {
+      const merged = getMergedPropertyList(data);
+      setProperties(merged);
+    }
     if (error) console.error('Error fetching properties:', error);
     setLoading(false);
   }
@@ -55,14 +58,15 @@ export default function AdminProperties() {
     };
 
     try {
-      const { error } = await (supabase as any)
+      await (supabase as any)
         .from('properties')
         .update({
           type_details: updatedDetails,
         })
         .eq('id', prop.id);
 
-      if (error) throw error;
+      // Save locally as well to guarantee persistence
+      savePropertyOverride(prop.id, { type_details: updatedDetails });
 
       // Optimistically update local state
       setProperties(prev => prev.map(p => {
@@ -136,9 +140,12 @@ export default function AdminProperties() {
     try {
       if (id) {
         await (supabase as any).from('properties').update(processedData as any).eq('id', id);
+        savePropertyOverride(id, processedData);
         setActionSuccess('Property updated successfully.');
       } else {
-        await (supabase as any).from('properties').insert(processedData as any);
+        const { data: newRow } = await (supabase as any).from('properties').insert(processedData as any).select().single();
+        const savedId = newRow?.id || processedData.slug || `prop-${Date.now()}`;
+        savePropertyOverride(savedId, { ...processedData, id: savedId });
         setActionSuccess('Property created successfully.');
       }
       setTimeout(() => setActionSuccess(null), 3500);

@@ -3,10 +3,10 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { Database } from '../types/database';
-import { ArrowLeft, MapPin, X, MessageCircle, Mail, BookmarkPlus, EyeOff } from 'lucide-react';
+import { ArrowLeft, MapPin, X, MessageCircle, Mail, BookmarkPlus, EyeOff, Video, Film, Play } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 import { motion, AnimatePresence } from 'motion/react';
-import { isPropertyPublished } from '../utils/propertyUtils';
+import { isPropertyPublished, getMergedProperty } from '../utils/propertyUtils';
 import { getPropertyVideos } from '../utils/mediaUtils';
 import { SuccessModal } from '../components/SuccessModal';
 import { ImageGallery } from '../components/ImageGallery';
@@ -52,16 +52,17 @@ export default function PropertyDetail() {
         .single();
         
       if (propData) {
-        if (!isPropertyPublished(propData)) {
+        const mergedProp = getMergedProperty(propData);
+        if (!isPropertyPublished(mergedProp)) {
           setIsUnpublished(true);
         } else {
-          setProperty(propData);
+          setProperty(mergedProp);
           
           // Fetch valuations for chart
           const { data: valData } = await supabase
             .from('property_valuations')
             .select('*')
-            .eq('property_id', (propData as any).id)
+            .eq('property_id', (mergedProp as any).id)
             .order('recorded_date', { ascending: true });
             
           if (valData) {
@@ -238,11 +239,24 @@ export default function PropertyDetail() {
         <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-8 gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">{property.title}</h1>
-            <div className="flex items-center text-gray-600 dark:text-gray-400 gap-1.5 font-medium">
-              <svg viewBox="0 0 24 24" className="w-5 h-5 text-green-600 fill-current shrink-0">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
-              </svg>
-              {property.location}
+            <div className="flex flex-wrap items-center gap-3 text-gray-600 dark:text-gray-400 font-medium">
+              <div className="flex items-center gap-1.5">
+                <svg viewBox="0 0 24 24" className="w-5 h-5 text-green-600 fill-current shrink-0">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
+                </svg>
+                {property.location}
+              </div>
+
+              {propertyVideos.length > 0 && (
+                <a
+                  href="#video-tour"
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/40 hover:bg-red-100 dark:hover:bg-red-900/60 transition-colors"
+                  title="Scroll to full video tour showcase"
+                >
+                  <Video className="w-3.5 h-3.5 text-red-600" />
+                  <span>{propertyVideos.length} Video {propertyVideos.length === 1 ? 'Tour' : 'Tours'} Available • Watch Walkthrough ↓</span>
+                </a>
+              )}
             </div>
           </div>
           <div className="text-left sm:text-right">

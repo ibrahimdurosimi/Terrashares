@@ -4,7 +4,7 @@ import { Database } from '../types/database';
 import { PropertyCard } from '../components/PropertyCard';
 import { Building2, Search, Filter, X, Scale } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { isPropertyPublished } from '../utils/propertyUtils';
+import { isPropertyPublished, getMergedPropertyList } from '../utils/propertyUtils';
 
 type Property = Database['public']['Tables']['properties']['Row'];
 type Category = 'all' | 'residential' | 'commercial' | 'land' | 'mixed_use';
@@ -35,7 +35,8 @@ export default function Properties() {
       const { data } = await query;
       
       if (data) {
-        let filteredData = (data as Property[]).filter(isPropertyPublished);
+        const mergedData = getMergedPropertyList(data);
+        let filteredData = (mergedData as Property[]).filter(isPropertyPublished);
         
         // Location filter
         if (filterLocation) {
