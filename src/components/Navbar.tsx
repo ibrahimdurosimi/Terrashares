@@ -87,6 +87,10 @@ export function Navbar() {
             </div>
             <Link to="/about" className="text-sm font-semibold text-[#171717] dark:text-white/80 hover:text-[#9ABA1B] dark:hover:text-white transition-colors">About</Link>
             <Link to="/contact" className="text-sm font-semibold text-[#171717] dark:text-white/80 hover:text-[#9ABA1B] dark:hover:text-white transition-colors">Contact</Link>
+            <Link to="/careers" className="text-sm font-semibold text-[#171717] dark:text-white/80 hover:text-[#9ABA1B] dark:hover:text-white transition-colors inline-flex items-center gap-1.5">
+              <span>Careers</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#9ABA1B] animate-pulse"></span>
+            </Link>
   
             {isAdmin && (
               <Link to="/admin" className="text-sm font-bold text-[#9ABA1B] hover:opacity-70 transition-opacity">Admin</Link>
@@ -157,6 +161,10 @@ export function Navbar() {
                 </div>
                 <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="text-lg font-semibold text-[#171717] dark:text-white hover:text-[#9ABA1B] transition-colors py-2">About</Link>
                 <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="text-lg font-semibold text-[#171717] dark:text-white hover:text-[#9ABA1B] transition-colors py-2">Contact</Link>
+                <Link to="/careers" onClick={() => setMobileMenuOpen(false)} className="text-lg font-semibold text-[#171717] dark:text-white hover:text-[#9ABA1B] transition-colors py-2 flex items-center justify-between">
+                  <span>Careers</span>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-[#9ABA1B]/20 text-[#9ABA1B] font-bold">Hiring</span>
+                </Link>
   
               {isAdmin && (
                 <Link 

@@ -81,7 +81,12 @@ export function Footer() {
                 <li><Link to="/about" className="text-[#171717]/60 dark:text-white/60 hover:text-[#9ABA1B] transition-colors text-sm">About us</Link></li>
                 <li><Link to="/properties" className="text-[#171717]/60 dark:text-white/60 hover:text-[#9ABA1B] transition-colors text-sm">Properties</Link></li>
                 <li><Link to="/contact" className="text-[#171717]/60 dark:text-white/60 hover:text-[#9ABA1B] transition-colors text-sm">Contact</Link></li>
-                <li><Link to="#" className="text-[#171717]/60 dark:text-white/60 hover:text-[#9ABA1B] transition-colors text-sm">Careers</Link></li>
+                <li>
+                  <Link to="/careers" className="text-[#171717]/60 dark:text-white/60 hover:text-[#9ABA1B] transition-colors text-sm inline-flex items-center gap-1.5">
+                    <span>Careers</span>
+                    <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-[#9ABA1B]/20 text-[#9ABA1B]">Hiring</span>
+                  </Link>
+                </li>
               </ul>
             </div>
             

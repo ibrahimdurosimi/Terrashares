@@ -35,6 +35,7 @@ export default function AdminLayout() {
 
   const links = [
     { name: 'Properties', path: '/admin/properties' },
+    { name: 'Job Applications', path: '/admin/applications' },
     { name: 'Leads', path: '/admin/leads' },
     { name: 'Investments', path: '/admin/investments' },
     { name: 'Notifications', path: '/admin/notifications' },

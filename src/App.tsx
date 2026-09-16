@@ -13,6 +13,7 @@ import Properties from './pages/Properties';
 import PropertyDetail from './pages/PropertyDetail';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import Careers from './pages/Careers';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Terms from './pages/Terms';
@@ -24,6 +25,7 @@ import Profile from './pages/dashboard/Profile';
 import AdminLayout from './pages/admin/AdminLayout';
 import AdminProperties from './pages/admin/AdminProperties';
 import AdminLeads from './pages/admin/AdminLeads';
+import AdminApplications from './pages/admin/AdminApplications';
 import AdminInvestments from './pages/admin/AdminInvestments';
 import AdminNotifications from './pages/admin/AdminNotifications';
 import AdminFAQs from './pages/admin/AdminFAQs';
@@ -42,6 +44,7 @@ export default function App() {
             <Route path="/properties/:slug" element={<PropertyDetail />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/careers" element={<Careers />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/login" element={<Login />} />
@@ -54,6 +57,7 @@ export default function App() {
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<Navigate to="/admin/properties" replace />} />
               <Route path="properties" element={<AdminProperties />} />
+              <Route path="applications" element={<AdminApplications />} />
               <Route path="leads" element={<AdminLeads />} />
               <Route path="investments" element={<AdminInvestments />} />
               <Route path="notifications" element={<AdminNotifications />} />
