@@ -27,6 +27,7 @@ export default function AdminApplications() {
   const [applications, setApplications] = useState<JobApplication[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [roleFilter, setRoleFilter] = useState<string>('all');
   const [selectedApp, setSelectedApp] = useState<JobApplication | null>(null);
   const [adminNote, setAdminNote] = useState('');
 
@@ -77,11 +78,13 @@ export default function AdminApplications() {
       app.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       app.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       app.phone.includes(searchTerm) ||
+      (app.job_title && app.job_title.toLowerCase().includes(searchTerm.toLowerCase())) ||
       app.qualification.toLowerCase().includes(searchTerm.toLowerCase()) ||
       app.location.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesStatus = statusFilter === 'all' || app.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const matchesRole = roleFilter === 'all' || app.job_id === roleFilter;
+    return matchesSearch && matchesStatus && matchesRole;
   });
 
   const getStatusBadge = (status: JobApplication['status']) => {
@@ -111,7 +114,7 @@ export default function AdminApplications() {
             Job Applications
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Review candidates for Executive Assistant & Business Development Support
+            Review candidates for Terrashare open roles: Executive Assistant & Digital Marketing Intern
           </p>
         </div>
 
@@ -122,26 +125,52 @@ export default function AdminApplications() {
         </div>
       </div>
 
-      {/* Filter and Search Bar */}
-      <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl p-4 shadow-sm border border-black/5 dark:border-white/10 mb-6 flex flex-col md:flex-row items-center gap-4 justify-between">
-        <div className="relative w-full md:w-96">
-          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search by candidate name, email, location..."
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            className="w-full bg-[#F5F8E8]/40 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl py-2 pl-10 pr-4 text-sm text-[#171717] dark:text-white focus:outline-none focus:border-[#9ABA1B]"
-          />
+      {/* Role and Status Filter Controls */}
+      <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl p-4 shadow-sm border border-black/5 dark:border-white/10 mb-6 space-y-4">
+        <div className="flex flex-col md:flex-row items-center gap-4 justify-between">
+          <div className="relative w-full md:w-96">
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search by name, role, email, location..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              className="w-full bg-[#F5F8E8]/40 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl py-2 pl-10 pr-4 text-sm text-[#171717] dark:text-white focus:outline-none focus:border-[#9ABA1B]"
+            />
+          </div>
+
+          {/* Role Filter Tabs */}
+          <div className="flex items-center gap-1.5 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+            <span className="text-xs font-bold text-gray-400 mr-1 hidden sm:inline">Role:</span>
+            {[
+              { id: 'all', label: 'All Openings' },
+              { id: 'ea-ceo-bd-support', label: 'Executive Assistant' },
+              { id: 'digital-marketing-intern', label: 'Marketing Intern' },
+            ].map(r => (
+              <button
+                key={r.id}
+                onClick={() => setRoleFilter(r.id)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-colors whitespace-nowrap ${
+                  roleFilter === r.id
+                    ? 'bg-[#9ABA1B] text-white shadow-sm'
+                    : 'bg-black/5 dark:bg-white/5 text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white'
+                }`}
+              >
+                {r.label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+        {/* Status Filter Row */}
+        <div className="flex items-center gap-2 overflow-x-auto pt-2 border-t border-black/5 dark:border-white/5">
           <Filter className="w-4 h-4 text-gray-400 shrink-0" />
+          <span className="text-xs font-bold text-gray-400 mr-1">Status:</span>
           {['all', 'new', 'reviewing', 'shortlisted', 'interview', 'rejected'].map(status => (
             <button
               key={status}
               onClick={() => setStatusFilter(status)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors whitespace-nowrap ${
+              className={`px-2.5 py-1 rounded-md text-xs font-medium uppercase tracking-wider transition-colors whitespace-nowrap ${
                 statusFilter === status
                   ? 'bg-[#171717] dark:bg-white text-white dark:text-[#171717]'
                   : 'bg-black/5 dark:bg-white/5 text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white'
@@ -178,6 +207,15 @@ export default function AdminApplications() {
                 {filteredApplications.map(app => (
                   <tr key={app.id} className="hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-colors">
                     <td className="py-4 px-6">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                          app.job_id === 'digital-marketing-intern'
+                            ? 'bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300'
+                            : 'bg-[#9ABA1B]/15 text-[#9ABA1B]'
+                        }`}>
+                          {app.job_id === 'digital-marketing-intern' ? 'Marketing Intern' : 'Executive Assistant'}
+                        </span>
+                      </div>
                       <div className="font-bold text-[#171717] dark:text-white">{app.full_name}</div>
                       <div className="text-xs text-gray-500 flex items-center gap-2 mt-0.5">
                         <span>{app.email}</span>
@@ -264,9 +302,18 @@ export default function AdminApplications() {
           <div className="bg-white dark:bg-[#1a1a1a] rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-black/5 dark:border-white/10 my-8">
             <div className="flex items-start justify-between pb-4 border-b border-black/5 dark:border-white/10 mb-6">
               <div>
-                <span className="text-[10px] font-mono text-gray-400 uppercase tracking-widest">{selectedApp.id}</span>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[10px] font-mono text-gray-400 uppercase tracking-widest">{selectedApp.id}</span>
+                  <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                    selectedApp.job_id === 'digital-marketing-intern'
+                      ? 'bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300'
+                      : 'bg-[#9ABA1B]/15 text-[#9ABA1B]'
+                  }`}>
+                    {selectedApp.job_id === 'digital-marketing-intern' ? 'Digital Marketing Intern' : 'Executive Assistant & BD'}
+                  </span>
+                </div>
                 <h3 className="text-2xl font-bold text-[#171717] dark:text-white">{selectedApp.full_name}</h3>
-                <p className="text-xs text-gray-500">{selectedApp.job_title}</p>
+                <p className="text-xs text-gray-500 font-medium">{selectedApp.job_title}</p>
               </div>
               <button
                 onClick={() => setSelectedApp(null)}

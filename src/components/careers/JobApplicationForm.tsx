@@ -20,13 +20,26 @@ import {
   Check
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { FEATURED_JOB, submitJobApplication } from '../../utils/careerUtils';
+import { JOB_OPENINGS, FEATURED_JOB, submitJobApplication } from '../../utils/careerUtils';
 
 interface JobApplicationFormProps {
+  selectedJobId?: string;
+  onJobChange?: (jobId: string) => void;
   onSuccess?: (appId: string) => void;
 }
 
-export function JobApplicationForm({ onSuccess }: JobApplicationFormProps) {
+export function JobApplicationForm({ selectedJobId, onJobChange, onSuccess }: JobApplicationFormProps) {
+  const [currentJobId, setCurrentJobId] = useState<string>(selectedJobId || FEATURED_JOB.id);
+
+  // Sync if selectedJobId changes externally
+  React.useEffect(() => {
+    if (selectedJobId && selectedJobId !== currentJobId) {
+      setCurrentJobId(selectedJobId);
+    }
+  }, [selectedJobId]);
+
+  const currentJob = JOB_OPENINGS.find(j => j.id === currentJobId) || FEATURED_JOB;
+
   const [formData, setFormData] = useState({
     full_name: '',
     email: '',
@@ -144,8 +157,8 @@ export function JobApplicationForm({ onSuccess }: JobApplicationFormProps) {
     setIsSubmitting(true);
     try {
       const result = await submitJobApplication({
-        job_id: FEATURED_JOB.id,
-        job_title: FEATURED_JOB.title,
+        job_id: currentJob.id,
+        job_title: currentJob.title,
         full_name: formData.full_name.trim(),
         email: formData.email.trim(),
         phone: formData.phone.trim(),
@@ -177,6 +190,7 @@ export function JobApplicationForm({ onSuccess }: JobApplicationFormProps) {
   };
 
   if (submittedAppId) {
+    const isInternship = currentJob.id === 'digital-marketing-intern';
     return (
       <div id="application-success" className="bg-white dark:bg-[#1a1a1a] rounded-3xl p-8 md:p-12 shadow-xl border border-black/5 dark:border-white/10 text-center">
         <div className="w-20 h-20 bg-[#9ABA1B]/15 text-[#9ABA1B] rounded-full flex items-center justify-center mx-auto mb-6">
@@ -189,7 +203,7 @@ export function JobApplicationForm({ onSuccess }: JobApplicationFormProps) {
           Thank You, {formData.full_name}!
         </h3>
         <p className="text-[#171717]/70 dark:text-white/70 max-w-lg mx-auto mb-6 text-base leading-relaxed">
-          Your application for <strong className="text-[#171717] dark:text-white">{FEATURED_JOB.title}</strong> has been successfully registered under tracking code:
+          Your application for <strong className="text-[#171717] dark:text-white">{currentJob.title}</strong> has been successfully registered under tracking code:
         </p>
         
         <div className="inline-block bg-[#F5F8E8] dark:bg-[#252525] border border-[#9ABA1B]/30 rounded-2xl px-6 py-3 font-mono text-lg font-bold text-[#171717] dark:text-white mb-8 select-all">
@@ -203,15 +217,15 @@ export function JobApplicationForm({ onSuccess }: JobApplicationFormProps) {
           <ul className="space-y-3 text-sm text-[#171717]/80 dark:text-white/80">
             <li className="flex items-start gap-2.5">
               <span className="w-5 h-5 rounded-full bg-[#9ABA1B]/20 text-[#9ABA1B] flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">1</span>
-              <span><strong>Review:</strong> Our executive recruitment team reviews each application carefully within 3–5 business days.</span>
+              <span><strong>Review:</strong> Our hiring team reviews your profile, portfolio, and experience within 3–5 business days.</span>
             </li>
             <li className="flex items-start gap-2.5">
               <span className="w-5 h-5 rounded-full bg-[#9ABA1B]/20 text-[#9ABA1B] flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">2</span>
-              <span><strong>Initial Chat:</strong> Shortlisted candidates will be invited for a 20-minute video or phone conversation.</span>
+              <span><strong>Screening:</strong> Shortlisted applicants will be invited for a 20-minute video or phone chat with the hiring lead ({isInternship ? 'Growth Manager' : 'Executive Team'}).</span>
             </li>
             <li className="flex items-start gap-2.5">
               <span className="w-5 h-5 rounded-full bg-[#9ABA1B]/20 text-[#9ABA1B] flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">3</span>
-              <span><strong>CEO Meeting:</strong> Final stage candidates will meet directly with the CEO at our Ajah office.</span>
+              <span><strong>Final Interview:</strong> Finalists participate in an in-person or video interview ({isInternship ? 'Growth team review & task showcase' : 'Direct interview with the CEO'}).</span>
             </li>
           </ul>
         </div>
@@ -233,6 +247,7 @@ export function JobApplicationForm({ onSuccess }: JobApplicationFormProps) {
             });
             setResumeFile(null);
             setResumeLink('');
+            setIndustryExposure([]);
           }}
           className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold bg-[#171717] dark:bg-white text-white dark:text-[#171717] hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
         >
@@ -242,8 +257,28 @@ export function JobApplicationForm({ onSuccess }: JobApplicationFormProps) {
     );
   }
 
+  const roleTags = currentJob.id === 'digital-marketing-intern'
+    ? [
+        'Social Media Management (IG/FB/LinkedIn)',
+        'Canva & Graphic Design',
+        'Email Campaigns & Newsletters',
+        'Community Engagement & Moderation',
+        'Content Copywriting',
+        'Video Editing (CapCut / Reels)',
+        'Real Estate & Proptech Interest'
+      ]
+    : [
+        'Real Estate / Property',
+        'Fintech / Investments',
+        'Personal / Executive Assistant Role',
+        'CRM & Lead Tracking Tools',
+        'Client Presentations & Pitch Decks',
+        'Calendar & Travel Scheduling'
+      ];
+
   return (
     <form onSubmit={handleSubmit} noValidate className="bg-white dark:bg-[#1a1a1a] rounded-3xl p-6 sm:p-10 shadow-xl border border-black/5 dark:border-white/10">
+      {/* Position Header & Selection */}
       <div className="border-b border-black/5 dark:border-white/10 pb-6 mb-8">
         <div className="flex items-center gap-2 text-[#9ABA1B] text-xs font-bold uppercase tracking-wider mb-1">
           <Sparkles className="w-4 h-4" />
@@ -252,9 +287,54 @@ export function JobApplicationForm({ onSuccess }: JobApplicationFormProps) {
         <h3 className="text-2xl sm:text-3xl font-black text-[#171717] dark:text-white" style={{ fontFamily: 'Georgia, serif' }}>
           Candidate Application Form
         </h3>
-        <p className="text-sm text-[#171717]/60 dark:text-white/60 mt-1">
-          Applying for: <strong className="text-[#171717] dark:text-white">{FEATURED_JOB.title}</strong>
+        <p className="text-sm text-[#171717]/60 dark:text-white/60 mt-1 mb-5">
+          Select the opening you are applying for and fill out the details below.
         </p>
+
+        {/* Role Selector Buttons */}
+        <div>
+          <label className="block text-xs font-bold uppercase tracking-wider text-[#9ABA1B] mb-2.5">
+            Select Target Position <span className="text-red-500">*</span>
+          </label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {JOB_OPENINGS.map(job => {
+              const isSelected = job.id === currentJobId;
+              return (
+                <button
+                  type="button"
+                  key={job.id}
+                  onClick={() => {
+                    setCurrentJobId(job.id);
+                    setIndustryExposure([]);
+                    if (onJobChange) onJobChange(job.id);
+                  }}
+                  className={`p-4 rounded-2xl border text-left transition-all relative ${
+                    isSelected
+                      ? 'border-[#9ABA1B] bg-[#9ABA1B]/10 dark:bg-[#9ABA1B]/15 shadow-sm ring-1 ring-[#9ABA1B]'
+                      : 'border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20 bg-gray-50/50 dark:bg-white/[0.02]'
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-2 mb-1.5">
+                    <span className={`text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full ${
+                      isSelected
+                        ? 'bg-[#9ABA1B] text-white'
+                        : 'bg-black/5 dark:bg-white/10 text-gray-600 dark:text-gray-300'
+                    }`}>
+                      {job.employment_type} • {job.workplace_type}
+                    </span>
+                    {isSelected && <Check className="w-4 h-4 text-[#9ABA1B]" />}
+                  </div>
+                  <div className="font-bold text-sm text-[#171717] dark:text-white leading-snug">
+                    {job.title}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    {job.department} • {job.salary_range}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       {errors.submit && (
@@ -403,16 +483,10 @@ export function JobApplicationForm({ onSuccess }: JobApplicationFormProps) {
         {/* Nice to have checklist */}
         <div>
           <label className="block text-xs font-bold text-[#171717] dark:text-white mb-2">
-            Prior Industry Exposure (Check all that apply):
+            Relevant Skills & Prior Exposure (Check all that apply):
           </label>
           <div className="flex flex-wrap gap-2.5">
-            {[
-              'Real Estate / Property',
-              'Fintech / Investments',
-              'Personal / Executive Assistant Role',
-              'CRM & Lead Tracking Tools',
-              'Client Presentations & Pitch Decks',
-            ].map(item => {
+            {roleTags.map(item => {
               const isChecked = industryExposure.includes(item);
               return (
                 <button
@@ -572,13 +646,20 @@ export function JobApplicationForm({ onSuccess }: JobApplicationFormProps) {
           <Sparkles className="w-4 h-4" /> 4. Candidate Pitch & Cover Note
         </h4>
         <label className="block text-xs text-[#171717]/70 dark:text-white/70 mb-2">
-          Tell us why you are interested in this role and what makes you a great fit for Terrashare (mention any experience with CEO support, presentations, or business development): <span className="text-red-500">*</span>
+          {currentJob.id === 'digital-marketing-intern'
+            ? 'Tell us why you are interested in this digital marketing internship and what makes you a great fit (mention any experience with social channels, design tools like Canva, copywriting, or email newsletters):'
+            : 'Tell us why you are interested in this role and what makes you a great fit for Terrashare (mention any experience with CEO support, presentations, or business development):'}{' '}
+          <span className="text-red-500">*</span>
         </label>
         <textarea
           rows={5}
           value={formData.cover_note}
           onChange={e => setFormData({ ...formData, cover_note: e.target.value })}
-          placeholder="Write your note here... (Minimum 30 characters)"
+          placeholder={
+            currentJob.id === 'digital-marketing-intern'
+              ? 'Tell us about your social media background, creative tools you use (Canva, CapCut, etc.), and what excites you about marketing at Terrashare...'
+              : 'Write your note here... (Minimum 30 characters)'
+          }
           className={`w-full bg-[#F5F8E8]/50 dark:bg-white/5 border ${
             errors.cover_note ? 'border-red-400 focus:border-red-500' : 'border-black/10 dark:border-white/10 focus:border-[#9ABA1B]'
           } rounded-2xl p-4 text-sm text-[#171717] dark:text-white focus:outline-none transition-colors resize-y`}

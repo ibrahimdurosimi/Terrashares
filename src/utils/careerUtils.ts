@@ -10,6 +10,7 @@ export const FEATURED_JOB: JobOpening = {
   employment_type: 'Full-time',
   experience_level: '0–2 Years (Internships Count)',
   salary_range: 'Competitive + Performance Bonuses & Growth',
+  reports_to: 'Chief Executive Officer (CEO)',
   posted_date: 'March 2026',
   status: 'open',
   summary:
@@ -63,6 +64,72 @@ export const FEATURED_JOB: JobOpening = {
   ],
 };
 
+export const DIGITAL_MARKETING_INTERN_JOB: JobOpening = {
+  id: 'digital-marketing-intern',
+  title: 'Digital Marketing Intern',
+  department: 'Growth & Marketing',
+  location: 'Lagos, Nigeria (Hybrid)',
+  workplace_type: 'Hybrid',
+  employment_type: 'Internship',
+  experience_level: 'Entry-level (Current student / Recent graduate)',
+  salary_range: 'Stipend-paid (6 months duration)',
+  reports_to: 'Growth Manager',
+  posted_date: 'March 2026',
+  status: 'open',
+  summary:
+    'Terrashare is looking for a creative and proactive Digital Marketing Intern to support our growth efforts across social media, email, and community channels. This is a hands-on opportunity to build real marketing experience within a fast-scaling real estate investment platform, working directly under the Growth Manager.',
+  responsibilities: [
+    {
+      category: 'Social Media Management',
+      items: [
+        'Plan, create, and schedule content across Facebook, Instagram, and LinkedIn',
+        'Monitor engagement, comments, and messages, responding or escalating where needed',
+        'Track platform performance and suggest improvements based on insights',
+      ],
+    },
+    {
+      category: 'Email Marketing',
+      items: [
+        'Assist in building and sending email campaigns and newsletters',
+        'Help maintain and segment subscriber/contact lists',
+        'Track open rates, click-throughs, and campaign performance',
+      ],
+    },
+    {
+      category: 'Community Management',
+      items: [
+        'Engage with followers and prospective investors across social platforms',
+        'Monitor brand mentions and community sentiment',
+        'Support responses to inquiries and escalate as needed to the Growth Manager',
+      ],
+    },
+  ],
+  requirements: [
+    'Currently studying or recently graduated (Marketing, Communications, Business, or related field)',
+    'Strong written communication skills',
+    'Genuine interest in and familiarity with social media platforms',
+    'Basic sense of visual/content design',
+    'Organized, proactive, and eager to learn',
+    'Comfortable working in a hybrid, fast-paced environment',
+  ],
+  nice_to_have: [
+    'Prior experience running a personal or organizational social media page',
+    'Interest in real estate, fintech, or investment industries',
+    'Basic experience with email marketing or content scheduling tools',
+  ],
+  benefits: [
+    'Monthly stipend for the duration of the 6-month internship',
+    'Direct mentorship from the Growth Manager',
+    'Hands-on experience across social media, email, and community marketing',
+    'Potential for growth as Terrashare scales',
+  ],
+};
+
+export const JOB_OPENINGS: JobOpening[] = [
+  FEATURED_JOB,
+  DIGITAL_MARKETING_INTERN_JOB,
+];
+
 const STORAGE_KEY = 'terrashare_job_applications';
 
 const INITIAL_DEMO_APPLICATIONS: JobApplication[] = [
@@ -86,6 +153,27 @@ const INITIAL_DEMO_APPLICATIONS: JobApplication[] = [
     status: 'shortlisted',
     created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
     notes: 'Strong academic background and high energy. Scheduled for initial screening.',
+  },
+  {
+    id: 'TS-APP-2026-103',
+    job_id: 'digital-marketing-intern',
+    job_title: 'Digital Marketing Intern',
+    full_name: 'David Oluwaseun',
+    email: 'david.oluwaseun@example.com',
+    phone: '+234 814 555 1290',
+    location: 'Yaba, Lagos',
+    qualification: "Final Year Student / B.Sc Mass Comm",
+    experience_years: '0–1 year',
+    linkedin_url: 'https://linkedin.com/in/david-oluwaseun-growth',
+    portfolio_url: 'https://instagram.com/creativesbydavid',
+    resume_name: 'David_Oluwaseun_Resume.pdf',
+    resume_size: '180 KB',
+    cover_note: 'I manage social media channels for our campus entrepreneurship club and create carousel designs on Canva. Excited by Terrashare\'s fractional real estate model and eager to learn email copywriting and performance reporting under the Growth Manager.',
+    availability: 'Immediate',
+    industry_exposure: ['Social Media / Content Design', 'Fintech / Investments'],
+    status: 'new',
+    created_at: new Date(Date.now() - 86400000 * 0.5).toISOString(),
+    notes: 'Great visual portfolio link and clear written communication.',
   },
   {
     id: 'TS-APP-2026-092',

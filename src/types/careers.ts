@@ -30,6 +30,7 @@ export interface JobOpening {
   employment_type: 'Full-time' | 'Contract' | 'Internship';
   experience_level: string;
   salary_range?: string;
+  reports_to?: string;
   posted_date: string;
   status: 'open' | 'closed';
   summary: string;
